@@ -1,11 +1,11 @@
-import sys
-import os
+# import sys
+# import os
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-import pytest
+# import pytest
 from deepdiff import DeepDiff
-from src.resource.moleculardefinition import MolecularDefinition  
+from src.resource.moleculardefinition import MolecularDefinition
 
 def test_molecular_definition():
     example_1 = {
