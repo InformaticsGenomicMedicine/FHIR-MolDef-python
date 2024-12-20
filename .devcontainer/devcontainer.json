@@ -1,7 +1,7 @@
 {
     "name": "FHIR-MolDef-python",
     "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
-    "postCreateCommand": "pip install -r requirements.txt && python -m venv .venv && source .venv/bin/activate && python -m ipykernel install --user --name=my-custom-kernel --display-name 'FHIR-MolDef'",
+    "postCreateCommand": "pip install -r requirements.txt",
     "customizations": {
         "vscode": {
             "extensions": [

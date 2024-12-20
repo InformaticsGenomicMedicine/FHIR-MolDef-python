@@ -14,7 +14,6 @@ A Python implementation of HL7 FHIR Molecular Definition.
     ```bash
     Finishing up...
     Running postCreateCommand...
-        › pip install -r requirements.txt
     ```
 
 ## 2. Selecting Kernel
