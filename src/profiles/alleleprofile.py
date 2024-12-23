@@ -43,7 +43,7 @@ class AlleleProfile(MolecularDefinition):
         """
         return [
             "identifier",
-            "type",
+            "moleculeType",
             "location",
             "representation",
         ]

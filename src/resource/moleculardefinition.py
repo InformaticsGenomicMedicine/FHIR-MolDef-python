@@ -74,6 +74,16 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
+    topology: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="topology",
+        title="Topology of the genomic molecule",
+        description="The topology of the genomic molecule, e.g., dendrimer, array, or polyhedron.",
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
     memberState: typing.List[fhirtypes.ReferenceType] = Field(  # type: ignore
         None,
         alias="memberState",

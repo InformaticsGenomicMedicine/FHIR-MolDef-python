@@ -1,14 +1,11 @@
-# import sys
-# import os
-
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
-# import pytest
+import pytest
 from deepdiff import DeepDiff
 from src.resource.moleculardefinition import MolecularDefinition
+from pydantic import ValidationError
 
-def test_molecular_definition():
-    example_1 = {
+@pytest.fixture
+def example_molecular_definition():
+    return {
         "resourceType": "MolecularDefinition",
         "id": "example-allele1",
         "meta": {
@@ -85,10 +82,9 @@ def test_molecular_definition():
         ]
     }
 
-    moldef = MolecularDefinition(**example_1)
-
+def test_molecular_definition(example_molecular_definition):
+    moldef = MolecularDefinition(**example_molecular_definition)
     model_dumped = moldef.model_dump()
-
-    differences = DeepDiff(example_1, model_dumped, ignore_order=True)
+    differences = DeepDiff(example_molecular_definition, model_dumped, ignore_order=True)
 
     assert differences == {}, f"Differences found: {differences}"

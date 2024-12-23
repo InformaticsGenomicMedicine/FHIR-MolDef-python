@@ -54,6 +54,6 @@ class SequenceProfile(MolecularDefinition):
 
         return [
             "identifier",
-            "type",
+            "moleculeType",
             "representation",
         ]
