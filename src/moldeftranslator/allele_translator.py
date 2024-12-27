@@ -324,16 +324,15 @@ class VrsFhirAlleleTranslation:
             )
 
     def _is_valid_sequence_location(self, sequence_location):
-        """_summary_
+        """Validates a sequence location object to ensure it meets specific conditions.
 
         Args:
-            sequence_location (_type_): _description_
+            sequence_location (object): The sequence location object to validate.
 
         Returns:
-            _type_: _description_
+            bool: True if the sequence location is valid, False otherwise.
         """
         if not (hasattr(sequence_location, "sequenceContext") and
-                sequence_location.sequenceContext and
                 getattr(sequence_location.sequenceContext, "display", None)):
             return False
 
@@ -343,9 +342,7 @@ class VrsFhirAlleleTranslation:
         coordinate_interval = sequence_location.coordinateInterval
 
         if not (hasattr(coordinate_interval, "coordinateSystem") and
-                coordinate_interval.coordinateSystem and
                 hasattr(coordinate_interval.coordinateSystem, "system") and
-                coordinate_interval.coordinateSystem.system and
                 hasattr(coordinate_interval.coordinateSystem.system, "coding")):
             return False
 
@@ -471,7 +468,7 @@ class VrsFhirAlleleTranslation:
         }
 
         # Ensure only one coding is present
-        coding_list = location_data.coordinateInterval.numberingSystem.coding
+        coding_list = location_data.coordinateInterval.coordinateSystem.system.coding
         if len(coding_list) != 1:
             raise ValueError("Currently only supporting 1 coding in numberingSystem")
 
