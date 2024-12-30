@@ -10,7 +10,7 @@ from moldefresource.moleculardefinition import (
     MolecularDefinitionLocationSequenceLocationCoordinateInterval,
     MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem
 )
-from src.profiles.alleleprofile import AlleleProfile
+from profiles.alleleprofile import AlleleProfile
 from fhir.resources.identifier import Identifier
 from fhir.resources.organization import Organization
 from fhir.resources.reference import Reference
@@ -18,11 +18,11 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.quantity import Quantity
 from decimal import Decimal
 
-from src.api.seqrepo_api import SeqRepoAPI
+from api.seqrepo_api import SeqRepoAPI
 from ga4gh.vrs import models
 
 # from src.resource.exception import InvalidVRSAlleleError
-from src.normalize.allele_normalizer import AlleleNormalizer
+from normalize.allele_normalizer import AlleleNormalizer
 
 
 class VrsFhirAlleleTranslation:

@@ -4,72 +4,72 @@ from fhir_core.types import create_fhir_type
 
 MolecularDefinitionType = create_fhir_type(
     "MolecularDefinitionType",
-    "src.resource.moleculardefinition.MolecularDefinition",
+    "moldefresource.moleculardefinition.MolecularDefinition",
 )
 
 MolecularDefinitionLocationType = create_fhir_type(
     "MolecularDefinitionLocationType",
-    "src.resource.moleculardefinition.MolecularDefinitionLocation",
+    "moldefresource.moleculardefinition.MolecularDefinitionLocation",
 )
 
 MolecularDefinitionLocationSequenceLocationType = create_fhir_type(
     "MolecularDefinitionLocationSequenceLocationType",
-    "src.resource.moleculardefinition.MolecularDefinitionLocationSequenceLocation",
+    "moldefresource.moleculardefinition.MolecularDefinitionLocationSequenceLocation",
 )
 
 MolecularDefinitionLocationSequenceLocationCoordinateIntervalType = create_fhir_type(
     "MolecularDefinitionLocationSequenceLocationCoordinateIntervalType",
-    "src.resource.moleculardefinition.MolecularDefinitionLocationSequenceLocationCoordinateInterval",
+    "moldefresource.moleculardefinition.MolecularDefinitionLocationSequenceLocationCoordinateInterval",
 )
 
 MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystemType = create_fhir_type(
     "MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystemType",
-    "src.resource.moleculardefinition.MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem",
+    "moldefresource.moleculardefinition.MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem",
 )
 
 MolecularDefinitionLocationFeatureLocationType = create_fhir_type(
     "MolecularDefinitionLocationFeatureLocationType",
-    "src.resource.moleculardefinition.MolecularDefinitionLocationFeatureLocation",
+    "moldefresource.moleculardefinition.MolecularDefinitionLocationFeatureLocation",
 )
 
 MolecularDefinitionRepresentationType = create_fhir_type(
     "MolecularDefinitionRepresentationType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentation",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentation",
 )
 
 MolecularDefinitionRepresentationLiteralType = create_fhir_type(
     "MolecularDefinitionRepresentationLiteralType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationLiteral",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationLiteral",
 )
 
 MolecularDefinitionRepresentationExtractedType = create_fhir_type(
     "MolecularDefinitionRepresentationExtractedType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationExtracted",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationExtracted",
 )
 
 MolecularDefinitionRepresentationRepeatedType = create_fhir_type(
     "MolecularDefinitionRepresentationRepeatedType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationRepeated",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRepeated",
 )
 
 MolecularDefinitionRepresentationConcatenatedType = create_fhir_type(
     "MolecularDefinitionRepresentationConcatenatedType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationConcatenated",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationConcatenated",
 )
 
 MolecularDefinitionRepresentationConcatenatedSequenceElementType = create_fhir_type(
     "MolecularDefinitionRepresentationConcatenatedSequenceElementType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationConcatenatedSequenceElement",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationConcatenatedSequenceElement",
 )
 
 MolecularDefinitionRepresentationRelativeType = create_fhir_type(
     "MolecularDefinitionRepresentationRelativeType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationRelative",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRelative",
 )
 
 MolecularDefinitionRepresentationRelativeEditType = create_fhir_type(
     "MolecularDefinitionRepresentationRelativeEditType",
-    "src.resource.moleculardefinition.MolecularDefinitionRepresentationRelativeEdit",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRelativeEdit",
 )
 
 

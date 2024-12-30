@@ -1,6 +1,6 @@
 # NOTE: This is just a temporary class for now.
 from ga4gh.vrs import normalize as vrs_normalize
-from src.api.seqrepo_api import SeqRepoAPI
+from api.seqrepo_api import SeqRepoAPI
 from ga4gh.core import ga4gh_identify
 
 
