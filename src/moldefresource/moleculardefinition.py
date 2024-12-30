@@ -1,7 +1,7 @@
 import typing
 from pydantic import Field
 from fhir.resources import backboneelement, domainresource, fhirtypes
-import src.resource.fhirtypeextra as fhirtypeextra
+import moldefresource.fhirtypeextra as fhirtypeextra
 from fhir_core.types import CodeType, StringType, BooleanType, IntegerType
 
 

@@ -1,6 +1,6 @@
 import pytest
 from deepdiff import DeepDiff
-from src.resource.moleculardefinition import MolecularDefinition
+from moldefresource.moleculardefinition import MolecularDefinition
 from pydantic import ValidationError
 
 @pytest.fixture

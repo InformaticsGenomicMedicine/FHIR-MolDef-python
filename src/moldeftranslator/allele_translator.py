@@ -1,7 +1,7 @@
 import re
 from decimal import Decimal
 
-from src.resource.moleculardefinition import (
+from moldefresource.moleculardefinition import (
     # MolecularDefinition,
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,

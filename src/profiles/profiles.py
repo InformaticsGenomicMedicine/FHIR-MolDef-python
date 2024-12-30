@@ -1,9 +1,8 @@
-from src.resource.moleculardefinition import MolecularDefinition
 from pydantic import Field, model_validator
 import typing
 from fhir.resources import fhirtypes
-import src.resource.fhirtypeextra as fhirtypeextra
-
+from moldefresource.moleculardefinition import MolecularDefinition
+import moldefresource.fhirtypeextra as fhirtypeextra
 
 class SequenceProfile(MolecularDefinition):
     """FHIR Sequence Profile

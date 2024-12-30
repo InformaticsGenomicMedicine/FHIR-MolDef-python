@@ -1,4 +1,4 @@
-from src.resource.moleculardefinition import MolecularDefinition
+from moldefresource.moleculardefinition import MolecularDefinition
 from pydantic import Field, model_validator
 import typing
 from fhir.resources import fhirtypes
