@@ -149,21 +149,25 @@ class VrsFhirAlleleTranslation:
         ga4gh_id, refseq_id, start_pos, end_pos, altAllele = self._extract_vrs_values(
             expression
         )
-        start_quant = Quantity(value=Decimal(int(start_pos)))
-        end_quant = Quantity(value=Decimal(int(end_pos)))
+        #vrs only allows integer, where FHIR requires a Decimal for precision.
+        start_quant = Quantity(value=int(start_pos)) 
+        end_quant = Quantity(value=int(end_pos)) 
 
         # handling VRS deletions it returns '' in fhir string type It gets an error. So need to convert this into a string. 
         if altAllele == '':
             altAllele = ' '
 
+        # Auto setting the Organization name
         organization = Organization(
             name="Global Alliance for Genomics and Health",
         )
 
         organization_reference = Reference(display=f"{organization.name}")
-
+        
         identifier = Identifier(value=ga4gh_id, assigner=organization_reference)
+        # Capturing the sequence type from the refseq ID
         sequence_type = self._detect_sequence_type(sequence_id=refseq_id)
+
         molType = CodeableConcept(
             coding=[
                 {
@@ -361,13 +365,14 @@ class VrsFhirAlleleTranslation:
         return True
 
     def _validate_location(self,expression):
-        """_summary_
+        """
+        Validate and extract valid sequence locations from the given expression.
 
         Args:
-            expression (_type_): _description_
+            expression (object): The expression containing sequence location information.
 
         Returns:
-            _type_: _description_
+            list: A list of valid sequence location objects.
         """
         valid_sequence_locations = [] 
 
@@ -439,7 +444,6 @@ class VrsFhirAlleleTranslation:
             )
         return literals[0]
 
-    #TODO: edit the translation structure. remove numberyingSystem and include coordinateSystem
     def translate_allele_profile_to_vrs_allele(
         self, expression: object, normalize: bool = True
     ):
@@ -461,7 +465,6 @@ class VrsFhirAlleleTranslation:
         location_data = self._get_single_location(expression)
 
         values_needed = {
-            # TODO: This refseq might change the way its going to be extracted. Revisit once you understand the Reference resource for this particular attribute.
             "refseq": location_data.sequenceContext.display,
             "start": location_data.coordinateInterval.startQuantity.value,
             "end": location_data.coordinateInterval.endQuantity.value,
