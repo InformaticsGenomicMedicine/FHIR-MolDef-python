@@ -121,8 +121,8 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# Notes for updates
+# Local use only
 Notes.md
 TODO.md
-
 edits
+notebooks/vrs-python.log
