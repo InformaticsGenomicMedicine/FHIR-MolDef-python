@@ -1,11 +1,11 @@
 [project]
 name = "FHIR-MolDef-python" 
 version = "0.1.0" 
-description = "A brief description of your project"
+description = "This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard."
 readme = "README.md"
 authors = [
-    {name = "Robert R. Freimuth", email = "Freimuth.Robert@mayo.edu"},
-    {name = "Salem Bajjali", email = "Bajjali.Salem@mayo.edu"}
+    {name = "Robert R. Freimuth"},
+    {name = "Salem Bajjali"}
 ]
 
 license = {file = "LICENSE"}
