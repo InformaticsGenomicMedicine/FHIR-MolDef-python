@@ -2,6 +2,13 @@
 
 Welcome to the **FHIR-MolDef-python** repository! This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard. It is designed to simplify the creation of Molecular Definition resources, including Molecular Definition Allele Profiles, and to enable seamless bidirectional translations between Allele Profiles and VRS Alleles.
 
+### ⚠️ **Disclaimer**
+The `MolecularDefinition` schema used in this project is based on the **most recent schema development** as described here: [Work in Progress Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html).  
+
+It does **not** align with the schema provided in the HL7 FHIR 6.0.0 Ballot 2 version available here: [FHIR Ballot 2 Schema](https://hl7.org/fhir/6.0.0-ballot2/moleculardefinition.html).  
+
+⚠️ **Note**: The [Work in Progress Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html) page may occasionally be unavailable due to active development. This downtime is beyond our group's control. If the page is temporarily inaccessible, we recommend trying again later.
+
 ---
 
 ## Features
