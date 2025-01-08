@@ -53,6 +53,14 @@ class SequenceProfile(MolecularDefinition):
         """
 
         return [
+            "id",
+            "meta",
+            "implicitRules",
+            "language",
+            "text",
+            "contained",
+            "extension",
+            "modifierExtension",
             "identifier",
             "moleculeType",
             "representation",
