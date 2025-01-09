@@ -47,6 +47,16 @@ MolecularDefinitionRepresentationExtractedType = create_fhir_type(
     "moldefresource.moleculardefinition.MolecularDefinitionRepresentationExtracted",
 )
 
+MolecularDefinitionRepresentationExtractedCoordinateIntervalType = create_fhir_type(
+    "MolecularDefinitionRepresentationExtractedCoordinateIntervalType",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationExtractedCoordinateInterval",
+)
+
+MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType = create_fhir_type(
+    "MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType",
+)
+
 MolecularDefinitionRepresentationRepeatedType = create_fhir_type(
     "MolecularDefinitionRepresentationRepeatedType",
     "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRepeated",
@@ -72,6 +82,15 @@ MolecularDefinitionRepresentationRelativeEditType = create_fhir_type(
     "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRelativeEdit",
 )
 
+MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType = create_fhir_type(
+    "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRelativeEditCoordinateInterval",
+)
+
+MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType = create_fhir_type(
+    "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystem",
+)
 
 __all__ = [
     # New MolecularDefinition Values
@@ -84,9 +103,13 @@ __all__ = [
     "MolecularDefinitionRepresentationType",
     "MolecularDefinitionRepresentationLiteralType",
     "MolecularDefinitionRepresentationExtractedType",
+    "MolecularDefinitionRepresentationExtractedCoordinateIntervalType",
+    "MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType",
     "MolecularDefinitionRepresentationRepeatedType",
     "MolecularDefinitionRepresentationConcatenatedType",
     "MolecularDefinitionRepresentationConcatenatedSequenceElementType",
     "MolecularDefinitionRepresentationRelativeType",
     "MolecularDefinitionRepresentationRelativeEditType",
+    "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType",
+    "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType"
 ]

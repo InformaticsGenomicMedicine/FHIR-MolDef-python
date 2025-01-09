@@ -26,7 +26,7 @@ class MolecularDefinition(domainresource.DomainResource):
             "element_property": True,
         },
     )
-    #NOTE: added new attribute
+
     desription: typing.Optional[fhirtypes.MarkdownType] = Field(  # type: ignore
         None,
         alias="desription",
@@ -37,7 +37,6 @@ class MolecularDefinition(domainresource.DomainResource):
         }, 
     )
 
-    #NOTE: added this, converted type to molecularType
     moleculeType: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
         None,
         alias="moleculeType",
@@ -51,7 +50,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    type: typing.Optional[CodeType] = Field(  # type: ignore
+    type: typing.List[CodeType] = Field(  # type: ignore
         None,
         alias="type",
         title="	Type of the Molecular Definition entity",
@@ -412,7 +411,7 @@ class MolecularDefinitionLocationFeatureLocation(backboneelement.BackboneElement
 
     __resource_type__ = "MolecularDefinitionLocationFeatureLocation"
 
-    geneId: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    geneId: typing.List[fhirtypes.CodeableConceptType] = Field(  # type: ignore
         None,
         alias="geneId",
         title="Gene Id",
@@ -625,34 +624,14 @@ class MolecularDefinitionRepresentationExtracted(backboneelement.BackboneElement
         },
     )
 
-    start: IntegerType = Field(  # type: ignore
-        ...,
-        alias="start",
-        title="The start coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted",
-        description=(
-            "The start coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted."
-        ),
-        json_schema_extra={"element_property": True},
-    )
-
-    end: IntegerType = Field(  # type: ignore
-        ...,
-        alias="end",
-        title="The end coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted",
-        description=(
-            "The end coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted."
-        ),
-        json_schema_extra={"element_property": True},
-    )
-
-    coordinateSystem: fhirtypes.CodeableConceptType = Field(  # type: ignore
-        ...,
-        alias="coordinateSystem",
-        title="The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based",
-        description=(
-            "The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based."
-        ),
-        json_schema_extra={"element_property": True},
+    coordinateInterval: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalType] = Field(  # type: ignore
+        None,
+        alias="coordinateInterval",
+        title="Coordinate Interval for this location",
+        description="The coordinate interval for this location.",
+        json_schema_extra={
+            "element_property": True,
+        },
     )
 
     reverseComplement: typing.Optional[BooleanType] = Field(  # type: ignore
@@ -676,10 +655,120 @@ class MolecularDefinitionRepresentationExtracted(backboneelement.BackboneElement
             "extension",
             "modifierExtension",
             "startingMolecule",
+            "coordinateInterval",
+            "reverseComplement",
+        ]
+
+class MolecularDefinitionRepresentationExtractedCoordinateInterval(
+    backboneelement.BackboneElement
+):
+    """Disclaimer: Any field name ends with ``__ext`` doesn't part of
+    Resource StructureDefinition, instead used to enable Extensibility feature
+    for FHIR Primitive Data Types.
+
+    The coordinate interval for this location.
+    """
+
+    __resource_type__ = "MolecularDefinitionRepresentationExtractedCoordinateInterval"
+
+    coordinateSystem: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType] = Field(  # type: ignore
+        ...,
+        alias="coordinateSystem",
+        title="The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based",
+        description=(
+            "The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based."
+        ),
+        json_schema_extra={"element_property": True},
+    )
+
+    start: IntegerType = Field(  # type: ignore
+        ...,
+        alias="start",
+        title="The start coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted",
+        description=(
+            "The start coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted."
+        ),
+        json_schema_extra={"element_property": True},
+    )
+
+    end: IntegerType = Field(  # type: ignore
+        ...,
+        alias="end",
+        title="The end coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted",
+        description=(
+            "The end coordinate (on the parent sequence) of the interval that defines the subsequence to be extracted."
+        ),
+        json_schema_extra={"element_property": True},
+    )
+
+    @classmethod
+    def elements_sequence(cls):
+        """returning all elements names from
+        ``MolecularDefinitionLocationSequenceLocationCoordinateInterval`` according specification,
+        with preserving original sequence order.
+        """
+        return [
+            "id",
+            "extension",
+            "modifierExtension",
+            "coordinateSystem",
             "start",
             "end",
-            "coordinateSystem",
-            "reverseComplement",
+        ]
+
+class MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystem(backboneelement.BackboneElement):
+    """Disclaimer: Any field name ends with ``__ext`` doesn't part of
+    Resource StructureDefinition, instead used to enable Extensibility feature
+    for FHIR Primitive Data Types.
+
+    The location of this molecule in context of a feature.
+    """
+
+    __resource_type__ = "MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystem"
+
+    system: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="system",
+        title="System",
+        description=("The system of the specified coordinate."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    origin: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="origin",
+        title="Origin",
+        description=("The origin of the specified coordinate."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    normalizationMethod: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="normalizationMethod",
+        title="Normalization Method",
+        description=("The normalization method of the specified coordinate."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    @classmethod
+    def elements_sequence(cls):
+        """returning all elements names from
+        ``MolecularDefinitionLocationFeatureLocation`` according specification,
+        with preserving original sequence order.
+        """
+        return [
+            "id",
+            "extension",
+            "modifierExtension",
+            "system",
+            "origin",
+            "normalizationMethod",
         ]
 
 class MolecularDefinitionRepresentationRepeated(backboneelement.BackboneElement):
@@ -881,33 +970,11 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
         },
     )
 
-    coordinateSystem: fhirtypes.CodeableConceptType = Field(  # type: ignore
-        ...,
-        alias="coordinateSystem",
-        title="The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based",
-        description=(
-            "The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based."
-        ),
-        json_schema_extra={
-            "element_property": True,
-        },
-    )
-
-    start: IntegerType = Field(  # type: ignore
-        ...,
-        alias="start",
-        title="The start coordinate of the interval that will be edited",
-        description=("The start coordinate of the interval that will be edited."),
-        json_schema_extra={
-            "element_property": True,
-        },
-    )
-
-    end: IntegerType = Field(  # type: ignore
-        ...,
-        alias="end",
-        title="The end coordinate of the interval that will be edited",
-        description=("The end coordinate of the interval that will be edited."),
+    coordinateInterval: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType] = Field(  # type: ignore
+        None,
+        alias="coordinateInterval",
+        title="Coordinate Interval for this location",
+        description="The coordinate interval for this location.",
         json_schema_extra={
             "element_property": True,
         },
@@ -950,9 +1017,121 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
             "extension",
             "modifierExtension",
             "editOrder",
+            "coordinateInterval",
+            "replacementMolecule",
+            "replacedMolecule",
+        ]
+
+class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
+    backboneelement.BackboneElement
+):
+    """Disclaimer: Any field name ends with ``__ext`` doesn't part of
+    Resource StructureDefinition, instead used to enable Extensibility feature
+    for FHIR Primitive Data Types.
+
+    The coordinate interval for this location.
+    """
+
+    __resource_type__ = "MolecularDefinitionRepresentationRelativeEditCoordinateInterval"
+
+    coordinateSystem: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType] = Field(  # type: ignore
+        ...,
+        alias="coordinateSystem",
+        title="The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based",
+        description=(
+            "The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based."
+        ),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    start: IntegerType = Field(  # type: ignore
+        ...,
+        alias="start",
+        title="The start coordinate of the interval that will be edited",
+        description=("The start coordinate of the interval that will be edited."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    end: IntegerType = Field(  # type: ignore
+        ...,
+        alias="end",
+        title="The end coordinate of the interval that will be edited",
+        description=("The end coordinate of the interval that will be edited."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    @classmethod
+    def elements_sequence(cls):
+        """returning all elements names from
+        ``MolecularDefinitionLocationSequenceLocationCoordinateInterval`` according specification,
+        with preserving original sequence order.
+        """
+        return [
+            "id",
+            "extension",
+            "modifierExtension",
             "coordinateSystem",
             "start",
             "end",
-            "replacementMolecule",
-            "replacedMolecule",
+        ]
+
+class MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystem(backboneelement.BackboneElement):
+    """Disclaimer: Any field name ends with ``__ext`` doesn't part of
+    Resource StructureDefinition, instead used to enable Extensibility feature
+    for FHIR Primitive Data Types.
+
+    The location of this molecule in context of a feature.
+    """
+
+    __resource_type__ = "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystem"
+
+    system: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="system",
+        title="System",
+        description=("The system of the specified coordinate."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    origin: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="origin",
+        title="Origin",
+        description=("The origin of the specified coordinate."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    normalizationMethod: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+        None,
+        alias="normalizationMethod",
+        title="Normalization Method",
+        description=("The normalization method of the specified coordinate."),
+        json_schema_extra={
+            "element_property": True,
+        },
+    )
+
+    @classmethod
+    def elements_sequence(cls):
+        """returning all elements names from
+        ``MolecularDefinitionLocationFeatureLocation`` according specification,
+        with preserving original sequence order.
+        """
+        return [
+            "id",
+            "extension",
+            "modifierExtension",
+            "system",
+            "origin",
+            "normalizationMethod",
         ]
