@@ -54,7 +54,7 @@ MolecularDefinitionRepresentationExtractedCoordinateIntervalType = create_fhir_t
 
 MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType = create_fhir_type(
     "MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType",
-    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType",
+    "moldefresource.moleculardefinition.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystem",
 )
 
 MolecularDefinitionRepresentationRepeatedType = create_fhir_type(
