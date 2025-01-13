@@ -51,6 +51,7 @@ class AlleleProfile(MolecularDefinition):
             "extension",
             "modifierExtension",
             "identifier",
+            # "description"
             "moleculeType",
             "location",
             "representation",

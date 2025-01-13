@@ -27,9 +27,9 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    desription: typing.Optional[fhirtypes.MarkdownType] = Field(  # type: ignore
+    description: typing.Optional[fhirtypes.MarkdownType] = Field(  # type: ignore
         None,
-        alias="desription",
+        alias="description",
         title="Description of the Molecular Definition instance",
         description="A description of the molecular definition instance in a human friendly format.",
         json_schema_extra={
@@ -121,7 +121,7 @@ class MolecularDefinition(domainresource.DomainResource):
             "extension",
             "modifierExtension",
             "identifier",
-            "desription",
+            "description",
             "moleculeType",
             "type",
             "location",
