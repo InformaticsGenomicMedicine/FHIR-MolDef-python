@@ -6,81 +6,81 @@ from pydantic import ValidationError
 @pytest.fixture
 def example_molecular_definition():
     return {
-        "resourceType": "MolecularDefinition",
-        "id": "example-allele1",
-        "meta": {
-            "profile": ["http://hl7.org/fhir/StructureDefinition/allele"]
+  "resourceType" : "MolecularDefinition",
+  "id" : "example-allele1",
+  "meta" : {
+    "profile" : ["http://hl7.org/fhir/StructureDefinition/allele"]
+  },
+  "moleculeType" : {
+    "coding" : [{
+      "system" : "http://hl7.org/fhir/sequence-type",
+      "code" : "dna",
+      "display" : "DNA Sequence"
+    }]
+  },
+  "location" : [{
+    "sequenceLocation" : {
+      "sequenceContext" : {
+        "reference" : "MolecularDefinition/example-sequence-lrg584",
+        "type" : "MolecularDefinition",
+        "display" : "Starting Sequence Resource: LRG_584"
+      },
+      "coordinateInterval" : {
+        "coordinateSystem" : {
+          "system" : {
+            "coding" : [{
+              "system" : "http://loinc.org",
+              "code" : "LA30100-4",
+              "display" : "0-based interval counting"
+            }],
+            "text" : "0-based interval counting"
+          }
         },
-        "moleculeType": {
-            "coding": [
-                {"system": "http://hl7.org/fhir/sequence-type", "code": "dna", "display": "DNA Sequence"}
-            ]
+        "startQuantity" : {
+          "value" : 5001
         },
-        "location": [
-            {
-                "sequenceLocation": {
-                    "sequenceContext": {
-                        "reference": "MolecularDefinition/example-sequence-lrg584",
-                        "type": "MolecularDefinition",
-                        "display": "Starting Sequence Resource: LRG_584"
-                    },
-                    "coordinateInterval": {
-                        "coordinateSystem": {
-                            "system": {
-                                "coding": [
-                                    {
-                                        "system": "http://loinc.org",
-                                        "code": "LA30100-4",
-                                        "display": "0-based interval counting"
-                                    }
-                                ],
-                                "text": "0-based interval counting"
-                            }
-                        },
-                        "startQuantity": {"value": 5001},
-                        "endQuantity": {"value": 97867}
-                    }
-                }
-            }
-        ],
-        "representation": [
-            {
-                "relative": {
-                    "startingMolecule": {
-                        "reference": "MolecularDefinition/example-sequence-lrg584",
-                        "type": "MolecularDefinition",
-                        "display": "Starting Sequence Resource: LRG_584"
-                    },
-                    "edit": [
-                        {
-                            "coordinateSystem": {
-                                "coding": [
-                                    {
-                                        "system": "http://loinc.org",
-                                        "code": "LA30100-4",
-                                        "display": "0-based interval counting"
-                                    }
-                                ],
-                                "text": "0-based interval counting"
-                            },
-                            "start": 5123,
-                            "end": 5124,
-                            "replacementMolecule": {
-                                "reference": "MolecularDefinition/example-sequence-t",
-                                "type": "MolecularDefinition",
-                                "display": "Replacement Sequence Resource: T"
-                            },
-                            "replacedMolecule": {
-                                "reference": "MolecularDefinition/example-sequence-c",
-                                "type": "MolecularDefinition",
-                                "display": "Replaced Sequence Resource: C"
-                            }
-                        }
-                    ]
-                }
-            }
-        ]
+        "endQuantity" : {
+          "value" : 97867
+        }
+      }
     }
+  }],
+  "representation" : [{
+    "relative" : {
+      "startingMolecule" : {
+        "reference" : "MolecularDefinition/example-sequence-lrg584",
+        "type" : "MolecularDefinition",
+        "display" : "Starting Sequence Resource: LRG_584"
+      },
+      "edit" : [{
+        "coordinateInterval" : {
+          "coordinateSystem" : {
+            "system" : {
+              "coding" : [{
+                "system" : "http://loinc.org",
+                "code" : "LA30100-4",
+                "display" : "0-based interval counting"
+              }],
+              "text" : "0-based interval counting"
+            }
+          },
+          "start" : 5123,
+          "end" : 5124
+        },
+        "replacementMolecule" : {
+          "reference" : "MolecularDefinition/example-sequence-t",
+          "type" : "MolecularDefinition",
+          "display" : "Replacement Sequence Resource: T"
+        },
+        "replacedMolecule" : {
+          "reference" : "MolecularDefinition/example-sequence-c",
+          "type" : "MolecularDefinition",
+          "display" : "Replaced Sequence Resource: C"
+        }
+      }]
+    }
+  }]
+}
 
 def test_molecular_definition_full_validation(example_molecular_definition):
     moldef = MolecularDefinition(**example_molecular_definition)
@@ -122,12 +122,12 @@ def impl_molecular_definition_1(moldef_instance):
 
     # edit field checks
     edit = representation_relative.edit[0]
-    assert edit.coordinateSystem.coding[0].system == "http://loinc.org"
-    assert edit.coordinateSystem.coding[0].code == "LA30100-4"
-    assert edit.coordinateSystem.coding[0].display == "0-based interval counting"
-    assert edit.coordinateSystem.coordinateSystem.text == "0-based interval counting"
-    assert edit.start == 5123
-    assert edit.end == 5124
+    assert edit.coordinateInterval.coordinateSystem.system.coding[0].system == "http://loinc.org"
+    assert edit.coordinateInterval.coordinateSystem.system.coding[0].code == "LA30100-4"
+    assert edit.coordinateInterval.coordinateSystem.system.coding[0].display == "0-based interval counting"
+    assert edit.coordinateInterval.coordinateSystem.system.text == "0-based interval counting"
+    assert edit.coordinateInterval.start == 5123
+    assert edit.coordinateInterval.end == 5124
     assert edit.replacementMolecule.reference == "MolecularDefinition/example-sequence-t"
     assert edit.replacementMolecule.type == "MolecularDefinition"
     assert edit.replacementMolecule.display == "Replacement Sequence Resource: T"
