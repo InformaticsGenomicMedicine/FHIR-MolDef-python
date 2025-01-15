@@ -15,7 +15,7 @@ class AlleleProfile(MolecularDefinition):
     Returns:
         AlleleProfile: An instance of the AlleleProfile class.
     """
-
+    #TODO: not sure if i need this anymore
     # Redefine `memberState` as a private attribute or exclude it
     memberState: typing.List[fhirtypes.ReferenceType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
@@ -27,7 +27,32 @@ class AlleleProfile(MolecularDefinition):
         if "memberState" in values:
             raise ValueError("`memberState` is not allowed in AlleleProfile.")
         return values
+    
+    @model_validator(mode="after")
+    def validate_moleculeType(cls, values):
+        
+        molType = values.moleculeType
 
+        if not molType:
+            raise ValueError(
+                "The `moleculeType` field must not be empty (1..1 cardinality for AlleleProfile)."
+            )
+        return values
+
+    @model_validator(mode="after")
+    def validate_location_cardinality(cls, values):
+        
+        location = values.location
+
+        if not location or len(location) != 1:
+            raise ValueError(
+                "The `location` field must contain exactly one item (1..1 cardinality for AlleleProfile)."
+            )
+        return values
+
+    # @model_validator(mode="after")
+    #this is going to be for ContextState and allelestate  
+    
     @classmethod
     def model_json_schema(cls, *args, **kwargs):
         schema = super().model_json_schema(*args, **kwargs)
@@ -51,7 +76,7 @@ class AlleleProfile(MolecularDefinition):
             "extension",
             "modifierExtension",
             "identifier",
-            # "description"
+            "description",
             "moleculeType",
             "location",
             "representation",
