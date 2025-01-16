@@ -21,7 +21,6 @@ class AlleleProfile(MolecularDefinition):
         default=None, repr=False, exclude=True
     )
 
-    # Add a model_validator to ensure `memberState` is excluded
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, values):
         if "memberState" in values:
@@ -30,28 +29,60 @@ class AlleleProfile(MolecularDefinition):
     
     @model_validator(mode="after")
     def validate_moleculeType(cls, values):
-        
-        molType = values.moleculeType
-
-        if not molType:
+        if not values.moleculeType:
             raise ValueError(
-                "The `moleculeType` field must not be empty (1..1 cardinality for AlleleProfile)."
+                "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."
             )
         return values
 
     @model_validator(mode="after")
     def validate_location_cardinality(cls, values):
-        
-        location = values.location
-
-        if not location or len(location) != 1:
+        if not values.location: #
             raise ValueError(
-                "The `location` field must contain exactly one item (1..1 cardinality for AlleleProfile)."
+                "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."
+            )
+        return values
+    
+    @model_validator(mode="after")
+    def validate_representation_cardinality(cls, values):
+        
+        if not values.representation: 
+            raise ValueError(
+                "The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."
+
             )
         return values
 
-    # @model_validator(mode="after")
-    #this is going to be for ContextState and allelestate  
+    @model_validator(mode="after")
+    def validate_focus(cls, values):
+        allele_state = []
+        context_state = []
+
+        for value in values.representation:
+            if value.focus:
+                if not value.focus.coding:
+                    raise ValueError("The 'focus.coding' field must contain at least one entry.")
+
+                for coding in value.focus.coding:
+                    if coding.code == "allele-state":
+                        allele_state.append(coding)
+
+                        if not coding.system:
+                            raise ValueError("Each 'allele-state' coding entry must have a 'system' defined.")
+
+                    elif coding.code == "context-state":
+                        context_state.append(coding)
+
+                        if not coding.system:
+                            raise ValueError("Each 'context-state' coding entry must have a 'system' defined.")
+
+        if len(allele_state) == 0:
+            raise ValueError("At least one 'allele-state' must be present in 'focus.coding'.")
+
+        if len(context_state) > 1:
+            raise ValueError("Only one 'context-state' is allowed (0..1 cardinality).")
+
+        return values
     
     @classmethod
     def model_json_schema(cls, *args, **kwargs):
