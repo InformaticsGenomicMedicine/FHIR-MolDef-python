@@ -29,7 +29,7 @@ class AlleleProfile(MolecularDefinition):
     
     @model_validator(mode="after")
     def validate_moleculeType(cls, values):
-        if not values.moleculeType:
+        if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
             raise ValueError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."
             )
@@ -37,7 +37,7 @@ class AlleleProfile(MolecularDefinition):
 
     @model_validator(mode="after")
     def validate_location_cardinality(cls, values):
-        if not values.location: #
+        if not values.location or len(values.location) > 1: #
             raise ValueError(
                 "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."
             )
