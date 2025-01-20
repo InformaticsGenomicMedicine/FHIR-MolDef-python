@@ -15,6 +15,7 @@ from fhir.resources.identifier import Identifier
 from fhir.resources.organization import Organization
 from fhir.resources.reference import Reference
 from fhir.resources.codeableconcept import CodeableConcept
+from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
 from decimal import Decimal
 
@@ -188,11 +189,18 @@ class VrsFhirAlleleTranslation:
             ]
         )
         seq_context_display = Reference(display=refseq_id)
-
+        
+        focus_value = CodeableConcept(
+            coding=[Coding(
+                system="http://hl7.org/fhir/moleculardefinition-focus",
+                code = "allele-state")]
+        )
         MolDefReprLiteral = MolecularDefinitionRepresentationLiteral(
             value=str(altAllele)
         )
+        
         MolDefRepresentation = MolecularDefinitionRepresentation(
+            focus=focus_value,
             literal=MolDefReprLiteral
         )
         MolDefLocationSequenceLocationCoordinatSystem = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
@@ -304,145 +312,54 @@ class VrsFhirAlleleTranslation:
 
         Raises:
             TypeError: If the expression is not an instance of AlleleProfile.
-            TypeError: If any location in the expression is not an instance of MolecularDefinitionLocation.
-            TypeError: If any representation in the expression is not an instance of MolecularDefinitionRepresentation.
         """
         if not isinstance(expression, AlleleProfile):
             raise TypeError(
                 "Invalid expression type: expected an instance of AlleleProfile."
             )
 
-        if not all(
-            isinstance(loc, MolecularDefinitionLocation) for loc in expression.location
-        ):
-            raise TypeError(
-                "Each location should be an instance of MolecularDefinitionLocation."
-            )
+    def _is_valid_sequence_location(self, locations):
+        for loc in locations:
+            # Access sequenceLocation first
+            sequence_location = loc.sequenceLocation
+            if not sequence_location:
+                raise ValueError("Missing 'sequenceLocation' in location.")
 
-        if not all(
-            isinstance(rep, MolecularDefinitionRepresentation)
-            for rep in expression.representation
-        ):
-            raise TypeError(
-                "Each representation should be an instance of MolecularDefinitionRepresentation."
-            )
+            # Check sequenceContext.display
+            if not sequence_location.sequenceContext.display:
+                raise ValueError("Missing 'sequenceContext.display' in sequence location.")
 
-    def _is_valid_sequence_location(self, sequence_location):
-        """Validates a sequence location object to ensure it meets specific conditions.
+            # Check coordinateInterval existence
+            if not sequence_location.coordinateInterval:
+                raise ValueError("Missing 'coordinateInterval' in sequence location.")
 
-        Args:
-            sequence_location (object): The sequence location object to validate.
+            coordinate_interval = sequence_location.coordinateInterval
 
-        Returns:
-            bool: True if the sequence location is valid, False otherwise.
-        """
-        if not (hasattr(sequence_location, "sequenceContext") and
-                getattr(sequence_location.sequenceContext, "display", None)):
-            return False
+            # Check coordinateSystem.system.coding
+            if not coordinate_interval.coordinateSystem.system.coding:
+                raise ValueError("Missing 'coordinateSystem.system.coding' in coordinate interval.")
 
-        if not hasattr(sequence_location, "coordinateInterval"):
-            return False
+            if not any(coding.display for coding in coordinate_interval.coordinateSystem.system.coding):
+                raise ValueError("Missing 'coding.display' in 'coordinateSystem.system.coding'.")
 
-        coordinate_interval = sequence_location.coordinateInterval
+            # Check startQuantity and endQuantity
+            if not getattr(coordinate_interval.startQuantity, "value", None):
+                raise ValueError("Missing 'startQuantity.value' in coordinate interval.")
+            if not getattr(coordinate_interval.endQuantity, "value", None):
+                raise ValueError("Missing 'endQuantity.value' in coordinate interval.")
 
-        if not (hasattr(coordinate_interval, "coordinateSystem") and
-                hasattr(coordinate_interval.coordinateSystem, "system") and
-                hasattr(coordinate_interval.coordinateSystem.system, "coding")):
-            return False
+        return sequence_location 
 
-        coding_list = coordinate_interval.coordinateSystem.system.coding
-        if not any(hasattr(coding, "display") and coding.display for coding in coding_list):
-            return False
+    def _get_literal_value_for_allele_state(self,representations):
 
-        if not all(
-            hasattr(coordinate_interval, attr) and
-            getattr(coordinate_interval, attr) and
-            getattr(coordinate_interval, attr).value is not None
-            for attr in ["startQuantity", "endQuantity"]
-        ):
-            return False
-
-        return True
-
-    def _validate_location(self,expression):
-        """
-        Validate and extract valid sequence locations from the given expression.
-
-        Args:
-            expression (object): The expression containing sequence location information.
-
-        Returns:
-            list: A list of valid sequence location objects.
-        """
-        valid_sequence_locations = [] 
-
-        for value in expression.location:
-            if hasattr(value, "sequenceLocation"): 
-                sequence_location = value.sequenceLocation
-                if self._is_valid_sequence_location(sequence_location): 
-                    valid_sequence_locations.append(sequence_location)  
-
-        return valid_sequence_locations
-    
-    def _get_single_location(self, expression):
-        """Validates and retrieves a single sequence location from the given expression.
-
-        Args:
-            expression (object):  The expression containing the sequence location information.
-
-        Raises:
-            ValueError: The validated sequence location.
-
-        Returns:
-            dict: The validated sequence location.
-        """
-        sequence_location_list = self._validate_location(expression)
-        if len(sequence_location_list) != 1:
-            raise ValueError(
-                f"Currently only supporting 1 location. You provided {len(sequence_location_list)} locations. "
-                "Each location must contain: sequenceLocation, sequenceContext, coordinateInterval, startQuantity, and endQuantity."
-            )
-        return sequence_location_list[0]
-
-    def _validate_literal_representation(self, expression: object):
-        """ Validates the literal representation of an expression.
-
-        Args:
-            expression (object): The expression object containing representations.
-
-        Returns:
-            list: A list of literal values extracted from the expression's representations.
-        """
-        literals = []
-
-        for rep in expression.representation:
-            if (
-                hasattr(rep, "literal")
-                and hasattr(rep.literal, "value")
-                and rep.literal.value is not None
-            ):
-                literals.append(rep.literal.value)
-
-        return literals
-
-    def _get_single_literal(self, expression):
-        """ Validates and retrieves a single literal representation from the given expression.
-
-        Args:
-            expression (object): The expression to be validated and parsed.
-
-        Raises:
-            ValueError: If the expression does not contain exactly one literal representation.
-
-        Returns:
-            str: The single literal representation extracted from the expression.
-        """
-        literals = self._validate_literal_representation(expression)
-        if len(literals) != 1:
-            raise ValueError(
-                f"Currently only supporting 1 literal representation. You provided {len(literals)} literal representation."
-            )
-        return literals[0]
+        for rep in representations:
+            focus = getattr(rep,"focus",None)
+            if  focus and any(coding.code == "allele-state" for coding in getattr(focus,"coding",[])):
+                literal = getattr(rep,"literal",None)
+                if literal:
+                    return literal.value
+                else:
+                    raise ValueError("Missing `literal.value` for the `allele-state` representation.")
 
     def translate_allele_profile_to_vrs_allele(
         self, expression: object, normalize: bool = True
@@ -462,8 +379,7 @@ class VrsFhirAlleleTranslation:
         """
         self._is_valid_allele_profile(expression)
 
-        location_data = self._get_single_location(expression)
-
+        location_data = self._is_valid_sequence_location(expression.location)
         values_needed = {
             "refseq": location_data.sequenceContext.display,
             "start": location_data.coordinateInterval.startQuantity.value,
@@ -471,6 +387,7 @@ class VrsFhirAlleleTranslation:
         }
 
         # Ensure only one coding is present
+        #TODO: possible incoperate this in the _is_valid_seuqence_locaiton, to only have one coding list
         coding_list = location_data.coordinateInterval.coordinateSystem.system.coding
         if len(coding_list) != 1:
             raise ValueError("Currently only supporting 1 coding in numberingSystem")
@@ -478,8 +395,7 @@ class VrsFhirAlleleTranslation:
         # Retrieve coordinate system display if available
         values_needed["coordinate_system_display"] = coding_list[0].display
 
-        seq = self._get_single_literal(expression)
-
+        seq = self._get_literal_value_for_allele_state(expression.representation)
         # Process start and end positions
         refseq = values_needed["refseq"]
         # Making sure that the coordinateSystem is valid, and if so adjust the indexing of the start position
