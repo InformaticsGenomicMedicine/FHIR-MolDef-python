@@ -17,7 +17,6 @@ from fhir.resources.reference import Reference
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
-from decimal import Decimal
 
 from api.seqrepo_api import SeqRepoAPI
 from ga4gh.vrs import models
@@ -189,7 +188,7 @@ class VrsFhirAlleleTranslation:
             ]
         )
         seq_context_display = Reference(display=refseq_id)
-        
+
         focus_value = CodeableConcept(
             coding=[Coding(
                 system="http://hl7.org/fhir/moleculardefinition-focus",
@@ -319,6 +318,23 @@ class VrsFhirAlleleTranslation:
             )
 
     def _is_valid_sequence_location(self, locations):
+        """Validates the `sequenceLocation` structure within the provided locations to ensure all necessary attributes are present for accurate translations.
+
+        Args:
+            locations (list): A list of location objects containing `sequenceLocation` attributes.
+
+        Raises:
+            ValueError: If 'sequenceLocation' is missing in any location.
+            ValueError: If 'sequenceContext.display' is missing in any sequence location.
+            ValueError: If 'coordinateInterval' is missing in any sequence location.
+            ValueError: If 'coordinateSystem.system.coding' is missing in any coordinate interval.
+            ValueError: If 'coding.display' is missing in 'coordinateSystem.system.coding'.
+            ValueError: If 'startQuantity.value' is missing in any coordinate interval.
+            ValueError: If 'endQuantity.value' is missing in any coordinate interval.
+
+        Returns:
+            sequence_location: The validated sequence location object.
+        """
         for loc in locations:
             # Access sequenceLocation first
             sequence_location = loc.sequenceLocation
@@ -351,7 +367,17 @@ class VrsFhirAlleleTranslation:
         return sequence_location 
 
     def _get_literal_value_for_allele_state(self,representations):
+        """Retrieves the literal value associated with an `allele-state` representation, if present, from the provided list of representations.
 
+        Args:
+            representations (list): A list of representation objects that may include `allele-state` details.
+
+        Raises:
+             ValueError: If the `allele-state` representation is present but lacks a `literal.value`.
+
+        Returns:
+            str: The value of the `literal` attribute for the `allele-state` representation.
+        """
         for rep in representations:
             focus = getattr(rep,"focus",None)
             if  focus and any(coding.code == "allele-state" for coding in getattr(focus,"coding",[])):
