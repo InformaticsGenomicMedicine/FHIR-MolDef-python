@@ -26,7 +26,15 @@ class SequenceProfile(MolecularDefinition):
     location: typing.List[fhirtypeextra.MolecularDefinitionLocationType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
     )
-
+    
+    @model_validator(mode="after")
+    def validate_moleculeType(cls, values):
+        if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
+            raise ValueError(
+                "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for SequenceProfile."
+            )
+        return values
+    
     # Combined validator to exclude both `memberState` and `location` during validation
     @model_validator(mode="before")
     def validate_exclusions(cls, values):
