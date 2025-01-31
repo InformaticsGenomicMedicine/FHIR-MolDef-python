@@ -1,7 +1,7 @@
 from moldefresource.moleculardefinition import MolecularDefinition
 from pydantic import Field, model_validator
-import typing
 from fhir.resources import fhirtypes
+from pydantic.json_schema import SkipJsonSchema
 
 class AlleleProfile(MolecularDefinition):
     """FHIR Allele Profile
@@ -15,9 +15,8 @@ class AlleleProfile(MolecularDefinition):
     Returns:
         AlleleProfile: An instance of the AlleleProfile class.
     """
-    #TODO: not sure if i need this anymore
-    # Redefine `memberState` as a private attribute or exclude it
-    memberState: typing.List[fhirtypes.ReferenceType] = Field(  # type: ignore
+
+    memberState: SkipJsonSchema[fhirtypes.ReferenceType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
     )
 
@@ -37,7 +36,7 @@ class AlleleProfile(MolecularDefinition):
 
     @model_validator(mode="after")
     def validate_location_cardinality(cls, values):
-        if not values.location or len(values.location) > 1: #
+        if not values.location or len(values.location) > 1: 
             raise ValueError(
                 "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."
             )
@@ -45,7 +44,6 @@ class AlleleProfile(MolecularDefinition):
     
     @model_validator(mode="after")
     def validate_representation_cardinality(cls, values):
-        
         if not values.representation: 
             raise ValueError(
                 "The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."
@@ -83,14 +81,6 @@ class AlleleProfile(MolecularDefinition):
             raise ValueError("Only one 'context-state' is allowed (0..1 cardinality).")
 
         return values
-    
-    @classmethod
-    def model_json_schema(cls, *args, **kwargs):
-        schema = super().model_json_schema(*args, **kwargs)
-        # Remove `memberState` from the schema if it exists
-        if "properties" in schema and "memberState" in schema["properties"]:
-            del schema["properties"]["memberState"]
-        return schema
 
     @classmethod
     def elements_sequence(cls):
