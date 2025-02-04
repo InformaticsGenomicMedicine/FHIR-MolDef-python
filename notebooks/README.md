@@ -1,6 +1,6 @@
 ## FHIR-MolDef-python Educational Notebook Series
 
-This collection of Jupyter notebooks provides a hands-on introduction to using the FHIR-MolDef-Python codebase. The notebooks demonstrate how to work with the HL7 FHIR MolecularDefinition Resource, MolecularDefinition Profiles, and the bidirectional translation between GA4GH VRS (version 1.3) and HL7 FHIR MolecularDefinition. For instructions on running these notebooks in Codespaces, please refer to the main project [README](FHIR-MolDef-python/README.md), which includes step-by-step setup guidance.
+This collection of Jupyter notebooks provides a hands-on introduction to using the FHIR-MolDef-Python codebase. The notebooks demonstrate how to work with the HL7 FHIR MolecularDefinition Resource, MolecularDefinition Profiles, and the bidirectional translation between GA4GH VRS (version 1.3) and HL7 FHIR MolecularDefinition. For instructions on running these notebooks in Codespaces, please refer to the main project [README](../README.md), which includes step-by-step setup guidance.
 
 
 ## Notebooks
