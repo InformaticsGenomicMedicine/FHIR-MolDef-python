@@ -108,19 +108,20 @@ If you're new to using **Codespaces**, the following resources may be helpful:
 - Click on **Select Kernel**.
 
 ## 3. Choosing Python Environment
-- After clicking **Select Kernel**, choose **Python Environment...**.
+- After clicking **Select Kernel**, a pop-up will appear. Choose **Python Environment...**.
 - From the dropdown menu, select:
     ```plaintext
     Python 3.11.11 /usr/local/bin/python
     ```
+- ⚠️ **NOTE**: This step must be performed for each notebook that you intend to execute.
 
 ## 4. Running Notebooks
 - Once the appropriate kernel is selected, you can proceed to run the cells inside the Jupyter notebooks.
 - 💡 **Tip**: Use `Shift + Enter` to execute a cell quickly.
 
 ## 5. Deactivating Codespace
-- On the bottom left corner of your browser, click on **CodeSpaces:**.
-- Then click **Stop Current Codespace**.
+- On the bottom left corner of your browser, click on **CodeSpaces:** (highlighted in blue).
+- A pop-up will appear. Then, click **Stop Current Codespace**.
 - ✅ Once this is done, you have successfully deactivated your Codespace.
 
 ---
