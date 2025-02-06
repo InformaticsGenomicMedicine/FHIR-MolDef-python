@@ -1,6 +1,6 @@
 ## Overview
 
-Welcome to the **FHIR-MolDef-python** repository! This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard. It is designed to simplify the creation of Molecular Definition resources, including Molecular Definition Allele Profiles, and to enable seamless bidirectional translations between Allele Profiles and VRS Alleles.
+Welcome to the  **FHIR-MolDef-python** repository! This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard. It enables you to instantiate the MolecularDefinition resource—currently supporting SequenceProfile and AlleleProfile—and facilitates seamless, bidirectional translation between VRS Alleles and the FHIR AlleleProfile. The repository also includes Jupyter notebooks that serve as an educational guide, introducing the MolecularDefinition resource, its profiles, and translation functionalities to help you get started.
 
 ---
 
@@ -16,20 +16,22 @@ It does **not** align with the schema provided in the HL7 FHIR 6.0.0 Ballot 2 ve
 
 ## Features
 
-- **Generation of Molecular Definition Resources**  
-  Effortlessly generate fully compliant Molecular Definition resources based on the HL7 FHIR standard.
+### Resource
+**Generation of Molecular Definition Resources**: Effortlessly create fully compliant Molecular Definition resources based on the HL7 FHIR standard.
 
-- **Allele Profile Support**  
-  Leverage the Allele Profile, a child class of the Molecular Definition resource, to create and manage allele-specific representations.
+### Profile
+**SequenceProfile**: SequenceProfile is a specialized subclass of the MolecularDefinition resource, enabling you to create sequence-specific representations.
 
-- **Bidirectional Translation**  
-  Perform reliable and seamless bidirectional translations between Allele Profiles and VRS Alleles (version 1.3), ensuring data interoperability and consistency across platforms.
+**AlleleProfile**: AlleleProfile is a specialized subclass of the MolecularDefinition resource, allowing you to create and manage allele-specific representations.
 
-- **Educational Jupyter Notebooks**  
-  Leverage interactive Jupyter notebooks for a hands-on learning experience, providing practical examples and educational insights into the implementation and its functionality.
+### Translation
+**Bidirectional Translation**: Perform seamless, bidirectional translations between FHIR AlleleProfile and VRS Alleles (version 1.3), ensuring interoperability and data consistency across diverse platforms.
+
+### Notebooks
+**Educational Jupyter Notebooks**: Access interactive Jupyter notebooks for a hands-on learning experience, complete with practical examples and educational insights into the implementation’s functionality.
 
 ---
-
+<!--
 ### NOTE
 This package is not currently published on PyPI, but we plan to make it available soon. In the meantime, you can clone the repository and follow the instructions below to work with the code locally. Contributions to this repository are highly appreciated. You are welcome to fork the repository and submit a pull request with your changes. Alternatively, issues can be reported or improvements suggested by opening an issue in the tracker. Thank you for your support!
 
@@ -78,7 +80,7 @@ This package is not currently published on PyPI, but we plan to make it availabl
    ```
 
 ---
-
+-->
 ## Interacting with Notebooks
 To interact with the FHIR-MolDef-python, you can use GitHub Codespaces to access and work with the Jupyter Notebooks directly. If you plan to make changes, please fork the repository and submit your suggestions or modifications via an issue and a pull request. Personal accounts receive 120 free hours of Codespaces usage, while Pro accounts receive 180 hours. Be aware that Codespaces has a default timeout period of 30 minutes. For more information about Codespaces, refer to the links provided below. If you're already familiar with Codespaces and Jupyter Notebooks, you can proceed with the instructions below.
 
@@ -127,6 +129,7 @@ If you're new to using **Codespaces**, the following resources may be helpful:
 ---
 
 ## Acknowledgments
+This project relies on the following packages and resources. We extend our gratitude to their respective developers and contributors for making these tools freely available:
 
 - **[vrs-python](https://github.com/ga4gh/vrs-python)**
 - **[biocommons.seqrepo](https://github.com/biocommons/biocommons.seqrepo)**
