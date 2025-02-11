@@ -3,7 +3,7 @@ from fhir.resources import fhirtypes
 from moldefresource.moleculardefinition import MolecularDefinition
 import moldefresource.fhirtypeextra as fhirtypeextra
 from pydantic.json_schema import SkipJsonSchema
-
+from exception import ElementNotAllowed,InvalidMoleculeTypeError
 
 class SequenceProfile(MolecularDefinition):
     """FHIR Sequence Profile
@@ -31,13 +31,13 @@ class SequenceProfile(MolecularDefinition):
     def validate_exclusions(cls, values):
         for field in ["memberState", "location"]:
             if field in values:
-                raise ValueError(f"`{field}` is not allowed in SequenceProfile.")
+                raise ElementNotAllowed(f"`{field}` is not allowed in SequenceProfile.")
         return values
 
     @model_validator(mode="after")
     def validate_moleculeType(cls, values):
         if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
-            raise ValueError(
+            raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for SequenceProfile."
             )
         return values

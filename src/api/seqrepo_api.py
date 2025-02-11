@@ -1,7 +1,7 @@
 # from ga4gh.vrs.dataproxy import SeqRepoRESTDataProxy
 from ga4gh.vrs.extras.translator import Translator
 from ga4gh.vrs.dataproxy import create_dataproxy
-# from src.exceptions import SeqRepoDataProxyCreationError
+from exception import SeqRepoDataProxyCreationError
 
 class SeqRepoAPI:
     DEFAULT_LOCAL_URL = "seqrepo+file:///usr/local/share/seqrepo/2021-01-29/"
@@ -29,7 +29,7 @@ class SeqRepoAPI:
             try:
                 self.seqrepo_dataproxy = create_dataproxy(uri=self.HOST_URL)
             except:
-                raise ValueError(f"Failed to create seqrepo data proxy.")
+                raise SeqRepoDataProxyCreationError(f"Failed to create seqrepo data proxy.")
 
         self.tlr = Translator(
             data_proxy=self.seqrepo_dataproxy,

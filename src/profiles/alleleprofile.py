@@ -2,6 +2,15 @@ from moldefresource.moleculardefinition import MolecularDefinition
 from pydantic import Field, model_validator
 from fhir.resources import fhirtypes
 from pydantic.json_schema import SkipJsonSchema
+from exception import (
+    MemberStateNotAllowedError,
+    InvalidMoleculeTypeError,
+    LocationCardinalityError,
+    RepresentationCardinalityError,
+    MissingFocusCodingError,
+    MissingAlleleStateError,
+    MultipleContextStateError,
+)
 
 class AlleleProfile(MolecularDefinition):
     """FHIR Allele Profile
@@ -23,13 +32,13 @@ class AlleleProfile(MolecularDefinition):
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, values):
         if "memberState" in values:
-            raise ValueError("`memberState` is not allowed in AlleleProfile.")
+            raise MemberStateNotAllowedError("`memberState` is not allowed in AlleleProfile.") 
         return values
     
     @model_validator(mode="after")
     def validate_moleculeType(cls, values):
         if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
-            raise ValueError(
+            raise InvalidMoleculeTypeError( 
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."
             )
         return values
@@ -37,7 +46,7 @@ class AlleleProfile(MolecularDefinition):
     @model_validator(mode="after")
     def validate_location_cardinality(cls, values):
         if not values.location or len(values.location) > 1: 
-            raise ValueError(
+            raise LocationCardinalityError( 
                 "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."
             )
         return values
@@ -45,7 +54,7 @@ class AlleleProfile(MolecularDefinition):
     @model_validator(mode="after")
     def validate_representation_cardinality(cls, values):
         if not values.representation: 
-            raise ValueError(
+            raise RepresentationCardinalityError( 
                 "The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."
 
             )
@@ -59,26 +68,26 @@ class AlleleProfile(MolecularDefinition):
         for value in values.representation:
             if value.focus:
                 if not value.focus.coding:
-                    raise ValueError("The 'focus.coding' field must contain at least one entry.")
+                    raise MissingFocusCodingError("The 'focus.coding' field must contain at least one entry.")
 
                 for coding in value.focus.coding:
                     if coding.code == "allele-state":
                         allele_state.append(coding)
 
                         if not coding.system:
-                            raise ValueError("Each 'allele-state' coding entry must have a 'system' defined.")
+                            raise MissingFocusCodingError("Each 'allele-state' coding entry must have a 'system' defined.")
 
                     elif coding.code == "context-state":
                         context_state.append(coding)
 
                         if not coding.system:
-                            raise ValueError("Each 'context-state' coding entry must have a 'system' defined.")
+                            raise MissingFocusCodingError("Each 'context-state' coding entry must have a 'system' defined.")
 
         if len(allele_state) == 0:
-            raise ValueError("At least one 'allele-state' must be present in 'focus.coding'.")
+            raise MissingAlleleStateError("At least one 'allele-state' must be present in 'focus.coding'.")
 
         if len(context_state) > 1:
-            raise ValueError("Only one 'context-state' is allowed (0..1 cardinality).")
+            raise MultipleContextStateError("Only one 'context-state' is allowed (0..1 cardinality).")
 
         return values
 
