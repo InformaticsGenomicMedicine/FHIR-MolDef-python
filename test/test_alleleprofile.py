@@ -1,5 +1,4 @@
 import pytest
-from deepdiff import DeepDiff
 from profiles.alleleprofile import AlleleProfile
 from pydantic import ValidationError
 
