@@ -25,11 +25,11 @@ class SeqRepoAPI:
 
         try:
             self.seqrepo_dataproxy = create_dataproxy(uri=seqrepo_data_proxy_url)
-        except Exception as e:
+        except Exception:
             try:
                 self.seqrepo_dataproxy = create_dataproxy(uri=self.HOST_URL)
-            except:
-                raise SeqRepoDataProxyCreationError(f"Failed to create seqrepo data proxy.")
+            except ValueError as e:
+                raise SeqRepoDataProxyCreationError(f"Failed to create seqrepo data proxy: {e}")
 
         self.tlr = Translator(
             data_proxy=self.seqrepo_dataproxy,
