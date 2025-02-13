@@ -24,7 +24,7 @@ class RepresentationTranslator:
 
         Args:
             CoordSystem (str): The coordinate system, which can be one of the following:
-                                "0-based interbase", "0-based counting", "1-based counting".
+                                '0-based interval counting', '0-based character counting', '1-based character counting'.
             start (int): The start position to be adjusted.
 
         Raises:
@@ -35,14 +35,14 @@ class RepresentationTranslator:
         """
         # TODO: need to double check
         adjustments = {
-            "0-based interbase": 0, #is synonymous with 0-based interval counting
-            "0-based counting": 1,
-            "1-based counting": -1,
+            "0-based interval counting": 0,
+            "0-based character counting": 1,
+            "1-based character counting": -1,
         }
 
         if coord_system not in adjustments:
             raise ValueError(
-                "Invalid coordinate system specified. Valid options are: '0-based interbase', '0-based counting', '1-based counting'."
+                "Invalid coordinate system specified. Valid options are: '0-based interval counting', '0-based character counting', '1-based character counting'."
             )
 
         return start + adjustments[coord_system]

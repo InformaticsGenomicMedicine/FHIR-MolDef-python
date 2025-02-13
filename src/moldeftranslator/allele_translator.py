@@ -183,7 +183,7 @@ class VrsFhirAlleleTranslation:
                     #TODO: double check that this is correct 
                     "system": "http://loinc.org",
                     "code": "LA30100-4",
-                    "display": "0-based interbase",
+                    "display": "0-based interval counting",
                 }
             ]
         )
@@ -238,7 +238,7 @@ class VrsFhirAlleleTranslation:
 
         Args:
             CoordSystem (str): The coordinate system, which can be one of the following:
-                                "0-based interbase", "0-based counting", "1-based counting".
+                                '0-based interval counting', '0-based character counting', '1-based character counting'.
             start (int): The start position to be adjusted.
 
         Raises:
@@ -247,16 +247,16 @@ class VrsFhirAlleleTranslation:
         Returns:
             int: The adjusted start position.
         """
-        # TODO: need to double check
+        # TODO: need to double check with bob
         adjustments = {
-            "0-based interbase": 0,
-            "0-based counting": 1,
-            "1-based counting": -1,
+            "0-based interval counting": 0,
+            "0-based character counting": 1,
+            "1-based character counting": -1,
         }
 
         if coord_system not in adjustments:
             raise ValueError(
-                "Invalid coordinate system specified. Valid options are: '0-based interbase', '0-based counting', '1-based counting'."
+                "Invalid coordinate system specified. Valid options are: '0-based interval counting', '0-based character counting', '1-based character counting'."
             )
 
         return start + adjustments[coord_system]
