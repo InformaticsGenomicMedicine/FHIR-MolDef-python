@@ -34,8 +34,8 @@ dependencies = [
     "pydantic==2.8.2",
     "ga4gh.vrs[extras]==0.8.5",
     "requests==2.32.3",
-    "fhir-core==0.1.3",
-    "fhir-resources==8.0.0b4",
+    "fhir-core==1.0.0",
+    "fhir-resources==8.0.0"
 ]
 
 [project.optional-dependencies]
