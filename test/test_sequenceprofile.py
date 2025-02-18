@@ -2,6 +2,7 @@ import pytest
 from profiles.sequenceprofile import SequenceProfile
 from pydantic import ValidationError
 from fhir.resources.reference import Reference
+from exception import ElementNotAllowedError,InvalidMoleculeTypeError
 
 @pytest.fixture
 def example_sequence_profile():
@@ -27,15 +28,15 @@ def example_sequence_profile():
 
 def test_missing_moleculeType(example_sequence_profile):
     example_sequence_profile.pop("moleculeType")
-    with pytest.raises(ValidationError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for SequenceProfile."):
+    with pytest.raises(InvalidMoleculeTypeError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for SequenceProfile."):
         SequenceProfile(**example_sequence_profile)
 
 def test_memberState_not_allowed(example_sequence_profile):
     example_sequence_profile["memberState"] = Reference(reference="test/SequenceProfile",type="test/SequenceProfile",display="NC_000002.12").model_dump()
-    with pytest.raises(ValueError, match=r"`memberState` is not allowed in SequenceProfile."):
+    with pytest.raises(ElementNotAllowedError, match=r"`memberState` is not allowed in SequenceProfile."):
         SequenceProfile(**example_sequence_profile)
 
 def test_location_not_allowed(example_sequence_profile):
     example_sequence_profile["location"] = {}
-    with pytest.raises(ValueError, match=r"`location` is not allowed in SequenceProfile."):
+    with pytest.raises(ElementNotAllowedError, match=r"`location` is not allowed in SequenceProfile."):
         SequenceProfile(**example_sequence_profile)

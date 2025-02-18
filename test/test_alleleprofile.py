@@ -1,6 +1,13 @@
 import pytest
 from profiles.alleleprofile import AlleleProfile
 from pydantic import ValidationError
+from exception import (
+    InvalidMoleculeTypeError,
+    LocationCardinalityError,
+    RepresentationCardinalityError,
+    MissingFocusCodingError,
+    MissingAlleleStateError
+)
 
 @pytest.fixture
 def example_allele_profile():
@@ -79,30 +86,30 @@ def example_allele_profile():
 
 def test_missing_moleculeType(example_allele_profile):
     example_allele_profile.pop("moleculeType")
-    with pytest.raises(ValidationError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."):
+    with pytest.raises(InvalidMoleculeTypeError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."):
         AlleleProfile(**example_allele_profile)
         
 def test_missing_location(example_allele_profile):
     example_allele_profile.pop("location")
-    with pytest.raises(ValidationError, match=r"The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."):
+    with pytest.raises(LocationCardinalityError, match=r"The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."):
         AlleleProfile(**example_allele_profile)
 
 def test_missing_representation(example_allele_profile):
     example_allele_profile.pop("representation")
-    with pytest.raises(ValidationError, match=r"The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."):
+    with pytest.raises(RepresentationCardinalityError, match=r"The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."):
         AlleleProfile(**example_allele_profile)
 
 def test_missing_allele_state_code(example_allele_profile):
     example_allele_profile["representation"][0]["focus"]["coding"][0]["code"] = "random-state"
-    with pytest.raises(ValueError, match=r"At least one 'allele-state' must be present in 'focus.coding'."):
+    with pytest.raises(MissingAlleleStateError, match=r"At least one 'allele-state' must be present in 'focus.coding'."):
         AlleleProfile(**example_allele_profile)
 
 def test_missing_allele_state_system(example_allele_profile):
     example_allele_profile["representation"][0]["focus"]["coding"][0]["system"] = None
-    with pytest.raises(ValueError, match=r"Each 'allele-state' coding entry must have a 'system' defined."):
+    with pytest.raises(MissingFocusCodingError, match=r"Each 'allele-state' coding entry must have a 'system' defined."):
         AlleleProfile(**example_allele_profile)
 
 def test_missing_context_state_system(example_allele_profile):
     example_allele_profile["representation"][1]["focus"]["coding"][0]["system"] = None
-    with pytest.raises(ValueError, match=r"Each 'context-state' coding entry must have a 'system' defined."):
+    with pytest.raises(MissingFocusCodingError, match=r"Each 'context-state' coding entry must have a 'system' defined."):
         AlleleProfile(**example_allele_profile)
