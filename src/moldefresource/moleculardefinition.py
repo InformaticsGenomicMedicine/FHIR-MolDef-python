@@ -1046,8 +1046,8 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
         },
     )
 
-    start: IntegerType = Field(  # type: ignore
-        ...,
+    start: typing.Optional[IntegerType] = Field(  # type: ignore
+        None,
         alias="start",
         title="The start coordinate of the interval that will be edited",
         description=("The start coordinate of the interval that will be edited."),
@@ -1056,8 +1056,8 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
         },
     )
 
-    end: IntegerType = Field(  # type: ignore
-        ...,
+    end: typing.Optional[IntegerType] = Field(  # type: ignore
+        None,
         alias="end",
         title="The end coordinate of the interval that will be edited",
         description=("The end coordinate of the interval that will be edited."),
