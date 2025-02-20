@@ -1,4 +1,7 @@
 # Import required libraries
+from ga4gh.vrs import models
+from normalize.allele_normalizer import AlleleNormalizer
+
 from fhir.resources.coding import Coding
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.quantity import Quantity
@@ -15,11 +18,14 @@ from moldefresource.moleculardefinition import (
 )
 
 
-class AlleleProfileFactory:
+class AlleleFactory:
     """The goal of this module is to simplify the creation of AlleleProfiles, eliminating the need to build them step by step or through the unpackaging process.
     These AlleleProfiles will come with pre-filled attributes, allowing you to input just five key attributes: id, startQuantity, endQuantity, reference sequence, and literal value.
     This function specifically creates an AlleleProfile for Literal Value representation.
     """
+    def __init__(self):
+        self.normalize = AlleleNormalizer()
+
     def _detect_sequence_type(self, sequence_id: str) -> str:
         """Translate the prefix of the RefSeq identifier to the type of sequence.
 
@@ -46,8 +52,9 @@ class AlleleProfileFactory:
 
         raise ValueError(f"Unknown sequence type for input: {sequence_id}")
 
-    def create_allele_profile(self, id_value: str, start: int, end: int, reference_sequence: str, literal_value: str):
-
+    def create_allele_profile(
+        self, id_value: str, start: int, end: int, reference_sequence: str, literal_value: str
+    ):
         coding_val = Coding(
             system="http://loinc.org",
             code="LA30100-4",
@@ -76,7 +83,7 @@ class AlleleProfileFactory:
         # Wrap the coordianteInterval into the sequenceLocation and add the sequenceContext.
         MolDefLocSeqLoc = MolecularDefinitionLocationSequenceLocation(
             sequenceContext=Reference(
-                reference=f"MolecularDefinition/example-sequence-{refseq}-url",  
+                reference=f"MolecularDefinition/example-sequence-{refseq}-url",
                 type="MolecularDefinition",
                 display=reference_sequence,
             ),
@@ -105,14 +112,14 @@ class AlleleProfileFactory:
         )
 
         # Spcifies the profile URL in the Meta data type
-        meta_val = Meta(profile=["http://hl7.org/fhir/StructureDefinition/allelesliced"]) 
+        meta_val = Meta(profile=["http://hl7.org/fhir/StructureDefinition/allelesliced"])
 
         seq_type = self._detect_sequence_type(reference_sequence)
         # Defines the type of sequence, such as dna, rna, or aa.
         moltype_coding_val = Coding(
             system="http://hl7.org/fhir/sequence-type",
             code=seq_type.lower(),
-            display=f'{seq_type} Sequence',
+            display=f"{seq_type} Sequence",
         )
 
         # Wrap the moleculeType in the CodeableConcept data type.
@@ -121,9 +128,28 @@ class AlleleProfileFactory:
         )
         # Incorporates the Location and Representation components created earlier.
         return AlleleProfile(
-            id=id_value, 
+            id=id_value,
             meta=meta_val,
             moleculeType=moltype_codeconcept_val,
             location=[Location],
             representation=[Representation],
         )
+
+    def create_vrs_allele(
+        self, start: int, end: int, reference_sequence: str, alternative_sequence: str, normalize: bool = True
+    ):
+        interval = models.SequenceInterval(
+            start=models.Number(value=start), end=models.Number(value=end)
+        )
+        location = models.SequenceLocation(
+            sequence_id=f"refseq:{reference_sequence}", interval=interval
+        )
+
+        state = models.LiteralSequenceExpression(sequence=alternative_sequence)
+
+        allele = models.Allele(location=location, state=state)
+        
+        if normalize:
+            return self.normalize.post_normalize_allele(allele)
+        else:
+            return allele
