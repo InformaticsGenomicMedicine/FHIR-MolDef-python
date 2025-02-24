@@ -2,6 +2,13 @@
 
 This repository contains a collection of interactive Jupyter notebooks designed to provide a hands-on introduction to the **FHIR-MolDef-Python** codebase. The notebooks cover working with the **HL7 FHIR MolecularDefinition Resource**, exploring **Profiles**, and implementing bidirectional **translation between GA4GH VRS (v1.3)** and **HL7 FHIR MolecularDefinition**.
 
+### **Recommended Knowledge**
+
+To get the best understanding of these notebooks, we recommend having:
+    * Familiarity with **Jupyter Notebook** and **Python**.
+    * An understanding of the **HL7 FHIR MolecularDefinition** schema, which can be reviewed here: [FHIR MolecularDefinition Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html).
+    * Knowledge of the **GA4GH VRS (v1.3)** schema, which is essential for bidirectional translation. You can find the documentation here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/1.3/).
+
 For setup instructions, including how to run these notebooks in **Codespaces**, refer to the main project [README](../README.md).
 
 ### Notebook Categories
@@ -32,4 +39,11 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
    - Shows the process of translating HL7 FHIR **AlleleProfile** resources back into **GA4GH VRS (v1.3)** representations.  
 
 ---
+
+### 4. **Allele Factory**
+
+- **[Allele Factory](allele_factor.ipynb)**
+   - This demo notebook showcases the **Allele Factory Module**, which simplifies the creation of **VRS Alleles** and **FHIR AlleleProfile** resources.
+   - Since generating these profiles requires a solid understanding of the schema, this module helps users by generating an Allele with just **five input attributes**.
+   - The **Allele Factory Module** reduces the learning curve by automating profile generation, making it easier for users to work with VRS and FHIR Alleles without deep prior knowledge of their schemas.
 
