@@ -52,7 +52,7 @@ class AlleleFactory:
 
         raise ValueError(f"Unknown sequence type for input: {sequence_id}")
 
-    def create_allele_profile(
+    def create_fhir_allele(
         self, id_value: str, start: int, end: int, reference_sequence: str, literal_value: str
     ):
         coding_val = Coding(
