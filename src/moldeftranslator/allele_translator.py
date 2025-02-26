@@ -452,3 +452,93 @@ class VrsFhirAlleleTranslation:
             allele = self.norm.post_normalize_allele(allele)
 
         return allele
+
+
+    # ------------------ MOLDEF ALLELE PROFILE Contained TO VRS ALLELE------------------#
+    #TODO: add doc strings
+    def _validate_accession(self, refseq_id: str) -> str:
+        refseq_pattern = re.compile(r"^(NC_|NG_|NM_|NP_)\d+\.\d+$")
+
+        if not refseq_pattern.match(refseq_id):
+            raise ValueError(f"Invalid accession number: {refseq_id}. Must be a valid NCBI RefSeq ID (e.g., NM_000769.4).")
+
+        return refseq_id
+    
+    #TODO: edit the error messages 
+    def _validate_and_extract_code(self,expression):
+
+        if not expression.contained:
+            raise ValueError("Error: 'contained' field is missing or empty.")
+
+        contained_item = expression.contained[0]
+
+        if not contained_item.representation or len(contained_item.representation) != 1:
+            raise ValueError("Error: 'representation' must contain exactly one list item.")
+
+        representation_item = contained_item.representation[0]
+
+        if not representation_item.code:
+            raise ValueError("Error: 'code' field is missing or empty.")
+
+        code_item = representation_item.code[0]
+
+        if not code_item.coding:
+            raise ValueError("Error: 'coding' field is missing or empty.")
+
+        extracted_code = code_item.coding[0].code
+
+        if not extracted_code:
+            raise ValueError("Error: 'code' value is missing inside 'coding'.")
+
+        return self._validate_accession(extracted_code)
+
+    def translate_contained_allele_profile_to_vrs_allele(self, expression: object, normalize: bool = True):
+        
+        self._is_valid_allele_profile(expression)
+
+        location_data = self._is_valid_sequence_location(expression.location)
+        values_needed = {
+            "refseq": self._validate_and_extract_code(expression),
+            "start": location_data.coordinateInterval.startQuantity.value,
+            "end": location_data.coordinateInterval.endQuantity.value,
+        }
+
+        coding_list = location_data.coordinateInterval.coordinateSystem.system.coding
+
+        if len(coding_list) != 1:
+            raise ValueError("Currently only supporting 1 coding in numberingSystem")
+
+        # Retrieve coordinate system display if available
+        values_needed["coordinate_system_display"] = coding_list[0].display
+
+        seq = self._get_literal_value_for_allele_state(expression.representation)
+        # Process start and end positions
+        refseq = values_needed["refseq"]
+        # Making sure that the coordinateSystem is valid, and if so adjust the indexing of the start position
+        start = self._validate_indexing(
+            coord_system=values_needed["coordinate_system_display"],
+            start=values_needed["start"],
+        )
+        # Making sure that the value is an integer and not a float.
+        start_pos = self._convert_decimal_to_int(start)
+        end_pos = self._convert_decimal_to_int(values_needed["end"])
+
+        alternative_seq = self._validate_sequence(sequence=seq)
+
+        # Create VRS interval and allele objects
+        interval = models.SequenceInterval(
+            start=models.Number(value=start_pos),
+            end=models.Number(value=end_pos),
+        )
+        location = models.SequenceLocation(
+            sequence_id=f"refseq:{refseq}", interval=interval
+        )
+        state = models.LiteralSequenceExpression(sequence=alternative_seq)
+
+        # Return the constructed VRS allele
+        allele = models.Allele(location=location, state=state)
+        # normalizing VRS object
+        if normalize:
+            allele = self.norm.post_normalize_allele(allele)
+
+        return allele
