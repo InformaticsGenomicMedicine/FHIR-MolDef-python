@@ -23,6 +23,7 @@ class AlleleFactory:
     These AlleleProfiles will come with pre-filled attributes, allowing you to input just five key attributes: id, startQuantity, endQuantity, reference sequence, and literal value.
     This function specifically creates an AlleleProfile for Literal Value representation.
     """
+
     def __init__(self):
         self.normalize = AlleleNormalizer()
 
@@ -55,6 +56,18 @@ class AlleleFactory:
     def create_fhir_allele(
         self, id_value: str, start: int, end: int, reference_sequence: str, literal_value: str
     ):
+        """Creates a FHIR (Fast Healthcare Interoperability Resources) AlleleProfile instance. This method simplifies the creation of a FHIR AlleleProfile resource by abstracting the underlying FHIR structure and data mapping.
+
+        Args:
+            id_value (str): The unique identifier for the AlleleProfile instance.
+            start (int):  The start position of the allele (0-based).
+            end (int):  The end position of the allele (0-based).
+            reference_sequence (str): The RefSeq identifier.
+            literal_value (str): The alternative sequence.
+
+        Returns:
+            AlleleProfile: A fully constructed FHIR AlleleProfile resource.
+        """
         coding_val = Coding(
             system="http://loinc.org",
             code="LA30100-4",
@@ -72,10 +85,12 @@ class AlleleFactory:
             )
         )
         # Create the coordinateInterval and build the interval with start and end quantities.
-        MolDefLocSeqLocCoordInt = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
-            coordinateSystem=MolDefLocSeqLocCoordIntCoord,
-            startQuantity=Quantity(value=start),
-            endQuantity=Quantity(value=end),
+        MolDefLocSeqLocCoordInt = (
+            MolecularDefinitionLocationSequenceLocationCoordinateInterval(
+                coordinateSystem=MolDefLocSeqLocCoordIntCoord,
+                startQuantity=Quantity(value=start),
+                endQuantity=Quantity(value=end),
+            )
         )
 
         refseq = reference_sequence.split(".")[0].lower()
@@ -136,8 +151,25 @@ class AlleleFactory:
         )
 
     def create_vrs_allele(
-        self, start: int, end: int, reference_sequence: str, alternative_sequence: str, normalize: bool = True
+        self,
+        start: int,
+        end: int,
+        reference_sequence: str,
+        alternative_sequence: str,
+        normalize: bool = True,
     ):
+        """Creates a Variant Representation Specification (VRS) Allele object.This method simplifies the creation of a VRS Allele so users do not need to directly interact with the underlying Python implementation of vrs-python.
+
+        Args:
+            start (int): The start position of the allele.
+            end (int): The end position of the allele.
+            reference_sequence (str): The reference sequence identifier.
+            alternative_sequence (str): The alternative sequence.
+            normalize (bool, optional): Weather to normalize the vrs allele or not. Defaults to True.
+
+        Returns:
+            models.Allele: A VRS Allele object, either in normalized form or as originally constructed.
+        """
         interval = models.SequenceInterval(
             start=models.Number(value=start), end=models.Number(value=end)
         )
@@ -148,7 +180,7 @@ class AlleleFactory:
         state = models.LiteralSequenceExpression(sequence=alternative_sequence)
 
         allele = models.Allele(location=location, state=state)
-        
+
         if normalize:
             return self.normalize.post_normalize_allele(allele)
         else:
