@@ -1,28 +1,28 @@
 import re
 from decimal import Decimal
 
+from fhir.resources.codeableconcept import CodeableConcept
+from fhir.resources.coding import Coding
+from fhir.resources.identifier import Identifier
+from fhir.resources.organization import Organization
+from fhir.resources.quantity import Quantity
+from fhir.resources.reference import Reference
+from ga4gh.vrs import models
+
+from api.seqrepo_api import SeqRepoAPI
 from moldefresource.moleculardefinition import (
-    # MolecularDefinition,
-    MolecularDefinitionRepresentation,
-    MolecularDefinitionRepresentationLiteral,
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
     MolecularDefinitionLocationSequenceLocationCoordinateInterval,
-    MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem
+    MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem,
+    # MolecularDefinition,
+    MolecularDefinitionRepresentation,
+    MolecularDefinitionRepresentationLiteral,
 )
-from profiles.alleleprofile import AlleleProfile
-from fhir.resources.identifier import Identifier
-from fhir.resources.organization import Organization
-from fhir.resources.reference import Reference
-from fhir.resources.codeableconcept import CodeableConcept
-from fhir.resources.coding import Coding
-from fhir.resources.quantity import Quantity
-
-from api.seqrepo_api import SeqRepoAPI
-from ga4gh.vrs import models
 
 # from src.resource.exception import InvalidVRSAlleleError
 from normalize.allele_normalizer import AlleleNormalizer
+from profiles.alleleprofile import AlleleProfile
 
 
 class VrsFhirAlleleTranslation:
@@ -34,14 +34,14 @@ class VrsFhirAlleleTranslation:
     # ------------------ VRS ALLELE TO MOLDEF Allele PROFILE------------------#
 
     def _is_valid_vrs_allele(self, expression):
-        """
-        Validation step to ensure that the expression is a valid VRS Allele object.
+        """Validation step to ensure that the expression is a valid VRS Allele object.
 
         Args:
             expression (object): An object representing a VRS Allele.
 
         Raises:
             InvalidVRSAlleleError: If the expression is not a valid VRS Allele object.
+
         """
         conditions = [
             (expression.type == "Allele", "The expression type must be 'Allele'."),
@@ -69,6 +69,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             str: The type of sequence
+
         """
         prefix_to_type = {
             "NC_": "DNA",
@@ -95,6 +96,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             str: A RefSeq identifier.
+
         """
         # extract the sequence_id
         sequence_id = str(expression.location.sequence_id)
@@ -126,6 +128,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             tuple: A tuple containing the GA4GH ID, RefSeq ID, start position, end position, and alternate allele sequence.
+
         """
         self._is_valid_vrs_allele(expression)
 
@@ -145,15 +148,16 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             AlleleProfile: A FHIR AlleleProfile object constructed from the given VRS Allele expression.
+
         """
         ga4gh_id, refseq_id, start_pos, end_pos, altAllele = self._extract_vrs_values(
             expression
         )
         #vrs only allows integer, where FHIR requires a Decimal for precision.
-        start_quant = Quantity(value=int(start_pos)) 
-        end_quant = Quantity(value=int(end_pos)) 
+        start_quant = Quantity(value=int(start_pos))
+        end_quant = Quantity(value=int(end_pos))
 
-        # handling VRS deletions it returns '' in fhir string type It gets an error. So need to convert this into a string. 
+        # handling VRS deletions it returns '' in fhir string type It gets an error. So need to convert this into a string.
         if altAllele == '':
             altAllele = ' '
 
@@ -163,7 +167,7 @@ class VrsFhirAlleleTranslation:
         )
 
         organization_reference = Reference(display=f"{organization.name}")
-        
+
         identifier = Identifier(value=ga4gh_id, assigner=organization_reference)
         # Capturing the sequence type from the refseq ID
         sequence_type = self._detect_sequence_type(sequence_id=refseq_id)
@@ -173,14 +177,14 @@ class VrsFhirAlleleTranslation:
                 {
                     "system":"http://hl7.org/fhir/sequence-type",
                     "code": sequence_type.lower(),
-                    "display": "{} Sequence".format(sequence_type),
+                    "display": f"{sequence_type} Sequence",
                 }
             ]
         )
         coordSystem = CodeableConcept(
             coding=[
                 {
-                    #TODO: double check that this is correct 
+                    #TODO: double check that this is correct
                     "system": "http://loinc.org",
                     "code": "LA30100-4",
                     "display": "0-based interval counting",
@@ -197,7 +201,7 @@ class VrsFhirAlleleTranslation:
         MolDefReprLiteral = MolecularDefinitionRepresentationLiteral(
             value=str(altAllele)
         )
-        
+
         MolDefRepresentation = MolecularDefinitionRepresentation(
             focus=focus_value,
             literal=MolDefReprLiteral
@@ -213,7 +217,7 @@ class VrsFhirAlleleTranslation:
             )
         )
         MolDefLocationSequenceLocation = MolecularDefinitionLocationSequenceLocation(
-            sequenceContext=seq_context_display, 
+            sequenceContext=seq_context_display,
             coordinateInterval=MolDefLocationSequenceLocationCoordinateInterval,
         )
 
@@ -246,6 +250,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             int: The adjusted start position.
+
         """
         # TODO: need to double check with bob
         adjustments = {
@@ -272,6 +277,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             str: The validated sequence.
+
         """
         pattern = r"^[A-Z*\-]*$"
         if not re.match(pattern, sequence):
@@ -290,6 +296,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             int: The validated and converted integer value.
+
         """
         # check if the value is a decimal
         if not isinstance(value, Decimal):
@@ -311,6 +318,7 @@ class VrsFhirAlleleTranslation:
 
         Raises:
             TypeError: If the expression is not an instance of AlleleProfile.
+
         """
         if not isinstance(expression, AlleleProfile):
             raise TypeError(
@@ -334,6 +342,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             sequence_location: The validated sequence location object.
+
         """
         for loc in locations:
             # Access sequenceLocation first
@@ -364,7 +373,7 @@ class VrsFhirAlleleTranslation:
             if not getattr(coordinate_interval.endQuantity, "value", None):
                 raise ValueError("Missing 'endQuantity.value' in coordinate interval.")
 
-        return sequence_location 
+        return sequence_location
 
     def _get_literal_value_for_allele_state(self,representations):
         """Retrieves the literal value associated with an `allele-state` representation, if present, from the provided list of representations.
@@ -377,6 +386,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             str: The value of the `literal` attribute for the `allele-state` representation.
+
         """
         for rep in representations:
             focus = getattr(rep,"focus",None)
@@ -390,8 +400,7 @@ class VrsFhirAlleleTranslation:
     def translate_allele_profile_to_vrs_allele(
         self, expression: object, normalize: bool = True
     ):
-        """
-        Translate an AlleleProfile to a VRS Allele.
+        """Translate an AlleleProfile to a VRS Allele.
 
         Args:
             expression (object): An AlleleProfile object containing allele information.
@@ -402,6 +411,7 @@ class VrsFhirAlleleTranslation:
 
         Returns:
             models.Allele: A VRS Allele object constructed from the given AlleleProfile.
+
         """
         self._is_valid_allele_profile(expression)
 
@@ -463,8 +473,8 @@ class VrsFhirAlleleTranslation:
             raise ValueError(f"Invalid accession number: {refseq_id}. Must be a valid NCBI RefSeq ID (e.g., NM_000769.4).")
 
         return refseq_id
-    
-    #TODO: edit the error messages 
+
+    #TODO: edit the error messages
     def _validate_and_extract_code(self,expression):
 
         if not expression.contained:
@@ -493,7 +503,7 @@ class VrsFhirAlleleTranslation:
         return self._validate_accession(extracted_code)
 
     def translate_contained_allele_profile_to_vrs_allele(self, expression: object, normalize: bool = True):
-        
+
         self._is_valid_allele_profile(expression)
 
         location_data = self._is_valid_sequence_location(expression.location)

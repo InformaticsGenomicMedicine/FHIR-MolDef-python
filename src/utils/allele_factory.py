@@ -1,13 +1,11 @@
 # Import required libraries
-from ga4gh.vrs import models
-from normalize.allele_normalizer import AlleleNormalizer
-
-from fhir.resources.coding import Coding
 from fhir.resources.codeableconcept import CodeableConcept
+from fhir.resources.coding import Coding
+from fhir.resources.meta import Meta
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
-from fhir.resources.meta import Meta
-from profiles.alleleprofile import AlleleProfile
+from ga4gh.vrs import models
+
 from moldefresource.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
@@ -16,6 +14,8 @@ from moldefresource.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
+from normalize.allele_normalizer import AlleleNormalizer
+from profiles.alleleprofile import AlleleProfile
 
 
 class AlleleFactory:
@@ -38,6 +38,7 @@ class AlleleFactory:
 
         Returns:
             str: The type of sequence
+
         """
         prefix_to_type = {
             "NC_": "DNA",
@@ -67,6 +68,7 @@ class AlleleFactory:
 
         Returns:
             AlleleProfile: A fully constructed FHIR AlleleProfile resource.
+
         """
         coding_val = Coding(
             system="http://loinc.org",
@@ -169,6 +171,7 @@ class AlleleFactory:
 
         Returns:
             models.Allele: A VRS Allele object, either in normalized form or as originally constructed.
+
         """
         interval = models.SequenceInterval(
             start=models.Number(value=start), end=models.Number(value=end)

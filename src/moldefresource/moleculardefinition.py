@@ -1,8 +1,9 @@
-import typing
-from pydantic import Field
+
 from fhir.resources import backboneelement, domainresource, fhirtypes
+from fhir_core.types import BooleanType, CodeType, IntegerType, StringType
+from pydantic import Field
+
 import moldefresource.fhirtypeextra as fhirtypeextra
-from fhir_core.types import CodeType, StringType, BooleanType, IntegerType
 
 
 class MolecularDefinition(domainresource.DomainResource):
@@ -15,7 +16,7 @@ class MolecularDefinition(domainresource.DomainResource):
 
     __resource_type__ = "MolecularDefinition"
 
-    identifier: typing.List[fhirtypes.IdentifierType] = Field(  # type: ignore
+    identifier: list[fhirtypes.IdentifierType] = Field(  # type: ignore
         None,
         alias="identifier",
         title="Unique ID for this particular resource",
@@ -27,17 +28,17 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    description: typing.Optional[fhirtypes.MarkdownType] = Field(  # type: ignore
+    description: fhirtypes.MarkdownType | None = Field(  # type: ignore
         None,
         alias="description",
         title="Description of the Molecular Definition instance",
         description="A description of the molecular definition instance in a human friendly format.",
         json_schema_extra={
             "element_property": True,
-        }, 
+        },
     )
 
-    moleculeType: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    moleculeType: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="moleculeType",
         title="aa | dna | rna",
@@ -50,7 +51,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    type: typing.List[CodeType] = Field(  # type: ignore
+    type: list[CodeType] = Field(  # type: ignore
         None,
         alias="type",
         title="	Type of the Molecular Definition entity",
@@ -63,7 +64,7 @@ class MolecularDefinition(domainresource.DomainResource):
         None, alias="_type", title="Extension field for ``type``."
     )
 
-    location: typing.List[fhirtypeextra.MolecularDefinitionLocationType] = Field(  # type: ignore
+    location: list[fhirtypeextra.MolecularDefinitionLocationType] = Field(  # type: ignore
         None,
         alias="location",
         title="Location of this molecule",
@@ -73,7 +74,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    topology: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    topology: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="topology",
         title="Topology of the genomic molecule",
@@ -83,7 +84,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    memberState: typing.List[fhirtypes.ReferenceType] = Field(  # type: ignore
+    memberState: list[fhirtypes.ReferenceType] = Field(  # type: ignore
         None,
         alias="memberState",
         title="Member",
@@ -95,7 +96,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    representation: typing.List[fhirtypeextra.MolecularDefinitionRepresentationType] = Field(  # type: ignore
+    representation: list[fhirtypeextra.MolecularDefinitionRepresentationType] = Field(  # type: ignore
         None,
         alias="representation",
         title="Representation",
@@ -107,7 +108,7 @@ class MolecularDefinition(domainresource.DomainResource):
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinition`` according specification,
         with preserving original sequence order.
         """
@@ -139,7 +140,7 @@ class MolecularDefinitionLocation(backboneelement.BackboneElement):
 
     __resource_type__ = "MolecularDefinitionLocation"
 
-    sequenceLocation: typing.Optional[fhirtypeextra.MolecularDefinitionLocationSequenceLocationType] = Field(  # type: ignore
+    sequenceLocation: fhirtypeextra.MolecularDefinitionLocationSequenceLocationType | None = Field(  # type: ignore
         None,
         alias="sequenceLocation",
         title="Location of this molecule in context of a sequence",
@@ -149,7 +150,7 @@ class MolecularDefinitionLocation(backboneelement.BackboneElement):
         },
     )
 
-    featureLocation: typing.List[fhirtypeextra.MolecularDefinitionLocationFeatureLocationType] = Field(  # type: ignore
+    featureLocation: list[fhirtypeextra.MolecularDefinitionLocationFeatureLocationType] = Field(  # type: ignore
         None,
         alias="featureLocation",
         title="Location in context of a feature",
@@ -161,7 +162,7 @@ class MolecularDefinitionLocation(backboneelement.BackboneElement):
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocation`` according specification,
         with preserving original sequence order.
         """
@@ -195,7 +196,7 @@ class MolecularDefinitionLocationSequenceLocation(backboneelement.BackboneElemen
         },
     )
 
-    coordinateInterval: typing.Optional[fhirtypeextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalType] = Field(  # type: ignore
+    coordinateInterval: fhirtypeextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalType | None = Field(  # type: ignore
         None,
         alias="coordinateInterval",
         title="Coordinate Interval for this location",
@@ -205,7 +206,7 @@ class MolecularDefinitionLocationSequenceLocation(backboneelement.BackboneElemen
         },
     )
 
-    strand: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    strand: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="strand",
         title="Forward or Reverse",
@@ -220,7 +221,7 @@ class MolecularDefinitionLocationSequenceLocation(backboneelement.BackboneElemen
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationSequenceLocation`` according specification,
         with preserving original sequence order.
         """
@@ -245,7 +246,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
 
     __resource_type__ = "MolecularDefinitionLocationSequenceLocationCoordinateInterval"
 
-    coordinateSystem: typing.Optional[fhirtypeextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystemType] = Field(  # type: ignore
+    coordinateSystem: fhirtypeextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
         None,
         alias="coordinateSystem",
         title="Coordinate system for this location",
@@ -255,7 +256,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
         },
     )
 
-    startQuantity: typing.Optional[fhirtypes.QuantityType] = Field(  # type: ignore
+    startQuantity: fhirtypes.QuantityType | None = Field(  # type: ignore
         None,
         alias="startQuantity",
         title="Start",
@@ -268,7 +269,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
         },
     )
 
-    startRange: typing.Optional[fhirtypes.RangeType] = Field(  # type: ignore
+    startRange: fhirtypes.RangeType | None = Field(  # type: ignore
         None,
         alias="startRange",
         title="Start",
@@ -281,7 +282,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
         },
     )
 
-    endQuantity: typing.Optional[fhirtypes.QuantityType] = Field(  # type: ignore
+    endQuantity: fhirtypes.QuantityType | None = Field(  # type: ignore
         None,
         alias="endQuantity",
         title="End",
@@ -294,7 +295,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
         },
     )
 
-    endRange: typing.Optional[fhirtypes.RangeType] = Field(  # type: ignore
+    endRange: fhirtypes.RangeType | None = Field(  # type: ignore
         None,
         alias="endRange",
         title="End",
@@ -309,7 +310,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationSequenceLocationCoordinateInterval`` according specification,
         with preserving original sequence order.
         """
@@ -324,7 +325,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
             "endRange",
         ]
 
-    def get_one_of_many_fields(self) -> typing.Dict[str, typing.List[str]]:
+    def get_one_of_many_fields(self) -> dict[str, list[str]]:
         """https://www.hl7.org/fhir/formats.html#choice
         A few elements have a choice of more than one data type for their content.
         All such elements have a name that takes the form nnn[x].
@@ -356,7 +357,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSys
 
     __resource_type__ = "MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem"
 
-    system: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    system: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="system",
         title="System",
@@ -366,7 +367,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSys
         },
     )
 
-    origin: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    origin: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="origin",
         title="Origin",
@@ -376,7 +377,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSys
         },
     )
 
-    normalizationMethod: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    normalizationMethod: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="normalizationMethod",
         title="Normalization Method",
@@ -388,7 +389,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSys
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationFeatureLocation`` according specification,
         with preserving original sequence order.
         """
@@ -411,7 +412,7 @@ class MolecularDefinitionLocationFeatureLocation(backboneelement.BackboneElement
 
     __resource_type__ = "MolecularDefinitionLocationFeatureLocation"
 
-    geneId: typing.List[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    geneId: list[fhirtypes.CodeableConceptType] = Field(  # type: ignore
         None,
         alias="geneId",
         title="Gene Id",
@@ -423,7 +424,7 @@ class MolecularDefinitionLocationFeatureLocation(backboneelement.BackboneElement
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationFeatureLocation`` according specification,
         with preserving original sequence order.
         """
@@ -444,7 +445,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
 
     __resource_type__ = "MolecularDefinitionRepresentation"
 
-    focus: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    focus: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="focus",
         title="The focus of the representation",
@@ -454,7 +455,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    code: typing.List[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    code: list[fhirtypes.CodeableConceptType] = Field(  # type: ignore
         None,
         alias="code",
         title="A code of the representation",
@@ -464,7 +465,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    literal: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationLiteralType] = Field(  # type: ignore
+    literal: fhirtypeextra.MolecularDefinitionRepresentationLiteralType | None = Field(  # type: ignore
         None,
         alias="literal",
         title="A literal representation",
@@ -474,7 +475,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    resolvable: typing.Optional[fhirtypes.ReferenceType] = Field(  # type: ignore
+    resolvable: fhirtypes.ReferenceType | None = Field(  # type: ignore
         None,
         alias="resolvable",
         title="A resolvable representation of a molecule that optionally contains formatting in addition to the specification of the primary sequence itself",
@@ -486,7 +487,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    extracted: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationExtractedType] = Field(  # type: ignore
+    extracted: fhirtypeextra.MolecularDefinitionRepresentationExtractedType | None = Field(  # type: ignore
         None,
         alias="extracted",
         title="A Molecular Sequence that is represented as an extracted portion of a different Molecular Sequence",
@@ -498,7 +499,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    repeated: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationRepeatedType] = Field(  # type: ignore
+    repeated: fhirtypeextra.MolecularDefinitionRepresentationRepeatedType | None = Field(  # type: ignore
         None,
         alias="repeated",
         title="A Molecular Sequence that is represented as a repeated sequence motif",
@@ -510,7 +511,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    concatenated: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationConcatenatedType] = Field(  # type: ignore
+    concatenated: fhirtypeextra.MolecularDefinitionRepresentationConcatenatedType | None = Field(  # type: ignore
         None,
         alias="concatenated",
         title="A Molecular Sequence that is represented as an ordered concatenation of two or more Molecular Sequences",
@@ -522,7 +523,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    relative: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationRelativeType] = Field(  # type: ignore
+    relative: fhirtypeextra.MolecularDefinitionRepresentationRelativeType | None = Field(  # type: ignore
         None,
         alias="relative",
         title="A Molecular Definition that is represented as an ordered series of edits on a specified starting sequence",
@@ -536,7 +537,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentation`` according specification,
         with preserving original sequence order.
         """
@@ -564,7 +565,7 @@ class MolecularDefinitionRepresentationLiteral(backboneelement.BackboneElement):
 
     __resource_type__ = "MolecularDefinitionRepresentationLiteral"
 
-    encoding: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    encoding: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="encoding",
         title="The encoding used for the expression of the primary sequence",
@@ -588,7 +589,7 @@ class MolecularDefinitionRepresentationLiteral(backboneelement.BackboneElement):
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationLiteral`` according specification,
         with preserving original sequence order.
         """
@@ -624,7 +625,7 @@ class MolecularDefinitionRepresentationExtracted(backboneelement.BackboneElement
         },
     )
 
-    coordinateInterval: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalType] = Field(  # type: ignore
+    coordinateInterval: fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalType | None = Field(  # type: ignore
         None,
         alias="coordinateInterval",
         title="Coordinate Interval for this location",
@@ -634,7 +635,7 @@ class MolecularDefinitionRepresentationExtracted(backboneelement.BackboneElement
         },
     )
 
-    reverseComplement: typing.Optional[BooleanType] = Field(  # type: ignore
+    reverseComplement: BooleanType | None = Field(  # type: ignore
         None,
         alias="reverseComplement",
         title="A flag that indicates whether the extracted sequence should be reverse complemented",
@@ -646,7 +647,7 @@ class MolecularDefinitionRepresentationExtracted(backboneelement.BackboneElement
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationExtracted`` according specification,
         with preserving original sequence order.
         """
@@ -671,7 +672,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateInterval(
 
     __resource_type__ = "MolecularDefinitionRepresentationExtractedCoordinateInterval"
 
-    coordinateSystem: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType] = Field(  # type: ignore
+    coordinateSystem: fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
         ...,
         alias="coordinateSystem",
         title="The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based",
@@ -703,7 +704,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateInterval(
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationSequenceLocationCoordinateInterval`` according specification,
         with preserving original sequence order.
         """
@@ -726,7 +727,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSyst
 
     __resource_type__ = "MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystem"
 
-    system: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    system: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="system",
         title="System",
@@ -736,7 +737,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSyst
         },
     )
 
-    origin: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    origin: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="origin",
         title="Origin",
@@ -746,7 +747,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSyst
         },
     )
 
-    normalizationMethod: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    normalizationMethod: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="normalizationMethod",
         title="Normalization Method",
@@ -758,7 +759,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSyst
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationFeatureLocation`` according specification,
         with preserving original sequence order.
         """
@@ -805,7 +806,7 @@ class MolecularDefinitionRepresentationRepeated(backboneelement.BackboneElement)
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationRepeated`` according specification,
         with preserving original sequence order.
         """
@@ -827,7 +828,7 @@ class MolecularDefinitionRepresentationConcatenated(backboneelement.BackboneElem
 
     __resource_type__ = "MolecularDefinitionRepresentationConcatenated"
 
-    sequenceElement: typing.List[fhirtypeextra.MolecularDefinitionRepresentationConcatenatedSequenceElementType] = Field(  # type: ignore
+    sequenceElement: list[fhirtypeextra.MolecularDefinitionRepresentationConcatenatedSequenceElementType] = Field(  # type: ignore
         None,
         alias="sequenceElement",
         title="One element of a concatenated Molecular Sequence",
@@ -839,7 +840,7 @@ class MolecularDefinitionRepresentationConcatenated(backboneelement.BackboneElem
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationConcatenated`` according specification,
         with preserving original sequence order.
         """
@@ -888,7 +889,7 @@ class MolecularDefinitionRepresentationConcatenatedSequenceElement(
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationConcatenatedSequenceElement`` according specification,
         with preserving original sequence order.
         """
@@ -924,7 +925,7 @@ class MolecularDefinitionRepresentationRelative(backboneelement.BackboneElement)
         },
     )
 
-    edit: typing.List[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditType] = Field(  # type: ignore
+    edit: list[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditType] = Field(  # type: ignore
         None,
         alias="edit",
         title="An edit (change) made to a sequence",
@@ -936,7 +937,7 @@ class MolecularDefinitionRepresentationRelative(backboneelement.BackboneElement)
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationRelative`` according specification,
         with preserving original sequence order.
         """
@@ -958,7 +959,7 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
 
     __resource_type__ = "MolecularDefinitionRepresentationRelativeEdit"
 
-    editOrder: typing.Optional[IntegerType] = Field(  # type: ignore
+    editOrder: IntegerType | None = Field(  # type: ignore
         None,
         alias="editOrder",
         title="The order of this edit, relative to other edits on the starting sequence",
@@ -970,7 +971,7 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
         },
     )
 
-    coordinateInterval: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType] = Field(  # type: ignore
+    coordinateInterval: fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType | None = Field(  # type: ignore
         None,
         alias="coordinateInterval",
         title="Coordinate Interval for this location",
@@ -994,7 +995,7 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
         },
     )
 
-    replacedMolecule: typing.Optional[fhirtypes.ReferenceType] = Field(  # type: ignore
+    replacedMolecule: fhirtypes.ReferenceType | None = Field(  # type: ignore
         None,
         alias="replacedMolecule",
         title="...",
@@ -1008,7 +1009,7 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionRepresentationRelativeEdit`` according specification,
         with preserving original sequence order.
         """
@@ -1034,7 +1035,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
 
     __resource_type__ = "MolecularDefinitionRepresentationRelativeEditCoordinateInterval"
 
-    coordinateSystem: typing.Optional[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType] = Field(  # type: ignore
+    coordinateSystem: fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
         ...,
         alias="coordinateSystem",
         title="The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based",
@@ -1046,7 +1047,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
         },
     )
 
-    start: typing.Optional[IntegerType] = Field(  # type: ignore
+    start: IntegerType | None = Field(  # type: ignore
         None,
         alias="start",
         title="The start coordinate of the interval that will be edited",
@@ -1056,7 +1057,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
         },
     )
 
-    end: typing.Optional[IntegerType] = Field(  # type: ignore
+    end: IntegerType | None = Field(  # type: ignore
         None,
         alias="end",
         title="The end coordinate of the interval that will be edited",
@@ -1068,7 +1069,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationSequenceLocationCoordinateInterval`` according specification,
         with preserving original sequence order.
         """
@@ -1091,7 +1092,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateS
 
     __resource_type__ = "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystem"
 
-    system: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    system: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="system",
         title="System",
@@ -1101,7 +1102,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateS
         },
     )
 
-    origin: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    origin: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="origin",
         title="Origin",
@@ -1111,7 +1112,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateS
         },
     )
 
-    normalizationMethod: typing.Optional[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    normalizationMethod: fhirtypes.CodeableConceptType | None = Field(  # type: ignore
         None,
         alias="normalizationMethod",
         title="Normalization Method",
@@ -1123,7 +1124,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateS
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinitionLocationFeatureLocation`` according specification,
         with preserving original sequence order.
         """

@@ -1,9 +1,11 @@
-from pydantic import Field, model_validator
 from fhir.resources import fhirtypes
-from moldefresource.moleculardefinition import MolecularDefinition
-import moldefresource.fhirtypeextra as fhirtypeextra
+from pydantic import Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
-from exception import ElementNotAllowedError,InvalidMoleculeTypeError
+
+import moldefresource.fhirtypeextra as fhirtypeextra
+from exception import ElementNotAllowedError, InvalidMoleculeTypeError
+from moldefresource.moleculardefinition import MolecularDefinition
+
 
 class SequenceProfile(MolecularDefinition):
     """FHIR Sequence Profile
@@ -16,7 +18,9 @@ class SequenceProfile(MolecularDefinition):
 
     Returns:
         SequenceProfile: An instance of the SequenceProfile class.
+
     """
+
     #https://github.com/pydantic/pydantic/discussions/6699#discussioncomment-8642547 (H-G-11 comment)
     memberState: SkipJsonSchema[fhirtypes.ReferenceType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
@@ -44,11 +48,10 @@ class SequenceProfile(MolecularDefinition):
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinition`` according specification,
         with preserving original sequence order.
         """
-
         return [
             "id",
             "meta",

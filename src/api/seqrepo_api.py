@@ -1,7 +1,9 @@
 # from ga4gh.vrs.dataproxy import SeqRepoRESTDataProxy
-from ga4gh.vrs.extras.translator import Translator
 from ga4gh.vrs.dataproxy import create_dataproxy
+from ga4gh.vrs.extras.translator import Translator
+
 from exception import SeqRepoDataProxyCreationError
+
 
 class SeqRepoAPI:
     DEFAULT_LOCAL_URL = "seqrepo+file:///usr/local/share/seqrepo/2021-01-29/"
@@ -18,8 +20,8 @@ class SeqRepoAPI:
                 It allows retrieval of genomic sequence data.
             tlr (ga4gh.vrs.extras.translator.Translator): The translator for handling genomic variations.
                 It provides functionalities such as translation, normalization, and identification.
+
         """
-        
         if seqrepo_data_proxy_url is None:
             seqrepo_data_proxy_url = self.DEFAULT_LOCAL_URL
 

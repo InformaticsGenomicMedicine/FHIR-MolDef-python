@@ -1,16 +1,18 @@
-from moldefresource.moleculardefinition import MolecularDefinition
-from pydantic import Field, model_validator
 from fhir.resources import fhirtypes
+from pydantic import Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
+
 from exception import (
-    MemberStateNotAllowedError,
     InvalidMoleculeTypeError,
     LocationCardinalityError,
-    RepresentationCardinalityError,
-    MissingFocusCodingError,
+    MemberStateNotAllowedError,
     MissingAlleleStateError,
+    MissingFocusCodingError,
     MultipleContextStateError,
+    RepresentationCardinalityError,
 )
+from moldefresource.moleculardefinition import MolecularDefinition
+
 
 class AlleleProfile(MolecularDefinition):
     """FHIR Allele Profile
@@ -23,6 +25,7 @@ class AlleleProfile(MolecularDefinition):
 
     Returns:
         AlleleProfile: An instance of the AlleleProfile class.
+
     """
 
     memberState: SkipJsonSchema[fhirtypes.ReferenceType] = Field(  # type: ignore
@@ -32,29 +35,29 @@ class AlleleProfile(MolecularDefinition):
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, values):
         if "memberState" in values:
-            raise MemberStateNotAllowedError("`memberState` is not allowed in AlleleProfile.") 
+            raise MemberStateNotAllowedError("`memberState` is not allowed in AlleleProfile.")
         return values
-    
+
     @model_validator(mode="after")
     def validate_moleculeType(cls, values):
         if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
-            raise InvalidMoleculeTypeError( 
+            raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."
             )
         return values
 
     @model_validator(mode="after")
     def validate_location_cardinality(cls, values):
-        if not values.location or len(values.location) > 1: 
-            raise LocationCardinalityError( 
+        if not values.location or len(values.location) > 1:
+            raise LocationCardinalityError(
                 "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."
             )
         return values
-    
+
     @model_validator(mode="after")
     def validate_representation_cardinality(cls, values):
-        if not values.representation: 
-            raise RepresentationCardinalityError( 
+        if not values.representation:
+            raise RepresentationCardinalityError(
                 "The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."
 
             )

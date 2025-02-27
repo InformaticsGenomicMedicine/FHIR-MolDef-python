@@ -1,6 +1,6 @@
 from __future__ import annotations as _annotations
-from fhir_core.types import create_fhir_type
 
+from fhir_core.types import create_fhir_type
 
 MolecularDefinitionType = create_fhir_type(
     "MolecularDefinitionType",

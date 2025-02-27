@@ -1,8 +1,8 @@
-from moldefresource.moleculardefinition import (
-    MolecularDefinitionRepresentationLiteral,
-    MolecularDefinitionRepresentation,
-)
 from api.seqrepo_api import SeqRepoAPI
+from moldefresource.moleculardefinition import (
+    MolecularDefinitionRepresentation,
+    MolecularDefinitionRepresentationLiteral,
+)
 
 
 class RepresentationTranslator:
@@ -32,6 +32,7 @@ class RepresentationTranslator:
 
         Returns:
             int: The adjusted start position.
+
         """
         # TODO: need to double check
         adjustments = {
@@ -46,7 +47,7 @@ class RepresentationTranslator:
             )
 
         return start + adjustments[coord_system]
-    
+
     def translate_extracted_to_literal(self, expression):
         """Translates an extracted sequence representation to a literal sequence representation.
 
@@ -60,6 +61,7 @@ class RepresentationTranslator:
 
         Returns:
             object: Expression: The updated expression with the literal sequence representation appended.
+
         """
         representations = self._validate_representation(expression)
         extracted_list = []
@@ -73,7 +75,7 @@ class RepresentationTranslator:
             )
 
         extracted = extracted_list[0]
-        
+
         start_pos = extracted.coordinateInterval.start
         coordsystem = extracted.coordinateInterval.coordinateSystem.system.coding[0].display
 
@@ -113,6 +115,7 @@ class RepresentationTranslator:
 
         Returns:
             object: The updated expression with the literal sequence representation appended.
+
         """
         representations = self._validate_representation(expression)
 

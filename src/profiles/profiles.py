@@ -1,8 +1,10 @@
-from pydantic import Field, model_validator
-import typing
+
 from fhir.resources import fhirtypes
-from moldefresource.moleculardefinition import MolecularDefinition
+from pydantic import Field, model_validator
+
 import moldefresource.fhirtypeextra as fhirtypeextra
+from moldefresource.moleculardefinition import MolecularDefinition
+
 
 class SequenceProfile(MolecularDefinition):
     """FHIR Sequence Profile
@@ -15,14 +17,15 @@ class SequenceProfile(MolecularDefinition):
 
     Returns:
         SequenceProfile: An instance of the SequenceProfile class.
+
     """
 
     # Redefine `memberState` as a private attribute or exclude it
-    memberState: typing.List[fhirtypes.ReferenceType] = Field(  # type: ignore
+    memberState: list[fhirtypes.ReferenceType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
     )
     # Redefine `location` as a private attribute or exclude it
-    location: typing.List[fhirtypeextra.MolecularDefinitionLocationType] = Field(  # type: ignore
+    location: list[fhirtypeextra.MolecularDefinitionLocationType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
     )
 
@@ -46,11 +49,10 @@ class SequenceProfile(MolecularDefinition):
 
     @classmethod
     def elements_sequence(cls):
-        """returning all elements names from
+        """Returning all elements names from
         ``MolecularDefinition`` according specification,
         with preserving original sequence order.
         """
-
         return [
             "identifier",
             "type",
@@ -69,10 +71,11 @@ class AlleleProfile(MolecularDefinition):
 
     Returns:
         AlleleProfile: An instance of the AlleleProfile class.
+
     """
 
     # Redefine `memberState` as a private attribute or exclude it
-    memberState: typing.List[fhirtypes.ReferenceType] = Field(  # type: ignore
+    memberState: list[fhirtypes.ReferenceType] = Field(  # type: ignore
         default=None, repr=False, exclude=True
     )
 

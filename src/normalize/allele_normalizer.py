@@ -1,7 +1,8 @@
 # NOTE: This is just a temporary class for now.
-from ga4gh.vrs import normalize as vrs_normalize
-from api.seqrepo_api import SeqRepoAPI
 from ga4gh.core import ga4gh_identify
+from ga4gh.vrs import normalize as vrs_normalize
+
+from api.seqrepo_api import SeqRepoAPI
 
 
 class AlleleNormalizer:
@@ -17,6 +18,7 @@ class AlleleNormalizer:
 
         Returns:
             models.Allele: The normalized VRS allele with GA4GH identifiers.
+
         """
         # Translating the sequence id to ga4gh format
         seq_id = self.dp.translate_sequence_identifier(
