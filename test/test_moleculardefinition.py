@@ -1,7 +1,9 @@
 import pytest
 from deepdiff import DeepDiff
-from moldefresource.moleculardefinition import MolecularDefinition
 from pydantic import ValidationError
+
+from moldefresource.moleculardefinition import MolecularDefinition
+
 
 @pytest.fixture
 def example_molecular_definition():
@@ -53,7 +55,7 @@ def example_molecular_definition():
     ],
     "representation": [
         # The extracted portion of this example was made up to make sure the new schema developed is functioning properly
-        { 
+        {
             "extracted": {
                 "startingMolecule": {
                     "display": "test"
@@ -149,7 +151,7 @@ def impl_molecular_definition_1(moldef_instance):
     assert coordinate_interval.coordinateSystem.system.text == "0-based interval counting"
     assert coordinate_interval.startQuantity.value == 5001
     assert coordinate_interval.endQuantity.value == 97867
-    
+
     # extracted field checks
     rep_extracted = moldef_instance.representation[0].extracted
     assert rep_extracted.startingMolecule.display == "test"
@@ -186,7 +188,7 @@ def test_molecular_definition(example_molecular_definition):
     impl_molecular_definition_1(moldef)
 
 def test_molecular_definition_missing_sequence_context(example_molecular_definition):
-    # Create invalid data by removing the required `sequenceContext` field: sequenceContext has a cardinality of 1..1. 
+    # Create invalid data by removing the required `sequenceContext` field: sequenceContext has a cardinality of 1..1.
     invalid_data = example_molecular_definition.copy()
     del invalid_data["location"][0]["sequenceLocation"]["sequenceContext"]
 

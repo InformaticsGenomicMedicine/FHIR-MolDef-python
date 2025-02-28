@@ -1,13 +1,14 @@
 import pytest
-from profiles.alleleprofile import AlleleProfile
-from pydantic import ValidationError
+
 from exception import (
     InvalidMoleculeTypeError,
     LocationCardinalityError,
-    RepresentationCardinalityError,
+    MissingAlleleStateError,
     MissingFocusCodingError,
-    MissingAlleleStateError
+    RepresentationCardinalityError,
 )
+from profiles.alleleprofile import AlleleProfile
+
 
 @pytest.fixture
 def example_allele_profile():
@@ -88,7 +89,7 @@ def test_missing_moleculeType(example_allele_profile):
     example_allele_profile.pop("moleculeType")
     with pytest.raises(InvalidMoleculeTypeError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."):
         AlleleProfile(**example_allele_profile)
-        
+
 def test_missing_location(example_allele_profile):
     example_allele_profile.pop("location")
     with pytest.raises(LocationCardinalityError, match=r"The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."):

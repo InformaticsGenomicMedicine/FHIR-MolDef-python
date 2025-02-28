@@ -1,8 +1,9 @@
 import pytest
-from profiles.sequenceprofile import SequenceProfile
-from pydantic import ValidationError
 from fhir.resources.reference import Reference
-from exception import ElementNotAllowedError,InvalidMoleculeTypeError
+
+from exception import ElementNotAllowedError, InvalidMoleculeTypeError
+from profiles.sequenceprofile import SequenceProfile
+
 
 @pytest.fixture
 def example_sequence_profile():

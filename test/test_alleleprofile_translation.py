@@ -1,6 +1,8 @@
 import pytest
-from profiles.alleleprofile import AlleleProfile
+
 from moldeftranslator.allele_translator import VrsFhirAlleleTranslation
+from profiles.alleleprofile import AlleleProfile
+
 
 @pytest.fixture
 def example():
@@ -23,7 +25,7 @@ def example():
         "sequenceContext" : {
           "reference" : "MolecularDefinition/example-sequence-nc000002-url",
           "type" : "MolecularDefinition",
-          # Example needs to contain the reference sequence for translation 
+          # Example needs to contain the reference sequence for translation
           "display" : "NC_000002.12"
         },
         "coordinateInterval" : {
@@ -32,17 +34,17 @@ def example():
               "coding" : [{
                 "system" : "http://loinc.org",
                 "code" : "LA30100-4",
-                # Example needs to contain the systems coordinate for translation 
-                "display" : "0-based interval counting" 
+                # Example needs to contain the systems coordinate for translation
+                "display" : "0-based interval counting"
               }],
               "text" : "0-based interval counting"
             }
           },
-          # Example needs to contain the startQuantity for translation 
+          # Example needs to contain the startQuantity for translation
           "startQuantity" : {
             "value" : 27453448
           },
-          # Example needs to contain the endQuantity for translation 
+          # Example needs to contain the endQuantity for translation
           "endQuantity" : {
             "value" : 27453449
           }
