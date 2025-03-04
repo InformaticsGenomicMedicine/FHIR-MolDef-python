@@ -1,6 +1,10 @@
 ## Overview
 
-Welcome to the  **FHIR-MolDef-python** repository! This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard. It enables you to instantiate the MolecularDefinition resource—currently supporting SequenceProfile and AlleleProfile—and facilitates seamless, bidirectional translation between VRS Alleles and the FHIR AlleleProfile. The repository also includes Jupyter notebooks that serve as an educational guide, introducing the MolecularDefinition resource, its profiles, and translation functionalities to help you get started.
+Welcome to the  **FHIR-MolDef-python** repository! This repository provides a Python-based implementation of the HL7 (Health Level Seven) Fast Healthcare Interoperability Resources (FHIR) Molecular Definition standard. It enables you to create instances of the MolecularDefinition resource and supports two profiles: SequenceProfile and AlleleProfile.A profile in FHIR is a structured extension of a resource that defines specific constraints and usage guidelines for particular use cases.
+
+Additionally, this repository facilitates seamless, bidirectional translation between Global Alliance for Genomics and Health (GA4GH) Variant Representation Specification (VRS) Alleles and the FHIR AlleleProfile, ensuring interoperability between these two standards.
+
+To help you get started, we provide Jupyter notebooks that serve as an educational guide. These notebooks introduce the MolecularDefinition resource, explain its profiles, and showcase the translation process between VRS Alleles and FHIR AlleleProfile with practical examples.
 
 ---
 
