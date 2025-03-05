@@ -42,7 +42,7 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
 
 ### 4. **Allele Factory**
 
-- **[Allele Factory](allele_factor_demo.ipynb)**
+- **[Allele Factory](allele_factory_demo.ipynb)**
    - This demo notebook showcases the **Allele Factory Module**, which simplifies the creation of **VRS Alleles** and **FHIR AlleleProfile** resources.
    - Since generating these profiles requires a solid understanding of the schema, this module helps users by generating an Allele with just **five input attributes**.
    - The **Allele Factory Module** reduces the learning curve by automating profile generation, making it easier for users to work with VRS and FHIR Alleles without deep prior knowledge of their schemas.
