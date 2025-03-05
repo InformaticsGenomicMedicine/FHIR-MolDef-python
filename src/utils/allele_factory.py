@@ -42,8 +42,8 @@ class AlleleFactory:
         """
         prefix_to_type = {
             "NC_": "DNA",
-            "NM_": "DNA",
             "NG_": "DNA",
+            "NM_": "RNA",
             "NR_": "RNA",
             "NP_": "protein",
         }
