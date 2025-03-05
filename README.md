@@ -93,6 +93,16 @@ If you're new to using **Codespaces**, the following resources may be helpful:
 - [Codespaces Overview](https://docs.github.com/en/codespaces/overview)
 - [Codespaces Getting Started Documentation](https://docs.github.com/en/codespaces/getting-started/quickstart)
 
+⚠️ **NOTE**:
+If you encounter the following GitHub error:
+
+> _"Oh no, it looks like you are offline! Make sure you are connected to the internet and try again. If you verified that your connection is fine, your firewall might be blocking the connection."_
+
+This issue is most likely caused by an active **VPN**. To resolve it:
+
+- Sign out of your **VPN** and try again.
+- If the issue persists, check your security settings or network configuration.
+
 ---
 
 ## Access Notebooks (Codespace)
