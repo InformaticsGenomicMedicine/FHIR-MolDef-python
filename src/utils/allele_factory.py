@@ -1,7 +1,8 @@
 # Import required libraries
 from fhir.resources.codeableconcept import CodeableConcept
+from fhir.resources.identifier import Identifier
 from fhir.resources.coding import Coding
-from fhir.resources.meta import Meta
+# from fhir.resources.meta import Meta
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 from ga4gh.vrs import models
@@ -55,16 +56,16 @@ class AlleleFactory:
         raise ValueError(f"Unknown sequence type for input: {sequence_id}")
 
     def create_fhir_allele(
-        self, id_value: str, start: int, end: int, reference_sequence: str, literal_value: str
+        self, context_sequence_id: str, start: int, end: int, allele_state: str, id_value: str = "default"
     ):
         """Creates a FHIR (Fast Healthcare Interoperability Resources) AlleleProfile instance. This method simplifies the creation of a FHIR AlleleProfile resource by abstracting the underlying FHIR structure and data mapping.
 
         Args:
-            id_value (str): The unique identifier for the AlleleProfile instance.
-            start (int):  The start position of the allele (0-based).
-            end (int):  The end position of the allele (0-based).
-            reference_sequence (str): The RefSeq identifier.
-            literal_value (str): The alternative sequence.
+            context_sequence_id (str): Accession number of the reference sequence. Supported prefixes include: ("NC_", "NG_", "NM_", "NR_", "NP_")
+            start (int):  The start position of the allele (0-based interbase).
+            end (int):  The end position of the allele (0-based interbase).
+            allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
+            id_value (str, optional): The unique identifier for the AlleleProfile instance. Defaults to "default" if not provided.
 
         Returns:
             AlleleProfile: A fully constructed FHIR AlleleProfile resource.
@@ -77,8 +78,9 @@ class AlleleFactory:
         )
 
         codeconcept_val = CodeableConcept(
-            coding=[coding_val],
-            text="0-based interval counting",
+            coding=[coding_val]
+            # ,
+            # text="0-based interval counting",
         )
 
         MolDefLocSeqLocCoordIntCoord = (
@@ -95,14 +97,14 @@ class AlleleFactory:
             )
         )
 
-        refseq = reference_sequence.split(".")[0].lower()
+        refseq = context_sequence_id.split(".")[0].lower()
 
         # Wrap the coordianteInterval into the sequenceLocation and add the sequenceContext.
         MolDefLocSeqLoc = MolecularDefinitionLocationSequenceLocation(
             sequenceContext=Reference(
-                reference=f"MolecularDefinition/example-sequence-{refseq}-url",
-                type="MolecularDefinition",
-                display=reference_sequence,
+                # reference=f"MolecularDefinition/example-sequence-{refseq}-url",
+                # type="MolecularDefinition",
+                display=context_sequence_id,
             ),
             coordinateInterval=MolDefLocSeqLocCoordInt,
         )
@@ -113,7 +115,7 @@ class AlleleFactory:
         focus_coding_val = Coding(
             system="http://hl7.org/fhir/moleculardefinition-focus",
             code="allele-state",
-            display="Allele State",
+            # display="Allele State",
         )
         # Wrapt the coding value into the CodeableConcept.
         focus_codeconcept_val = CodeableConcept(
@@ -121,7 +123,7 @@ class AlleleFactory:
         )
 
         # Define the literal value using MolecularDefinitionRepresentationLiteral.
-        MolDefRepLit = MolecularDefinitionRepresentationLiteral(value=literal_value)
+        MolDefRepLit = MolecularDefinitionRepresentationLiteral(value=allele_state)
 
         # Integrate these into the MolecularDefinitionRepresentation.
         Representation = MolecularDefinitionRepresentation(
@@ -129,9 +131,9 @@ class AlleleFactory:
         )
 
         # Spcifies the profile URL in the Meta data type
-        meta_val = Meta(profile=["http://hl7.org/fhir/StructureDefinition/allelesliced"])
+        # meta_val = Meta(profile=["http://hl7.org/fhir/StructureDefinition/allelesliced"])
 
-        seq_type = self._detect_sequence_type(reference_sequence)
+        seq_type = self._detect_sequence_type(context_sequence_id)
         # Defines the type of sequence, such as dna, rna, or aa.
         moltype_coding_val = Coding(
             system="http://hl7.org/fhir/sequence-type",
@@ -143,10 +145,12 @@ class AlleleFactory:
         moltype_codeconcept_val = CodeableConcept(
             coding=[moltype_coding_val],
         )
+
+        identifier = Identifier(value=id_value)
         # Incorporates the Location and Representation components created earlier.
         return AlleleProfile(
-            id=id_value,
-            meta=meta_val,
+            identifier=[identifier],
+            # meta=meta_val,
             moleculeType=moltype_codeconcept_val,
             location=[Location],
             representation=[Representation],
@@ -154,19 +158,19 @@ class AlleleFactory:
 
     def create_vrs_allele(
         self,
+        context_sequence_id: str,
         start: int,
         end: int,
-        reference_sequence: str,
-        alternative_sequence: str,
+        allele_state: str,
         normalize: bool = True,
     ):
         """Creates a Variant Representation Specification (VRS) Allele object.This method simplifies the creation of a VRS Allele so users do not need to directly interact with the underlying Python implementation of vrs-python.
 
         Args:
-            start (int): The start position of the allele.
-            end (int): The end position of the allele.
-            reference_sequence (str): The reference sequence identifier.
-            alternative_sequence (str): The alternative sequence.
+            context_sequence_id (str): Accession number of the reference sequence. Supported prefixes include: ("NC_", "NG_", "NM_", "NR_", "NP_")
+            start (int): The start position of the allele (0-based interbase).
+            end (int):  The end position of the allele (0-based interbase).
+            allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
             normalize (bool, optional): Weather to normalize the vrs allele or not. Defaults to True.
 
         Returns:
@@ -177,10 +181,10 @@ class AlleleFactory:
             start=models.Number(value=start), end=models.Number(value=end)
         )
         location = models.SequenceLocation(
-            sequence_id=f"refseq:{reference_sequence}", interval=interval
+            sequence_id=f"refseq:{context_sequence_id}", interval=interval
         )
 
-        state = models.LiteralSequenceExpression(sequence=alternative_sequence)
+        state = models.LiteralSequenceExpression(sequence=allele_state)
 
         allele = models.Allele(location=location, state=state)
 
