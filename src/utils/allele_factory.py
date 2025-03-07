@@ -56,7 +56,7 @@ class AlleleFactory:
         raise ValueError(f"Unknown sequence type for input: {sequence_id}")
 
     def create_fhir_allele(
-        self, context_sequence_id: str, start: int, end: int, allele_state: str, id_value: str = "default"
+        self, context_sequence_id: str, start: int, end: int, allele_state: str, id_value: str = None
     ):
         """Creates a FHIR (Fast Healthcare Interoperability Resources) AlleleProfile instance. This method simplifies the creation of a FHIR AlleleProfile resource by abstracting the underlying FHIR structure and data mapping.
 
@@ -65,7 +65,7 @@ class AlleleFactory:
             start (int):  The start position of the allele (0-based interbase).
             end (int):  The end position of the allele (0-based interbase).
             allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
-            id_value (str, optional): The unique identifier for the AlleleProfile instance. Defaults to "default" if not provided.
+            id_value (str, optional): The unique identifier for the AlleleProfile instance. Defaults to None, and should be provided explicitly if required.
 
         Returns:
             AlleleProfile: A fully constructed FHIR AlleleProfile resource.
