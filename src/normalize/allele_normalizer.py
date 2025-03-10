@@ -6,6 +6,8 @@ from api.seqrepo_api import SeqRepoAPI
 
 
 class AlleleNormalizer:
+    """Initialize the AlleleNormalizer with a SeqRepo-backed data proxy.
+    """
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy

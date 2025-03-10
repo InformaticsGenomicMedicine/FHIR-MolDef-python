@@ -6,6 +6,12 @@ from exception import SeqRepoDataProxyCreationError
 
 
 class SeqRepoAPI:
+    """ Interface for interacting with a SeqRepo data source using GA4GH VRS tools.
+
+    Raises:
+        SeqRepoDataProxyCreationError: Raised when both the primary and fallback
+        SeqRepo URLs fail to initialize a valid data proxy.
+    """
     DEFAULT_LOCAL_URL = "seqrepo+file:///usr/local/share/seqrepo/2021-01-29/"
     HOST_URL = "seqrepo+https://services.genomicmedlab.org/seqrepo"
 
