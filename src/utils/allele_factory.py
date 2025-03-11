@@ -149,6 +149,7 @@ class AlleleFactory:
         identifier = Identifier(value=id_value)
         # Incorporates the Location and Representation components created earlier.
         return AlleleProfile(
+            #TODO: if Bob wants the roundtrop fhir to vrs to fhir 
             identifier=[identifier],
             # meta=meta_val,
             moleculeType=moltype_codeconcept_val,
