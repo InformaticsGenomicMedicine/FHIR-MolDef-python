@@ -26,6 +26,7 @@ from profiles.alleleprofile import AlleleProfile
 
 
 class VrsFhirAlleleTranslation:
+    """A class to handle the translation between VRS Allele objects and FHIR AlleleProfile objects."""
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy

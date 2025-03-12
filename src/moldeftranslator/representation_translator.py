@@ -6,7 +6,9 @@ from moldefresource.moleculardefinition import (
 
 
 class RepresentationTranslator:
-
+    """A class to handle the translation between HL7 FHIR Molecular Definition Representations, including extracted, repeated, and relative representations, into literal representations. 
+    Currently, RepresentationTranslator can only handle extracted and repeated representations. 
+    """
     def __init__(self):
         seqrepo_api = SeqRepoAPI()
         self.dp = seqrepo_api.seqrepo_dataproxy
