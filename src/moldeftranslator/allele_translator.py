@@ -227,7 +227,6 @@ class VrsFhirAlleleTranslation:
         )
 
         FHIRAllele = AlleleProfile(
-            #TODO: if Bob wants the roundtrop fhir to vrs to fhir 
             identifier=[identifier],
             moleculeType = molType,
             #NOTE: molecularType got added and now need to represent it in a codeableconcept. Remember type is still also present but dont need for translation.
