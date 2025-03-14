@@ -142,10 +142,10 @@ class VrsFhirAlleleTranslation:
         return ga4gh_id, refseq_id, start_pos, end_pos, alt_allele
 
     def vrs_allele_to_allele_profile(self, expression):
-        """Converts a VRS alelel expression to an AlleleProfile
+        """Converts a VRS allele expression to an AlleleProfile
 
         Args:
-            expression (object): Contains VRS alelel information
+            expression (object): Contains VRS allele information
 
         Returns:
             AlleleProfile: A FHIR AlleleProfile object constructed from the given VRS Allele expression.
@@ -468,6 +468,17 @@ class VrsFhirAlleleTranslation:
     # ------------------ MOLDEF ALLELE PROFILE Contained TO VRS ALLELE------------------#
     #TODO: add doc strings
     def _validate_accession(self, refseq_id: str) -> str:
+        """Validate the given RefSeq ID to ensure it matches the expected format.
+
+        Args:
+            refseq_id (str): The RefSeq ID to be validated.
+
+        Raises:
+            ValueError: If the RefSeq ID does not match the expected format.
+
+        Returns:
+            str: The validated RefSeq ID.
+        """
         refseq_pattern = re.compile(r"^(NC_|NG_|NM_|NP_)\d+\.\d+$")
 
         if not refseq_pattern.match(refseq_id):
@@ -477,6 +488,21 @@ class VrsFhirAlleleTranslation:
 
     #TODO: edit the error messages
     def _validate_and_extract_code(self,expression):
+        """Validate and extract the code from the given expression.
+
+        Args:
+            expression (object): The expression containing the code to be validated and extracted.
+
+        Raises:
+            ValueError: If the 'contained' field is missing or empty.
+            ValueError: If the 'representation' field does not contain exactly one list item.
+            ValueError: If the 'code' field is missing or empty.
+            ValueError: If the 'coding' field is missing or empty.
+            ValueError: If the 'code' value is missing inside 'coding'.
+
+        Returns:
+            str: The validated and extracted code.
+        """
 
         if not expression.contained:
             raise ValueError("Error: 'contained' field is missing or empty.")
@@ -504,7 +530,18 @@ class VrsFhirAlleleTranslation:
         return self._validate_accession(extracted_code)
 
     def translate_contained_allele_profile_to_vrs_allele(self, expression: object, normalize: bool = True):
+        """Translate a contained AlleleProfile to a VRS Allele.
 
+        Args:
+            expression (object): An AlleleProfile object containing allele information.
+            normalize (bool, optional): Whether to normalize the VRS Allele. Defaults to True.
+
+        Raises:
+            ValueError: If the expression contains invalid data or multiple locations/literals.
+
+        Returns:
+            models.Allele: A VRS Allele object constructed from the given AlleleProfile.
+        """
         self._is_valid_allele_profile(expression)
 
         location_data = self._is_valid_sequence_location(expression.location)
