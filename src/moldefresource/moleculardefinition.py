@@ -16,7 +16,7 @@ class MolecularDefinition(domainresource.DomainResource):
 
     __resource_type__ = "MolecularDefinition"
 
-    identifier: list[fhirtypes.IdentifierType] = Field(  # type: ignore
+    identifier: list[fhirtypes.IdentifierType] | None = Field(  # type: ignore
         None,
         alias="identifier",
         title="Unique ID for this particular resource",
@@ -51,7 +51,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    type: list[CodeType] = Field(  # type: ignore
+    type: list[CodeType] | None = Field(  # type: ignore
         None,
         alias="type",
         title="	Type of the Molecular Definition entity",
@@ -60,11 +60,11 @@ class MolecularDefinition(domainresource.DomainResource):
             "element_property": True,
         },
     )
-    type__ext: fhirtypes.FHIRPrimitiveExtensionType = Field(  # type: ignore
+    type__ext: fhirtypes.FHIRPrimitiveExtensionType | None = Field(  # type: ignore
         None, alias="_type", title="Extension field for ``type``."
     )
 
-    location: list[fhirtypeextra.MolecularDefinitionLocationType] = Field(  # type: ignore
+    location: list[fhirtypeextra.MolecularDefinitionLocationType] | None = Field(  # type: ignore
         None,
         alias="location",
         title="Location of this molecule",
@@ -84,7 +84,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    memberState: list[fhirtypes.ReferenceType] = Field(  # type: ignore
+    memberState: list[fhirtypes.ReferenceType] | None = Field(  # type: ignore
         None,
         alias="memberState",
         title="Member",
@@ -96,7 +96,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    representation: list[fhirtypeextra.MolecularDefinitionRepresentationType] = Field(  # type: ignore
+    representation: list[fhirtypeextra.MolecularDefinitionRepresentationType] | None = Field(  # type: ignore
         None,
         alias="representation",
         title="Representation",
@@ -150,7 +150,7 @@ class MolecularDefinitionLocation(backboneelement.BackboneElement):
         },
     )
 
-    featureLocation: list[fhirtypeextra.MolecularDefinitionLocationFeatureLocationType] = Field(  # type: ignore
+    featureLocation: list[fhirtypeextra.MolecularDefinitionLocationFeatureLocationType] | None = Field(  # type: ignore
         None,
         alias="featureLocation",
         title="Location in context of a feature",
@@ -412,7 +412,7 @@ class MolecularDefinitionLocationFeatureLocation(backboneelement.BackboneElement
 
     __resource_type__ = "MolecularDefinitionLocationFeatureLocation"
 
-    geneId: list[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    geneId: list[fhirtypes.CodeableConceptType] | None = Field(  # type: ignore
         None,
         alias="geneId",
         title="Gene Id",
@@ -455,7 +455,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    code: list[fhirtypes.CodeableConceptType] = Field(  # type: ignore
+    code: list[fhirtypes.CodeableConceptType] | None = Field(  # type: ignore
         None,
         alias="code",
         title="A code of the representation",
@@ -673,7 +673,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateInterval(
     __resource_type__ = "MolecularDefinitionRepresentationExtractedCoordinateInterval"
 
     coordinateSystem: fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
-        ...,
+        None,
         alias="coordinateSystem",
         title="The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based",
         description=(
@@ -828,7 +828,7 @@ class MolecularDefinitionRepresentationConcatenated(backboneelement.BackboneElem
 
     __resource_type__ = "MolecularDefinitionRepresentationConcatenated"
 
-    sequenceElement: list[fhirtypeextra.MolecularDefinitionRepresentationConcatenatedSequenceElementType] = Field(  # type: ignore
+    sequenceElement: list[fhirtypeextra.MolecularDefinitionRepresentationConcatenatedSequenceElementType] | None = Field(  # type: ignore
         None,
         alias="sequenceElement",
         title="One element of a concatenated Molecular Sequence",
@@ -925,7 +925,7 @@ class MolecularDefinitionRepresentationRelative(backboneelement.BackboneElement)
         },
     )
 
-    edit: list[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditType] = Field(  # type: ignore
+    edit: list[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditType] | None = Field(  # type: ignore
         None,
         alias="edit",
         title="An edit (change) made to a sequence",
@@ -1036,7 +1036,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
     __resource_type__ = "MolecularDefinitionRepresentationRelativeEditCoordinateInterval"
 
     coordinateSystem: fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
-        ...,
+        None,
         alias="coordinateSystem",
         title="The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based",
         description=(
