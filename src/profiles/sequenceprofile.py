@@ -34,7 +34,7 @@ class SequenceProfile(MolecularDefinition):
     @model_validator(mode="before")
     def validate_exclusions(cls, values):
         for field in ["memberState", "location"]:
-            if field in values:
+            if field in values and values[field] is not None:
                 raise ElementNotAllowedError(f"`{field}` is not allowed in SequenceProfile.")
         return values
 

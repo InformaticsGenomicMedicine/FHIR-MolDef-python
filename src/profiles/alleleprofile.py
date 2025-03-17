@@ -34,7 +34,7 @@ class AlleleProfile(MolecularDefinition):
 
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, values):
-        if "memberState" in values:
+        if "memberState" in values and values["memberState"] is not None:
             raise MemberStateNotAllowedError("`memberState` is not allowed in AlleleProfile.")
         return values
 
