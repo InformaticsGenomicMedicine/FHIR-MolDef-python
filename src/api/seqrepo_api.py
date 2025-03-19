@@ -6,7 +6,7 @@ from exception import SeqRepoDataProxyCreationError
 
 
 class SeqRepoAPI:
-    """ Interface for interacting with a SeqRepo data source using GA4GH VRS tools.
+    """Interface for interacting with a SeqRepo data source using GA4GH VRS tools.
 
     Raises:
         SeqRepoDataProxyCreationError: Raised when both the primary and fallback
@@ -37,7 +37,7 @@ class SeqRepoAPI:
             try:
                 self.seqrepo_dataproxy = create_dataproxy(uri=self.HOST_URL)
             except ValueError as e:
-                raise SeqRepoDataProxyCreationError(f"Failed to create seqrepo data proxy: {e}")
+                raise SeqRepoDataProxyCreationError(f"Failed to create seqrepo data proxy: {e}") from e
 
         self.tlr = Translator(
             data_proxy=self.seqrepo_dataproxy,
