@@ -34,7 +34,7 @@ class AlleleProfile(MolecularDefinition):
 
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, values):
-        """ Validates that the 'memberState' field is not present in the input values.
+        """Validates that the 'memberState' field is not present in the input values.
 
         Args:
             values (dict): Dictionary of input values to validate.
@@ -44,6 +44,7 @@ class AlleleProfile(MolecularDefinition):
 
         Returns:
             dict: The original input values if validation passes.
+
         """
         if "memberState" in values and values["memberState"] is not None:
             raise MemberStateNotAllowedError("`memberState` is not allowed in AlleleProfile.")
@@ -61,6 +62,7 @@ class AlleleProfile(MolecularDefinition):
 
         Returns:
             BaseModel: The validated model instance if the check passes.
+
         """
         if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
             raise InvalidMoleculeTypeError(
@@ -80,6 +82,7 @@ class AlleleProfile(MolecularDefinition):
 
         Returns:
             BaseModel: The validated model instance if the check passes.
+
         """
         if not values.location or len(values.location) > 1:
             raise LocationCardinalityError(
@@ -99,6 +102,7 @@ class AlleleProfile(MolecularDefinition):
 
         Returns:
             BaseModel: The validated model instance if the check passes.
+
         """
         if not values.representation:
             raise RepresentationCardinalityError(
@@ -121,6 +125,7 @@ class AlleleProfile(MolecularDefinition):
 
         Returns:
             BaseModel: The validated model instance if all constraints pass.
+
         """
         allele_state = []
         context_state = []
