@@ -23,6 +23,7 @@ from moldefresource.moleculardefinition import (
 # from src.resource.exception import InvalidVRSAlleleError
 from normalize.allele_normalizer import AlleleNormalizer
 from profiles.alleleprofile import AlleleProfile
+from profiles.sequenceprofile import SequenceProfile
 
 
 class VrsFhirAlleleTranslation:
@@ -464,9 +465,8 @@ class VrsFhirAlleleTranslation:
 
         return allele
 
-
+#TODO: move to a different class
     # ------------------ MOLDEF ALLELE PROFILE Contained TO VRS ALLELE------------------#
-    #TODO: add doc strings
     def _validate_accession(self, refseq_id: str) -> str:
         """Validate the given RefSeq ID to ensure it matches the expected format.
 
@@ -590,3 +590,112 @@ class VrsFhirAlleleTranslation:
             allele = self.norm.post_normalize_allele(allele)
 
         return allele
+
+
+    # ------------------ VRS ALLELE to MOLDEF ALLELE PROFILE Contained ------------------#
+
+    def vrs_allele_to_contained_allele_profile(self, expression):
+        ga4gh_id, refseq_id, start_pos, end_pos, altAllele = self._extract_vrs_values(
+            expression
+        )
+        #vrs only allows integer, where FHIR requires a Decimal for precision.
+        start_quant = Quantity(value=int(start_pos))
+        end_quant = Quantity(value=int(end_pos))
+
+        # handling VRS deletions it returns '' in fhir string type It gets an error. So need to convert this into a string.
+        if altAllele == '':
+            altAllele = ' '
+
+        # Auto setting the Organization name
+        organization = Organization(
+            name="Global Alliance for Genomics and Health",
+        )
+
+        organization_reference = Reference(display=f"{organization.name}")
+
+        identifier = Identifier(value=ga4gh_id, assigner=organization_reference)
+        # Capturing the sequence type from the refseq ID
+        sequence_type = self._detect_sequence_type(sequence_id=refseq_id)
+
+        molType = CodeableConcept(
+            coding=[
+                {
+                    "system":"http://hl7.org/fhir/sequence-type",
+                    "code": sequence_type.lower(),
+                    "display": f"{sequence_type} Sequence",
+                }
+            ]
+        )
+        coordSystem = CodeableConcept(
+            coding=[
+                {
+                    #TODO: double check that this is correct
+                    "system": "http://loinc.org",
+                    "code": "LA30100-4",
+                    "display": "0-based interval counting",
+                }
+            ]
+        )
+        seq_context_display = Reference(display=refseq_id)
+
+        focus_value = CodeableConcept(
+            coding=[Coding(
+                system="http://hl7.org/fhir/moleculardefinition-focus",
+                code = "allele-state")]
+        )
+        MolDefReprLiteral = MolecularDefinitionRepresentationLiteral(
+            value=str(altAllele)
+        )
+
+        MolDefRepresentation = MolecularDefinitionRepresentation(
+            focus=focus_value,
+            literal=MolDefReprLiteral
+        )
+        MolDefLocationSequenceLocationCoordinatSystem = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
+            system= coordSystem
+            )
+        MolDefLocationSequenceLocationCoordinateInterval = (
+            MolecularDefinitionLocationSequenceLocationCoordinateInterval(
+                coordinateSystem = MolDefLocationSequenceLocationCoordinatSystem,
+                startQuantity=start_quant,
+                endQuantity=end_quant
+            )
+        )
+        MolDefLocationSequenceLocation = MolecularDefinitionLocationSequenceLocation(
+            sequenceContext=seq_context_display,
+            coordinateInterval=MolDefLocationSequenceLocationCoordinateInterval,
+        )
+
+        MolDefLocation = MolecularDefinitionLocation(
+            sequenceLocation=MolDefLocationSequenceLocation
+        )
+        ########### TODO: need to edit this #######  
+        coding_values_2 = Coding(
+            system="http://www.ncbi.nlm.nih.gov/refseq",
+            code=refseq_id,
+            display="TBD-THIS IS A DEMO EXAMPLE"
+        )
+
+        code_values = CodeableConcept(coding=[coding_values_2])
+
+        representation_sequence_value = MolecularDefinitionRepresentation(
+            code=[code_values])
+
+        sequence_profile = SequenceProfile(
+            # id="example-sequence-nc000002-acc",
+            moleculeType=molType,
+            representation=[representation_sequence_value]
+            )
+        ########### ##################### #######  
+
+
+        FHIRAllele = AlleleProfile(
+            contained=[sequence_profile],
+            identifier=[identifier],
+            moleculeType = molType,
+            #NOTE: molecularType got added and now need to represent it in a codeableconcept. Remember type is still also present but dont need for translation.
+            # type=self._detect_sequence_type(sequence_id=refseq_id),
+            location=[MolDefLocation],
+            representation=[MolDefRepresentation],
+        )
+        return FHIRAllele
