@@ -7,65 +7,92 @@ from profiles.alleleprofile import AlleleProfile
 @pytest.fixture
 def example():
     return {
-    "resourceType" : "MolecularDefinition",
-    "id" : "demo-example-hgvs-substitition",
-    "meta" : {
-      "profile" : ["http://hl7.org/fhir/StructureDefinition/allelesliced"]
-    },
-    "moleculeType" : {
-      "coding" : [{
-        "system" : "http://hl7.org/fhir/sequence-type",
-        "code" : "dna",
-        "display" : "DNA Sequence"
-      }]
-    },
-    "location" : [
+    "resourceType": "MolecularDefinition",
+    "contained": [
         {
-      "sequenceLocation" : {
-        "sequenceContext" : {
-          "reference" : "MolecularDefinition/example-sequence-nc000002-url",
-          "type" : "MolecularDefinition",
-          # Example needs to contain the reference sequence for translation
-          "display" : "NC_000002.12"
-        },
-        "coordinateInterval" : {
-          "coordinateSystem" : {
-            "system" : {
-              "coding" : [{
-                "system" : "http://loinc.org",
-                "code" : "LA30100-4",
-                # Example needs to contain the systems coordinate for translation
-                "display" : "0-based interval counting"
-              }],
-              "text" : "0-based interval counting"
-            }
-          },
-          # Example needs to contain the startQuantity for translation
-          "startQuantity" : {
-            "value" : 27453448
-          },
-          # Example needs to contain the endQuantity for translation
-          "endQuantity" : {
-            "value" : 27453449
-          }
+            "resourceType": "MolecularDefinition",
+            "moleculeType": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sequence-type",
+                        "code": "dna",
+                        "display": "DNA Sequence"
+                    }
+                ]
+            },
+            "representation": [
+                {
+                    "code": [
+                        {
+                            "coding": [
+                                {
+                                    "system": "http://www.ncbi.nlm.nih.gov/refseq",
+                                    "code": "NC_000002.12"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
         }
-      }
-    }
     ],
-    "representation" : [{
-      "focus" : {
-        "coding" : [{
-          "system" : "http://hl7.org/fhir/moleculardefinition-focus",
-          "code" : "allele-state",
-          "display" : "Allele State"
-        }]
-      },
-      "literal" : {
-        # Example needs to contain the literal value for translation
-        "value" : "T"
-      }
-    }]
-  }
+    "moleculeType": {
+        "coding": [
+            {
+                "system": "http://hl7.org/fhir/sequence-type",
+                "code": "dna",
+                "display": "DNA Sequence"
+            }
+        ]
+    },
+    "location": [
+        {
+            "sequenceLocation": {
+                "sequenceContext": {
+                    "reference": "MolecularDefinition/example-sequence-nc000002-url",
+                    "type": "MolecularDefinition",
+                    "display": "NC_000002.12"
+                },
+                "coordinateInterval": {
+                    "coordinateSystem": {
+                        "system": {
+                            "coding": [
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "LA30100-4",
+                                    "display": "0-based interval counting"
+                                }
+                            ],
+                            "text": "0-based interval counting"
+                        }
+                    },
+                    "startQuantity": {
+                        "value": 27453448
+                    },
+                    "endQuantity": {
+                        "value": 27453449
+                    }
+                }
+            }
+        }
+    ],
+    "representation": [
+        {
+            "focus": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/moleculardefinition-focus",
+                        "code": "allele-state",
+                        "display": "Allele State"
+                    }
+                ]
+            },
+            "literal": {
+                "value": "T"
+            }
+        }
+    ]
+}
 
 @pytest.fixture
 def allele_translator():
