@@ -62,10 +62,10 @@ class VrsFhirAlleleTranslation:
             sequence_location = loc.sequenceLocation
             if not sequence_location:
                 raise ValueError("Missing 'sequenceLocation' in location.")
-
+            # TODO: no longer need this because we are not puting the refernce sequence in the .display
             # Check sequenceContext.display
-            if not sequence_location.sequenceContext.display:
-                raise ValueError("Missing 'sequenceContext.display' in sequence location.")
+            # if not sequence_location.sequenceContext.display:
+            #     raise ValueError("Missing 'sequenceContext.display' in sequence location.")
 
             # Check coordinateInterval existence
             if not sequence_location.coordinateInterval:
@@ -216,6 +216,8 @@ class VrsFhirAlleleTranslation:
 
         return validate_accession(code_item.coding[0].code)
     
+    def _refseq_to_fhir_id(self, refseq_accession):
+        return refseq_accession.split('.', 1)[0].replace('_', '').lower()
 #############################################################
 
     def allele_profile_to_vrs_allele(self, expression, normalize=True):
@@ -279,7 +281,11 @@ class VrsFhirAlleleTranslation:
 
         code_value = CodeableConcept(coding=[coding_ref])
         representation_sequence = MolecularDefinitionRepresentation(code=[code_value])
+
+        fhir_id = self._refseq_to_fhir_id(refseq_accession=refseq_id)
+
         sequence_profile = SequenceProfile(
+            id= f'ref-to-{fhir_id}', 
             moleculeType=mol_type,
             representation=[representation_sequence],
         )
@@ -301,8 +307,8 @@ class VrsFhirAlleleTranslation:
                 "display": "0-based interval counting",
             }]
         )
-
-        seq_context = Reference(display=refseq_id)
+        seq_context = Reference(reference=f"#{sequence_profile.id}",
+                                type="MolecularDefinition") #,display=refseq_id #this whas here before
         focus_value = CodeableConcept(
             coding=[Coding(system="http://hl7.org/fhir/moleculardefinition-focus", code="allele-state")]
         )
