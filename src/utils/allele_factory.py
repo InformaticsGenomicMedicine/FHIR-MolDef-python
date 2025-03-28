@@ -1,8 +1,8 @@
 # Import required libraries
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
-from fhir.resources.identifier import Identifier
 
+# from fhir.resources.identifier import Identifier
 # from fhir.resources.meta import Meta
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
@@ -16,8 +16,10 @@ from moldefresource.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
+from moldeftranslator.allele_utils import detect_sequence_type, validate_accession
 from normalize.allele_normalizer import AlleleNormalizer
 from profiles.alleleprofile import AlleleProfile
+from profiles.sequenceprofile import SequenceProfile
 
 
 class AlleleFactory:
@@ -29,133 +31,16 @@ class AlleleFactory:
     def __init__(self):
         self.normalize = AlleleNormalizer()
 
-    def _detect_sequence_type(self, sequence_id: str) -> str:
-        """Translate the prefix of the RefSeq identifier to the type of sequence.
+    def _refseq_to_fhir_id(self, refseq_accession):
+        """Convert a RefSeq accession to a FHIR-compatible ID.
 
         Args:
-            sequence_id (str): The RefSeq identifier.
-
-        Raises:
-            ValueError: If the prefix doesn't match any known sequence type.
+            refseq_accession (str): A RefSeq accession string (e.g., 'NM_001200.3').
 
         Returns:
-            str: The type of sequence
-
+            str: A normalized FHIR-compatible ID (e.g., 'nm001200').
         """
-        prefix_to_type = {
-            "NC_": "DNA",
-            "NG_": "DNA",
-            "NM_": "RNA",
-            "NR_": "RNA",
-            "NP_": "protein",
-        }
-
-        for prefix, seq_type in prefix_to_type.items():
-            if sequence_id.startswith(prefix):
-                return seq_type
-
-        raise ValueError(f"Unknown sequence type for input: {sequence_id}")
-
-    def create_fhir_allele(
-        self, context_sequence_id: str, start: int, end: int, allele_state: str, id_value: str = None
-    ):
-        """Creates a FHIR (Fast Healthcare Interoperability Resources) AlleleProfile instance. This method simplifies the creation of a FHIR AlleleProfile resource by abstracting the underlying FHIR structure and data mapping.
-
-        Args:
-            context_sequence_id (str): Accession number of the reference sequence. Supported prefixes include: ("NC_", "NG_", "NM_", "NR_", "NP_")
-            start (int):  The start position of the allele (0-based interbase).
-            end (int):  The end position of the allele (0-based interbase).
-            allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
-            id_value (str, optional): The unique identifier for the AlleleProfile instance. Defaults to None, and should be provided explicitly if required.
-
-        Returns:
-            AlleleProfile: A fully constructed FHIR AlleleProfile resource.
-
-        """
-        coding_val = Coding(
-            system="http://loinc.org",
-            code="LA30100-4",
-            display="0-based interval counting",
-        )
-
-        codeconcept_val = CodeableConcept(
-            coding=[coding_val]
-            # ,
-            # text="0-based interval counting",
-        )
-
-        MolDefLocSeqLocCoordIntCoord = (
-            MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-                system=codeconcept_val
-            )
-        )
-        # Create the coordinateInterval and build the interval with start and end quantities.
-        MolDefLocSeqLocCoordInt = (
-            MolecularDefinitionLocationSequenceLocationCoordinateInterval(
-                coordinateSystem=MolDefLocSeqLocCoordIntCoord,
-                startQuantity=Quantity(value=start),
-                endQuantity=Quantity(value=end),
-            )
-        )
-        #TODO: Revisit, was hashed out during the systems demo 
-        # refseq = context_sequence_id.split(".")[0].lower()
-
-        # Wrap the coordianteInterval into the sequenceLocation and add the sequenceContext.
-        MolDefLocSeqLoc = MolecularDefinitionLocationSequenceLocation(
-            sequenceContext=Reference(
-                # reference=f"MolecularDefinition/example-sequence-{refseq}-url",
-                # type="MolecularDefinition",
-                display=context_sequence_id,
-            ),
-            coordinateInterval=MolDefLocSeqLocCoordInt,
-        )
-        # Create the MolecularDefinitionLocation object, including the sequenceLocation
-        Location = MolecularDefinitionLocation(sequenceLocation=MolDefLocSeqLoc)
-
-        # Create a Coding instance to specify the focus.
-        focus_coding_val = Coding(
-            system="http://hl7.org/fhir/moleculardefinition-focus",
-            code="allele-state",
-            # display="Allele State",
-        )
-        # Wrapt the coding value into the CodeableConcept.
-        focus_codeconcept_val = CodeableConcept(
-            coding=[focus_coding_val],
-        )
-
-        # Define the literal value using MolecularDefinitionRepresentationLiteral.
-        MolDefRepLit = MolecularDefinitionRepresentationLiteral(value=allele_state)
-
-        # Integrate these into the MolecularDefinitionRepresentation.
-        Representation = MolecularDefinitionRepresentation(
-            literal=MolDefRepLit, focus=focus_codeconcept_val
-        )
-
-        # Spcifies the profile URL in the Meta data type
-        # meta_val = Meta(profile=["http://hl7.org/fhir/StructureDefinition/allelesliced"])
-
-        seq_type = self._detect_sequence_type(context_sequence_id)
-        # Defines the type of sequence, such as dna, rna, or aa.
-        moltype_coding_val = Coding(
-            system="http://hl7.org/fhir/sequence-type",
-            code=seq_type.lower(),
-            display=f"{seq_type} Sequence",
-        )
-
-        # Wrap the moleculeType in the CodeableConcept data type.
-        moltype_codeconcept_val = CodeableConcept(
-            coding=[moltype_coding_val],
-        )
-
-        identifier = Identifier(value=id_value)
-        # Incorporates the Location and Representation components created earlier.
-        return AlleleProfile(
-            identifier=[identifier],
-            # meta=meta_val,
-            moleculeType=moltype_codeconcept_val,
-            location=[Location],
-            representation=[Representation],
-        )
+        return refseq_accession.split('.', 1)[0].replace('_', '').lower()
 
     def create_vrs_allele(
         self,
@@ -173,7 +58,8 @@ class AlleleFactory:
             end (int):  The end position of the allele (0-based interbase).
             allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
             normalize (bool, optional): Weather to normalize the vrs allele or not. Defaults to True.
-
+            id_value (str, optional): The unique identifier for the AlleleProfile instance. Defaults to None, and should be provided explicitly if required.
+            
         Returns:
             models.Allele: A VRS Allele object, either in normalized form or as originally constructed.
 
@@ -193,3 +79,87 @@ class AlleleFactory:
             return self.normalize.post_normalize_allele(allele)
         else:
             return allele
+
+    def create_fhir_allele(
+        self, context_sequence_id: str, start: int, end: int, allele_state: str, id_value: str = None
+    ):
+        """Creates a FHIR (Fast Healthcare Interoperability Resources) AlleleProfile instance. This method simplifies the creation of a FHIR AlleleProfile resource by abstracting the underlying FHIR structure and data mapping.
+
+        Args:
+            context_sequence_id (str): Accession number of the reference sequence. Supported prefixes include: ("NC_", "NG_", "NM_", "NR_", "NP_")
+            start (int):  The start position of the allele (0-based interbase).
+            end (int):  The end position of the allele (0-based interbase).
+            allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
+            id_value (str, optional): The unique identifier for the AlleleProfile instance. If not provided, a default ID will be generated in the format 'ref-to-{context_sequence_id}'.
+
+        Returns:
+            AlleleProfile: A fully constructed FHIR AlleleProfile resource.
+
+        """
+        val_sequence_id = validate_accession(refseq_id = context_sequence_id)
+
+        sequence_type = detect_sequence_type(val_sequence_id)
+
+        mol_type = CodeableConcept(
+            coding=[{
+                "system": "http://hl7.org/fhir/sequence-type",
+                "code": sequence_type.lower(),
+                "display": f"{sequence_type} Sequence",
+            }]
+        )
+
+        coding_ref = Coding(
+            system="http://www.ncbi.nlm.nih.gov/refseq",
+            code=val_sequence_id,
+        )
+
+        code_value = CodeableConcept(coding=[coding_ref])
+        representation_sequence = MolecularDefinitionRepresentation(code=[code_value])
+
+        if id_value is not None:
+            fhir_id = id_value
+        else:
+            fhir_id = self._refseq_to_fhir_id(refseq_accession=val_sequence_id)
+
+        sequence_profile = SequenceProfile(
+            id= f'ref-to-{fhir_id}',
+            moleculeType=mol_type,
+            representation=[representation_sequence],
+        )
+        coord_system = CodeableConcept(
+            coding=[{
+                "system": "http://loinc.org",
+                "code": "LA30100-4",
+                "display": "0-based interval counting",
+            }]
+        )
+
+        seq_context = Reference(reference=f"#{sequence_profile.id}",
+                                type="MolecularDefinition")
+        focus_value = CodeableConcept(
+            coding=[Coding(system="http://hl7.org/fhir/moleculardefinition-focus", code="allele-state")]
+        )
+
+        moldef_literal = MolecularDefinitionRepresentationLiteral(value=str(allele_state))
+        moldef_repr = MolecularDefinitionRepresentation(focus=focus_value, literal=moldef_literal)
+
+        coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(system=coord_system)
+        coord_interval = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
+            coordinateSystem=coord_system_fhir,
+            startQuantity=Quantity(value=start),
+            endQuantity=Quantity(value=end)
+        )
+
+        seq_location = MolecularDefinitionLocationSequenceLocation(
+            sequenceContext=seq_context,
+            coordinateInterval=coord_interval
+        )
+
+        location = MolecularDefinitionLocation(sequenceLocation=seq_location)
+
+        return AlleleProfile(
+            contained=[sequence_profile],
+            moleculeType=mol_type,
+            location=[location],
+            representation=[moldef_repr],
+        )
