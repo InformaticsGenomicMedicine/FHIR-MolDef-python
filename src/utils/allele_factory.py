@@ -21,6 +21,8 @@ from normalize.allele_normalizer import AlleleNormalizer
 from profiles.alleleprofile import AlleleProfile
 from profiles.sequenceprofile import SequenceProfile
 
+from ga4gh.vrs.models import SequenceLocation,SequenceReference,LiteralSequenceExpression,sequenceString,Allele
+from api.seqrepo_api import SeqRepoAPI
 
 class AlleleFactory:
     """The goal of this module is to simplify the creation of AlleleProfiles, eliminating the need to build them step by step or through the unpackaging process.
@@ -30,6 +32,8 @@ class AlleleFactory:
 
     def __init__(self):
         self.normalize = AlleleNormalizer()
+        self.seqrepo_api = SeqRepoAPI()
+        self.dp = self.seqrepo_api.seqrepo_dataproxy
 
     def _refseq_to_fhir_id(self, refseq_accession):
         """Convert a RefSeq accession to a FHIR-compatible ID.
@@ -64,17 +68,23 @@ class AlleleFactory:
             models.Allele: A VRS Allele object, either in normalized form or as originally constructed.
 
         """
-        interval = models.SequenceInterval(
-            start=models.Number(value=start), end=models.Number(value=end)
+        refget_accession = self.dp.derive_refget_accession(f"refseq:{context_sequence_id}")
+        seq_ref = SequenceReference(
+            refgetAccession=refget_accession.split("refget:")[-1]
+            )
+
+        seq_location = SequenceLocation(
+            sequenceReference=seq_ref,
+            start = start,
+            end=end,
         )
-        location = models.SequenceLocation(
-            sequence_id=f"refseq:{context_sequence_id}", interval=interval
+        lit_seq_expr = LiteralSequenceExpression(
+            sequence=sequenceString(allele_state)
         )
-
-        state = models.LiteralSequenceExpression(sequence=allele_state)
-
-        allele = models.Allele(location=location, state=state)
-
+        allele = Allele(
+            location=seq_location,
+            state=lit_seq_expr
+        )
         if normalize:
             return self.normalize.post_normalize_allele(allele)
         else:
