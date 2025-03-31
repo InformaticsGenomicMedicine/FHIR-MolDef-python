@@ -12,7 +12,7 @@ class SeqRepoAPI:
         SeqRepoDataProxyCreationError: Raised when both the primary and fallback
         SeqRepo URLs fail to initialize a valid data proxy.
     """
-    DEFAULT_LOCAL_URL = "seqrepo+file:///usr/local/share/seqrepo/2021-01-29/"
+    DEFAULT_LOCAL_URL = "seqrepo+file:///usr/local/share/seqrepo/2024-12-20/"
     HOST_URL = "seqrepo+https://services.genomicmedlab.org/seqrepo"
 
     def __init__(self, seqrepo_data_proxy_url: str = None) -> None:
