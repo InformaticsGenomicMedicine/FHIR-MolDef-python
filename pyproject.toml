@@ -1,6 +1,6 @@
 [project]
 name = "FHIR-MolDef-python" 
-version = "0.1.0" 
+version = "0.2.0" 
 description = "This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard."
 readme = "README.md"
 authors = [
@@ -32,7 +32,7 @@ dependencies = [
     "ipykernel==6.28.0",
     "psycopg2-binary==2.9.9",
     "pydantic==2.8.2",
-    "ga4gh.vrs[extras]==0.8.5",
+    "ga4gh.vrs[extras]==2.0.1",
     "requests==2.32.3",
     "fhir-core==1.0.0",
     "fhir-resources==8.0.0",
