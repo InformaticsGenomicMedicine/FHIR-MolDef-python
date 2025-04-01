@@ -1,13 +1,13 @@
 ## FHIR-MolDef-Python Educational Notebook Series
 
-This repository contains a collection of interactive Jupyter notebooks designed to provide a hands-on introduction to the **FHIR-MolDef-Python** codebase. The notebooks cover working with the **HL7 FHIR MolecularDefinition Resource**, exploring **Profiles**, and implementing bidirectional **translation between GA4GH VRS (v1.3)** and **HL7 FHIR MolecularDefinition**.
+This repository contains a collection of interactive Jupyter notebooks designed to provide a hands-on introduction to the **FHIR-MolDef-Python** codebase. The notebooks cover working with the **HL7 FHIR MolecularDefinition Resource**, exploring **Profiles**, and implementing bidirectional **translation between GA4GH VRS (v2.0)** and **HL7 FHIR MolecularDefinition**.
 
 ### **Recommended Knowledge**
 
 To get the most out of these notebooks, we recommend the following prerequisites:
    - Familiarity with **Jupyter Notebook** and **Python**.
    - An understanding of the **HL7 FHIR MolecularDefinition** schema, you can review it here: [FHIR MolecularDefinition Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html).
-   - Knowledge of the **GA4GH VRS (v1.3)** schema, which is essential for bidirectional translation. Documentation is available here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/1.3/).
+   - Knowledge of the **GA4GH VRS (v2.0)** schema, which is essential for bidirectional translation. Documentation is available here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/1.3/).
 
 For setup instructions, including how to run these notebooks in **Codespaces**, refer to the main project [README](../README.md).
 
@@ -33,10 +33,10 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
 
 ### 3. **Translator**
 - **[VRS to FHIR Translation](vrs_translation_to_allele_profile_demo.ipynb)**  
-   - Demonstrates how to convert **GA4GH VRS (v1.3)** representations into HL7 FHIR **AlleleProfile** resources.  
+   - Demonstrates how to convert **GA4GH VRS (v2.0)** representations into HL7 FHIR **AlleleProfile** resources.  
 
 - **[FHIR to VRS Translation](allele_profile_to_vrs_translation_demo.ipynb)**  
-   - Shows the process of translating HL7 FHIR **AlleleProfile** resources back into **GA4GH VRS (v1.3)** representations.  
+   - Shows the process of translating HL7 FHIR **AlleleProfile** resources back into **GA4GH VRS (v2.0)** representations.  
 
 ---
 
