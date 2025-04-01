@@ -276,7 +276,6 @@ class VrsFhirAlleleTranslation:
         coding_ref = Coding(
             system="http://www.ncbi.nlm.nih.gov/refseq",
             code=refseq_id,
-            # display="TBD-THIS IS A DEMO EXAMPLE"
         )
 
         code_value = CodeableConcept(coding=[coding_ref])
@@ -296,10 +295,6 @@ class VrsFhirAlleleTranslation:
         start_quant = Quantity(value=int(start_pos))
         end_quant = Quantity(value=int(end_pos))
 
-        # organization = Organization(name="Global Alliance for Genomics and Health")
-        # organization_reference = Reference(display=organization.name)
-        # identifier = Identifier(value=ga4gh_id, assigner=organization_reference)
-
         coord_system = CodeableConcept(
             coding=[{
                 "system": "http://loinc.org",
@@ -308,7 +303,7 @@ class VrsFhirAlleleTranslation:
             }]
         )
         seq_context = Reference(reference=f"#{sequence_profile.id}",
-                                type="MolecularDefinition") #,display=refseq_id #this whas here before
+                                type="MolecularDefinition") 
         focus_value = CodeableConcept(
             coding=[Coding(system="http://hl7.org/fhir/moleculardefinition-focus", code="allele-state")]
         )
@@ -332,7 +327,6 @@ class VrsFhirAlleleTranslation:
 
         return AlleleProfile(
             contained=[sequence_profile],
-            # identifier=[identifier],
             moleculeType=mol_type,
             location=[location],
             representation=[moldef_repr],
