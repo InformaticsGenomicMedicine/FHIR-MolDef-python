@@ -51,7 +51,6 @@ def example():
                 "sequenceContext": {
                     "reference": "MolecularDefinition/example-sequence-nc000002-url",
                     "type": "MolecularDefinition",
-                    "display": "NC_000002.12"
                 },
                 "coordinateInterval": {
                     "coordinateSystem": {
@@ -62,8 +61,7 @@ def example():
                                     "code": "LA30100-4",
                                     "display": "0-based interval counting"
                                 }
-                            ],
-                            "text": "0-based interval counting"
+                            ]
                         }
                     },
                     "startQuantity": {

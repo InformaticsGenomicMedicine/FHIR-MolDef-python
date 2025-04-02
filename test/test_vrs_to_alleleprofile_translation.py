@@ -24,7 +24,7 @@ def example():
             "state": {"type": "LiteralSequenceExpression", "sequence": "T"}
         }
 
-@pytest.fixture
+@pytest.fixturex
 def allele_translator():
     return VrsFhirAlleleTranslation()
 
@@ -34,21 +34,91 @@ def vrs_allele(example):
 
 @pytest.fixture
 def alleleprofile_expected_outputs():
-    return {'resourceType': 'MolecularDefinition',
- 'identifier': [{'value': 'ga4gh:VA.fXvhngewkkyVwzEeSJRr5tro8Jcol6Q-',
-   'assigner': {'display': 'Global Alliance for Genomics and Health'}}],
- 'moleculeType': {'coding': [{'system': 'http://hl7.org/fhir/sequence-type',
-    'code': 'dna',
-    'display': 'DNA Sequence'}]},
- 'location': [{'sequenceLocation': {'sequenceContext': {'display': 'NC_000002.12'},
-    'coordinateInterval': {'coordinateSystem': {'system': {'coding': [{'system': 'http://loinc.org',
-         'code': 'LA30100-4',
-         'display': '0-based interval counting'}]}},
-     'startQuantity': {'value': Decimal('27453448')},
-     'endQuantity': {'value': Decimal('27453449')}}}}],
- 'representation': [{'focus': {'coding': [{'system': 'http://hl7.org/fhir/moleculardefinition-focus',
-      'code': 'allele-state'}]},
-   'literal': {'value': 'T'}}]}
+    return {
+    "resourceType": "MolecularDefinition",
+    "contained": [
+        {
+            "resourceType": "MolecularDefinition",
+            "moleculeType": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/sequence-type",
+                        "code": "dna",
+                        "display": "DNA Sequence"
+                    }
+                ]
+            },
+            "representation": [
+                {
+                    "code": [
+                        {
+                            "coding": [
+                                {
+                                    "system": "http://www.ncbi.nlm.nih.gov/refseq",
+                                    "code": "NC_000002.12"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "moleculeType": {
+        "coding": [
+            {
+                "system": "http://hl7.org/fhir/sequence-type",
+                "code": "dna",
+                "display": "DNA Sequence"
+            }
+        ]
+    },
+    "location": [
+        {
+            "sequenceLocation": {
+                "sequenceContext": {
+                    "reference": "MolecularDefinition/example-sequence-nc000002-url",
+                    "type": "MolecularDefinition",
+                },
+                "coordinateInterval": {
+                    "coordinateSystem": {
+                        "system": {
+                            "coding": [
+                                {
+                                    "system": "http://loinc.org",
+                                    "code": "LA30100-4",
+                                    "display": "0-based interval counting"
+                                }
+                            ]
+                        }
+                    },
+                    "startQuantity": {
+                        "value": Decimal(27453448)
+                    },
+                    "endQuantity": {
+                        "value": Decimal(27453449)
+                    }
+                }
+            }
+        }
+    ],
+    "representation": [
+        {
+            "focus": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/moleculardefinition-focus",
+                        "code": "allele-state",
+                        "display": "Allele State"
+                    }
+                ]
+            },
+            "literal": {
+                "value": "T"
+            }
+        }
+    ]
+}
 
 def test_translate_vrs_to_alleleprofile(allele_translator, vrs_allele, alleleprofile_expected_outputs):
     output_dict = allele_translator.vrs_allele_to_allele_profile(vrs_allele).model_dump()
