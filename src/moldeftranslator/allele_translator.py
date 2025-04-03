@@ -217,11 +217,35 @@ class VrsFhirAlleleTranslation:
         return validate_accession(code_item.coding[0].code)
     
     def _refseq_to_fhir_id(self, refseq_accession):
+        """Converts a RefSeq accession string to a standardized FHIR ID format.
+        This method removes the version suffix (after the dot), strips out underscores,
+        and converts the string to lowercase to ensure compatibility with FHIR resource IDs.
+
+        Args:
+            refseq_accession (str): A RefSeq accession string (e.g., 'NM_001256789.1').
+
+        Returns:
+            str: A formatted FHIR-compatible ID (e.g., 'nm001256789').
+        """
         return refseq_accession.split('.', 1)[0].replace('_', '').lower()
 #############################################################
 
     def allele_profile_to_vrs_allele(self, expression, normalize=True):
+        """Converts an FHIR AlleleProfile object into a GA4GH VRS Allele object.
 
+        Args:
+            expression (AlleleProfile): A FHIR-compliant AlleleProfile containing sequence location,
+                representation, and other metadata required for conversion.
+            normalize (bool, optional): If True, returns a normalized VRS Allele using the VRS normalizer.
+                Defaults to True.
+
+        Raises:
+            ValueError: Raised if multiple codings are found in the coordinate system or if the
+                coordinate system is unsupported.
+
+        Returns:
+            models.Allele: A GA4GH VRS Allele object.
+        """
         # Validate that the input is an AlleleProfile
         is_valid_allele_profile(expression)
 
@@ -260,7 +284,16 @@ class VrsFhirAlleleTranslation:
         return self.norm.post_normalize_allele(allele) if normalize else allele
 
     def vrs_allele_to_allele_profile(self, expression):
-        #NOTE: at this time ga4gh_id is not being used
+        """Converts a GA4GH VRS Allele object into a FHIR AlleleProfile.
+
+        Args:
+            expression (models.Allele): A GA4GH VRS Allele containing location and state information
+                used to reconstruct a FHIR AlleleProfile.
+
+        Returns:
+            AlleleProfile: A FHIR AlleleProfile object.
+        """
+        #TODO: at this time ga4gh_id is not being used
         ga4gh_id, refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
 
         sequence_type = detect_sequence_type(refseq_id)
