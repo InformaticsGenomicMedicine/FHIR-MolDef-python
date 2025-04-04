@@ -46,7 +46,6 @@ class VrsFhirAlleleTranslation:
 
         Raises:
             ValueError: If 'sequenceLocation' is missing in any location.
-            ValueError: If 'sequenceContext.display' is missing in any sequence location.
             ValueError: If 'coordinateInterval' is missing in any sequence location.
             ValueError: If 'coordinateSystem.system.coding' is missing in any coordinate interval.
             ValueError: If 'coding.display' is missing in 'coordinateSystem.system.coding'.
@@ -62,11 +61,6 @@ class VrsFhirAlleleTranslation:
             sequence_location = loc.sequenceLocation
             if not sequence_location:
                 raise ValueError("Missing 'sequenceLocation' in location.")
-            # TODO: no longer need this because we are not puting the refernce sequence in the .display
-            # Check sequenceContext.display
-            # if not sequence_location.sequenceContext.display:
-            #     raise ValueError("Missing 'sequenceContext.display' in sequence location.")
-
             # Check coordinateInterval existence
             if not sequence_location.coordinateInterval:
                 raise ValueError("Missing 'coordinateInterval' in sequence location.")
@@ -186,17 +180,16 @@ class VrsFhirAlleleTranslation:
             dp: SeqRepo data proxy for ID translation.
 
         Returns:
-            tuple: (ga4gh_id, refseq_id, start_pos, end_pos, alt_allele)
+            tuple: (refseq_id, start_pos, end_pos, alt_allele)
         """
         is_valid_vrs_allele(expression)
 
-        ga4gh_id = str(expression._id)
         refseq_id = self._translate_sequence_id(dp, str(expression.location.sequence_id))
         start_pos = expression.location.interval.start.value
         end_pos = expression.location.interval.end.value
         alt_allele = expression.state.sequence
 
-        return ga4gh_id, refseq_id, start_pos, end_pos, alt_allele
+        return refseq_id, start_pos, end_pos, alt_allele
 
     def _validate_and_extract_code(self, expression):
         if not expression.contained:
@@ -261,7 +254,7 @@ class VrsFhirAlleleTranslation:
         coding_list = location_data.coordinateInterval.coordinateSystem.system.coding
         if len(coding_list) != 1:
             raise ValueError("Only one coding supported in coordinateSystem.")
-        # TODO/QUESTION: instead of capturing the display should we capture the code?
+
         values_needed["coordinate_system_display"] = coding_list[0].display
 
         seq = self._get_literal_value_for_allele_state(expression.representation)
@@ -293,8 +286,7 @@ class VrsFhirAlleleTranslation:
         Returns:
             AlleleProfile: A FHIR AlleleProfile object.
         """
-        #TODO: at this time ga4gh_id is not being used
-        ga4gh_id, refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
+        refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
 
         sequence_type = detect_sequence_type(refseq_id)
 
