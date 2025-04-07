@@ -3,7 +3,7 @@ from moldefresource.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-
+from moldeftranslator.allele_utils import validate_indexing
 
 class RepresentationTranslator:
     """A class to handle the translation between HL7 FHIR Molecular Definition Representations, including extracted, repeated, and relative representations, into literal representations.
@@ -19,36 +19,6 @@ class RepresentationTranslator:
                 "MolecularDefinition Object does not contain representation attribute"
             )
         return expression.representation
-    #TODO: this method is coming from allele_translator.py
-    #TODO: might need to put this in a commen place
-    def _validate_indexing(self, coord_system, start):
-        """Adjust the indexing based on the coordinate system.
-
-        Args:
-            CoordSystem (str): The coordinate system, which can be one of the following:
-                                '0-based interval counting', '0-based character counting', '1-based character counting'.
-            start (int): The start position to be adjusted.
-
-        Raises:
-            ValueError: If an invalid coordinate system is specified.
-
-        Returns:
-            int: The adjusted start position.
-
-        """
-        # TODO: need to double check
-        adjustments = {
-            "0-based interval counting": 0,
-            "0-based character counting": 1,
-            "1-based character counting": -1,
-        }
-
-        if coord_system not in adjustments:
-            raise ValueError(
-                "Invalid coordinate system specified. Valid options are: '0-based interval counting', '0-based character counting', '1-based character counting'."
-            )
-
-        return start + adjustments[coord_system]
 
     def translate_extracted_to_literal(self, expression):
         """Translates an extracted sequence representation to a literal sequence representation.
@@ -81,7 +51,7 @@ class RepresentationTranslator:
         start_pos = extracted.coordinateInterval.start
         coordsystem = extracted.coordinateInterval.coordinateSystem.system.coding[0].display
 
-        start = self._validate_indexing(coord_system=coordsystem,start= start_pos)
+        start = validate_indexing(coord_system=coordsystem,start= start_pos)
         end = extracted.coordinateInterval.end
 
         sequence_id = extracted.startingMolecule.display
