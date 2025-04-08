@@ -39,7 +39,6 @@ It does **not** align with the schema provided in the HL7 FHIR 6.0.0 Ballot 2 ve
 ### NOTE
 This package is not currently published on PyPI, but we plan to make it available soon. In the meantime, you can clone the repository and follow the instructions below to work with the code locally. Contributions to this repository are highly appreciated. You are welcome to fork the repository and submit a pull request with your changes. Alternatively, issues can be reported or improvements suggested by opening an issue in the tracker. Thank you for your support!
 
-<!--
 ---
 
 ### Prerequisites
@@ -85,7 +84,7 @@ This package is not currently published on PyPI, but we plan to make it availabl
    ```
 
 ---
--->
+
 ## Interacting with Notebooks
 To interact with the FHIR-MolDef-python, you can use GitHub Codespaces to access and work with the Jupyter Notebooks directly. If you plan to make changes, please fork the repository and submit your suggestions or modifications via an issue and a pull request. Personal accounts receive 120 free hours of Codespaces usage, while Pro accounts receive 180 hours. Be aware that Codespaces has a default timeout period of 30 minutes. For more information about Codespaces, refer to the links provided below. If you're already familiar with Codespaces and Jupyter Notebooks, you can proceed with the instructions below.
 
