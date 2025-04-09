@@ -36,7 +36,7 @@ class VrsFhirAlleleTranslation:
         self.dp = self.seqrepo_api.seqrepo_dataproxy
         self.norm = AlleleNormalizer()
 
-##############################################################
+    ##############################################################
 
     def _is_valid_sequence_location(self, locations):
         """Validates the `sequenceLocation` structure within the provided locations to ensure all necessary attributes are present for accurate translations.
@@ -69,14 +69,23 @@ class VrsFhirAlleleTranslation:
 
             # Check coordinateSystem.system.coding
             if not coordinate_interval.coordinateSystem.system.coding:
-                raise ValueError("Missing 'coordinateSystem.system.coding' in coordinate interval.")
+                raise ValueError(
+                    "Missing 'coordinateSystem.system.coding' in coordinate interval."
+                )
 
-            if not any(coding.display for coding in coordinate_interval.coordinateSystem.system.coding):
-                raise ValueError("Missing 'coding.display' in 'coordinateSystem.system.coding'.")
+            if not any(
+                coding.display
+                for coding in coordinate_interval.coordinateSystem.system.coding
+            ):
+                raise ValueError(
+                    "Missing 'coding.display' in 'coordinateSystem.system.coding'."
+                )
 
             # Check startQuantity and endQuantity
             if not getattr(coordinate_interval.startQuantity, "value", None):
-                raise ValueError("Missing 'startQuantity.value' in coordinate interval.")
+                raise ValueError(
+                    "Missing 'startQuantity.value' in coordinate interval."
+                )
             if not getattr(coordinate_interval.endQuantity, "value", None):
                 raise ValueError("Missing 'endQuantity.value' in coordinate interval.")
 
@@ -140,13 +149,17 @@ class VrsFhirAlleleTranslation:
 
         """
         for rep in representations:
-            focus = getattr(rep,"focus",None)
-            if  focus and any(coding.code == "allele-state" for coding in getattr(focus,"coding",[])):
-                literal = getattr(rep,"literal",None)
+            focus = getattr(rep, "focus", None)
+            if focus and any(
+                coding.code == "allele-state" for coding in getattr(focus, "coding", [])
+            ):
+                literal = getattr(rep, "literal", None)
                 if literal:
                     return literal.value
                 else:
-                    raise ValueError("Missing `literal.value` for the `allele-state` representation.")
+                    raise ValueError(
+                        "Missing `literal.value` for the `allele-state` representation."
+                    )
 
     def _translate_sequence_id(self, dp, sequence_id):
         """Translate a sequence ID using SeqRepo and return the RefSeq ID.
@@ -161,7 +174,9 @@ class VrsFhirAlleleTranslation:
         Returns:
             str: A valid RefSeq identifier (e.g., NM_000123.3).
         """
-        translated_ids = dp.translate_sequence_identifier(sequence_id, namespace="refseq")
+        translated_ids = dp.translate_sequence_identifier(
+            sequence_id, namespace="refseq"
+        )
         if not translated_ids:
             raise ValueError(f"No RefSeq ID found for sequence ID '{sequence_id}'.")
 
@@ -184,7 +199,9 @@ class VrsFhirAlleleTranslation:
         """
         is_valid_vrs_allele(expression)
 
-        refseq_id = self._translate_sequence_id(dp, str(expression.location.sequence_id))
+        refseq_id = self._translate_sequence_id(
+            dp, str(expression.location.sequence_id)
+        )
         start_pos = expression.location.interval.start.value
         end_pos = expression.location.interval.end.value
         alt_allele = expression.state.sequence
@@ -197,7 +214,9 @@ class VrsFhirAlleleTranslation:
 
         contained_item = expression.contained[0]
         if not contained_item.representation or len(contained_item.representation) != 1:
-            raise ValueError("Contained 'representation' must contain exactly one item.")
+            raise ValueError(
+                "Contained 'representation' must contain exactly one item."
+            )
 
         representation_item = contained_item.representation[0]
         if not representation_item.code:
@@ -208,7 +227,7 @@ class VrsFhirAlleleTranslation:
             raise ValueError("Missing 'coding.code' value.")
 
         return validate_accession(code_item.coding[0].code)
-    
+
     def _refseq_to_fhir_id(self, refseq_accession):
         """Converts a RefSeq accession string to a standardized FHIR ID format.
         This method removes the version suffix (after the dot), strips out underscores,
@@ -220,8 +239,9 @@ class VrsFhirAlleleTranslation:
         Returns:
             str: A formatted FHIR-compatible ID (e.g., 'nm001256789').
         """
-        return refseq_accession.split('.', 1)[0].replace('_', '').lower()
-#############################################################
+        return refseq_accession.split(".", 1)[0].replace("_", "").lower()
+
+    #############################################################
 
     def allele_profile_to_vrs_allele(self, expression, normalize=True):
         """Converts an FHIR AlleleProfile object into a GA4GH VRS Allele object.
@@ -242,7 +262,7 @@ class VrsFhirAlleleTranslation:
         # Validate that the input is an AlleleProfile
         is_valid_allele_profile(expression)
 
-        #validating the locaiton
+        # validating the locaiton
         location_data = self._is_valid_sequence_location(expression.location)
 
         values_needed = {
@@ -258,7 +278,9 @@ class VrsFhirAlleleTranslation:
         values_needed["coordinate_system_display"] = coding_list[0].display
 
         seq = self._get_literal_value_for_allele_state(expression.representation)
-        start = validate_indexing(values_needed["coordinate_system_display"], values_needed["start"])
+        start = validate_indexing(
+            values_needed["coordinate_system_display"], values_needed["start"]
+        )
         start_pos = self._convert_decimal_to_int(start)
         end_pos = self._convert_decimal_to_int(values_needed["end"])
         alt_seq = self._validate_sequence(seq)
@@ -268,8 +290,7 @@ class VrsFhirAlleleTranslation:
             end=models.Number(value=end_pos),
         )
         location = models.SequenceLocation(
-            sequence_id=f"refseq:{values_needed['refseq']}",
-            interval=interval
+            sequence_id=f"refseq:{values_needed['refseq']}", interval=interval
         )
         state = models.LiteralSequenceExpression(sequence=alt_seq)
 
@@ -286,16 +307,20 @@ class VrsFhirAlleleTranslation:
         Returns:
             AlleleProfile: A FHIR AlleleProfile object.
         """
-        refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
+        refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(
+            expression, self.dp
+        )
 
         sequence_type = detect_sequence_type(refseq_id)
 
         mol_type = CodeableConcept(
-            coding=[{
-                "system": "http://hl7.org/fhir/sequence-type",
-                "code": sequence_type.lower(),
-                "display": f"{sequence_type} Sequence",
-            }]
+            coding=[
+                {
+                    "system": "http://hl7.org/fhir/sequence-type",
+                    "code": sequence_type.lower(),
+                    "display": f"{sequence_type} Sequence",
+                }
+            ]
         )
 
         coding_ref = Coding(
@@ -309,43 +334,54 @@ class VrsFhirAlleleTranslation:
         fhir_id = self._refseq_to_fhir_id(refseq_accession=refseq_id)
 
         sequence_profile = SequenceProfile(
-            id= f'ref-to-{fhir_id}', 
+            id=f"ref-to-{fhir_id}",
             moleculeType=mol_type,
             representation=[representation_sequence],
         )
 
-        if alt_allele == '':
-            alt_allele = ' '
+        if alt_allele == "":
+            alt_allele = " "
 
         start_quant = Quantity(value=int(start_pos))
         end_quant = Quantity(value=int(end_pos))
 
         coord_system = CodeableConcept(
-            coding=[{
-                "system": "http://loinc.org",
-                "code": "LA30100-4",
-                "display": "0-based interval counting",
-            }]
+            coding=[
+                {
+                    "system": "http://loinc.org",
+                    "code": "LA30100-4",
+                    "display": "0-based interval counting",
+                }
+            ]
         )
-        seq_context = Reference(reference=f"#{sequence_profile.id}",
-                                type="MolecularDefinition") 
+        seq_context = Reference(
+            reference=f"#{sequence_profile.id}", type="MolecularDefinition"
+        )
         focus_value = CodeableConcept(
-            coding=[Coding(system="http://hl7.org/fhir/moleculardefinition-focus", code="allele-state")]
+            coding=[
+                Coding(
+                    system="http://hl7.org/fhir/moleculardefinition-focus",
+                    code="allele-state",
+                )
+            ]
         )
 
         moldef_literal = MolecularDefinitionRepresentationLiteral(value=str(alt_allele))
-        moldef_repr = MolecularDefinitionRepresentation(focus=focus_value, literal=moldef_literal)
+        moldef_repr = MolecularDefinitionRepresentation(
+            focus=focus_value, literal=moldef_literal
+        )
 
-        coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(system=coord_system)
+        coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
+            system=coord_system
+        )
         coord_interval = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
             coordinateSystem=coord_system_fhir,
             startQuantity=start_quant,
-            endQuantity=end_quant
+            endQuantity=end_quant,
         )
 
         seq_location = MolecularDefinitionLocationSequenceLocation(
-            sequenceContext=seq_context,
-            coordinateInterval=coord_interval
+            sequenceContext=seq_context, coordinateInterval=coord_interval
         )
 
         location = MolecularDefinitionLocation(sequenceLocation=seq_location)

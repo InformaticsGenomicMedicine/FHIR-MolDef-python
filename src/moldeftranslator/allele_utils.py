@@ -28,6 +28,7 @@ def is_valid_vrs_allele(expression):
         if not condition:
             raise ValueError(error_message)
 
+
 def is_valid_allele_profile(expression: object):
     """Validates if the given expression is a valid AlleleProfile.
 
@@ -42,6 +43,7 @@ def is_valid_allele_profile(expression: object):
         raise TypeError(
             "Invalid expression type: expected an instance of AlleleProfile."
         )
+
 
 def detect_sequence_type(sequence_id: str) -> str:
     """Translate the prefix of the RefSeq identifier to the type of sequence.
@@ -70,6 +72,7 @@ def detect_sequence_type(sequence_id: str) -> str:
 
     raise ValueError(f"Unknown sequence type for input: {sequence_id}")
 
+
 def validate_accession(refseq_id: str) -> str:
     """Validate the given RefSeq ID to ensure it matches the expected format.
 
@@ -85,9 +88,12 @@ def validate_accession(refseq_id: str) -> str:
     refseq_pattern = re.compile(r"^(NC_|NG_|NM_|NP_)\d+\.\d+$")
 
     if not refseq_pattern.match(refseq_id):
-        raise ValueError(f"Invalid accession number: {refseq_id}. Must be a valid NCBI RefSeq ID (e.g., NM_000769.4).")
+        raise ValueError(
+            f"Invalid accession number: {refseq_id}. Must be a valid NCBI RefSeq ID (e.g., NM_000769.4)."
+        )
 
     return refseq_id
+
 
 def validate_indexing(coord_system, start):
     """Adjust the indexing based on the coordinate system.
