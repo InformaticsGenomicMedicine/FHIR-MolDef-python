@@ -5,6 +5,7 @@ from moldefresource.moleculardefinition import (
 )
 from moldeftranslator.allele_utils import validate_indexing
 
+
 class RepresentationTranslator:
     """A class to handle the translation between HL7 FHIR Molecular Definition Representations, including extracted, repeated, and relative representations, into literal representations.
     Currently, RepresentationTranslator can only handle extracted and repeated representations.
