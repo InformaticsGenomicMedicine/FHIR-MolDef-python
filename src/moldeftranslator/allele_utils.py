@@ -1,5 +1,12 @@
 import re
 
+from exception import (
+    InvalidAccessionError,
+    InvalidAlleleProfileError,
+    InvalidCoordinateSystemError,
+    InvalidSequenceTypeError,
+    InvalidVRSAlleleError,
+)
 from profiles.alleleprofile import AlleleProfile
 
 
@@ -26,7 +33,7 @@ def is_valid_vrs_allele(expression):
     ]
     for condition, error_message in conditions:
         if not condition:
-            raise ValueError(error_message)
+            raise InvalidVRSAlleleError(error_message)
 
 
 def is_valid_allele_profile(expression: object):
@@ -40,7 +47,7 @@ def is_valid_allele_profile(expression: object):
 
     """
     if not isinstance(expression, AlleleProfile):
-        raise TypeError(
+        raise InvalidAlleleProfileError(
             "Invalid expression type: expected an instance of AlleleProfile."
         )
 
@@ -70,7 +77,7 @@ def detect_sequence_type(sequence_id: str) -> str:
         if sequence_id.startswith(prefix):
             return seq_type
 
-    raise ValueError(f"Unknown sequence type for input: {sequence_id}")
+    raise InvalidSequenceTypeError(f"Unknown sequence type for input: {sequence_id}")
 
 
 def validate_accession(refseq_id: str) -> str:
@@ -88,7 +95,7 @@ def validate_accession(refseq_id: str) -> str:
     refseq_pattern = re.compile(r"^(NC_|NG_|NM_|NP_)\d+\.\d+$")
 
     if not refseq_pattern.match(refseq_id):
-        raise ValueError(
+        raise InvalidAccessionError(
             f"Invalid accession number: {refseq_id}. Must be a valid NCBI RefSeq ID (e.g., NM_000769.4)."
         )
 
@@ -117,7 +124,7 @@ def validate_indexing(coord_system, start):
     }
 
     if coord_system not in adjustments:
-        raise ValueError(
+        raise InvalidCoordinateSystemError(
             "Invalid coordinate system specified. Valid options are: '0-based interval counting', '0-based character counting', '1-based character counting'."
         )
 
