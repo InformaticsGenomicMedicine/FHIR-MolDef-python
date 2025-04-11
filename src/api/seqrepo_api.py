@@ -2,8 +2,7 @@
 from ga4gh.vrs.dataproxy import create_dataproxy
 from ga4gh.vrs.extras.translator import Translator
 
-from exception import SeqRepoDataProxyCreationError
-
+from exceptions.api import SeqRepoDataProxyCreationError
 
 class SeqRepoAPI:
     """Interface for interacting with a SeqRepo data source using GA4GH VRS tools.

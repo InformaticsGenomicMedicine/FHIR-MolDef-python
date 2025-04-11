@@ -3,7 +3,7 @@ from pydantic import Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
 
 import moldefresource.fhirtypeextra as fhirtypeextra
-from exception import ElementNotAllowedError, InvalidMoleculeTypeError
+from exceptions.fhir import ElementNotAllowedError, InvalidMoleculeTypeError
 from moldefresource.moleculardefinition import MolecularDefinition
 
 

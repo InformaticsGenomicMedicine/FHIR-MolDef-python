@@ -2,7 +2,7 @@ from fhir.resources import fhirtypes
 from pydantic import Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
 
-from exception import (
+from exceptions.fhir import (
     InvalidMoleculeTypeError,
     LocationCardinalityError,
     MemberStateNotAllowedError,

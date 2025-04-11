@@ -1,6 +1,6 @@
 import re
 
-from exception import (
+from exceptions.utils import (
     InvalidAccessionError,
     InvalidAlleleProfileError,
     InvalidCoordinateSystemError,

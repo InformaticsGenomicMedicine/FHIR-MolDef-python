@@ -1,7 +1,7 @@
 import pytest
 from fhir.resources.reference import Reference
 
-from exception import ElementNotAllowedError, InvalidMoleculeTypeError
+from exceptions.fhir import ElementNotAllowedError, InvalidMoleculeTypeError
 from profiles.sequenceprofile import SequenceProfile
 
 
