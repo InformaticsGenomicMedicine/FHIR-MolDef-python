@@ -1,12 +1,13 @@
 import pytest
 
-from exception import (
+from exceptions.fhir import (
     InvalidMoleculeTypeError,
     LocationCardinalityError,
     MissingAlleleStateError,
     MissingFocusCodingError,
     RepresentationCardinalityError,
 )
+
 from profiles.alleleprofile import AlleleProfile
 
 
