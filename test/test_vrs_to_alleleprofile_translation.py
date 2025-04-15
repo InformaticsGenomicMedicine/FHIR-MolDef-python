@@ -3,7 +3,7 @@ from decimal import Decimal
 import pytest
 from ga4gh.vrs import models
 
-from moldeftranslator.allele_translator import VrsFhirAlleleTranslation
+from translators.allele_translator import VrsFhirAlleleTranslation
 
 
 @pytest.fixture

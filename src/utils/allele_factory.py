@@ -16,7 +16,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from moldeftranslator.allele_utils import detect_sequence_type, validate_accession
+from translators.allele_utils import detect_sequence_type, validate_accession
 from normalize.allele_normalizer import AlleleNormalizer
 from profiles.alleleprofile import AlleleProfile
 from profiles.sequenceprofile import SequenceProfile

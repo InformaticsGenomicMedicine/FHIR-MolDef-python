@@ -3,7 +3,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from moldeftranslator.allele_utils import validate_indexing
+from translators.allele_utils import validate_indexing
 
 
 class RepresentationTranslator:

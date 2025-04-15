@@ -16,7 +16,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from moldeftranslator.allele_utils import (
+from translators.allele_utils import (
     detect_sequence_type,
     is_valid_allele_profile,
     is_valid_vrs_allele,

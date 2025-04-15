@@ -1,6 +1,6 @@
 import pytest
 
-from moldeftranslator.allele_translator import VrsFhirAlleleTranslation
+from translators.allele_translator import VrsFhirAlleleTranslation
 from profiles.alleleprofile import AlleleProfile
 
 
