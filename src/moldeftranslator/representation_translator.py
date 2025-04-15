@@ -1,5 +1,5 @@
 from api.seqrepo_api import SeqRepoAPI
-from moldefresource.moleculardefinition import (
+from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )

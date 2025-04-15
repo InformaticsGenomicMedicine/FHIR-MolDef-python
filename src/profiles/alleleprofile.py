@@ -11,7 +11,7 @@ from exceptions.fhir import (
     MultipleContextStateError,
     RepresentationCardinalityError,
 )
-from moldefresource.moleculardefinition import MolecularDefinition
+from resources.moleculardefinition import MolecularDefinition
 
 
 class AlleleProfile(MolecularDefinition):

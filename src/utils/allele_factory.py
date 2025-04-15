@@ -8,7 +8,7 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 from ga4gh.vrs import models
 
-from moldefresource.moleculardefinition import (
+from resources.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
     MolecularDefinitionLocationSequenceLocationCoordinateInterval,

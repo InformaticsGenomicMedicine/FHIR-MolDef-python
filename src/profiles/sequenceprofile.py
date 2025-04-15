@@ -2,9 +2,9 @@ from fhir.resources import fhirtypes
 from pydantic import Field, model_validator
 from pydantic.json_schema import SkipJsonSchema
 
-import moldefresource.fhirtypeextra as fhirtypeextra
+import resources.fhirtypeextra as fhirtypeextra
 from exceptions.fhir import ElementNotAllowedError, InvalidMoleculeTypeError
-from moldefresource.moleculardefinition import MolecularDefinition
+from resources.moleculardefinition import MolecularDefinition
 
 
 class SequenceProfile(MolecularDefinition):

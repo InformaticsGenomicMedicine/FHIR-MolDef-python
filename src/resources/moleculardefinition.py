@@ -3,7 +3,7 @@ from fhir.resources import backboneelement, domainresource, fhirtypes
 from fhir_core.types import BooleanType, CodeType, IntegerType, StringType
 from pydantic import Field
 
-import moldefresource.fhirtypeextra as fhirtypeextra
+import resources.fhirtypeextra as fhirtypeextra
 
 
 class MolecularDefinition(domainresource.DomainResource):
