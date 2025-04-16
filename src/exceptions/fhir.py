@@ -9,7 +9,7 @@ class ElementNotAllowedError(FHIRException):
     pass
 
 class MemberStateNotAllowedError(FHIRException):
-    """Raised when 'memberState' is set in AlleleProfile but should not be."""
+    """Raised when 'memberState' is set in Allele but should not be."""
 
     pass
 

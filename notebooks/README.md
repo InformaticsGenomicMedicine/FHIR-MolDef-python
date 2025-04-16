@@ -21,9 +21,9 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
 ---
 
 ### 2. **Profiles**
-- **[AlleleProfile](allele_profile_demo.ipynb)**  
-   - Explores the Python implementation of the **HL7 FHIR AlleleProfile**.  
-   - Provides a walkthrough for constructing an AlleleProfile resource.  
+- **[Allele](allele_profile_demo.ipynb)**  
+   - Explores the Python implementation of the **HL7 FHIR Allele**.  
+   - Provides a walkthrough for constructing an Allele resource.  
 
 - **[SequenceProfile](sequence_profile_demo.ipynb)**  
    - Showcases the Python implementation of the **HL7 FHIR SequenceProfile**.  
@@ -33,17 +33,17 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
 
 ### 3. **Translator**
 - **[VRS to FHIR Translation](vrs_translation_to_allele_profile_demo.ipynb)**  
-   - Demonstrates how to convert **GA4GH VRS (v1.3)** representations into HL7 FHIR **AlleleProfile** resources.  
+   - Demonstrates how to convert **GA4GH VRS (v1.3)** representations into HL7 FHIR **Allele** resources.  
 
 - **[FHIR to VRS Translation](allele_profile_to_vrs_translation_demo.ipynb)**  
-   - Shows the process of translating HL7 FHIR **AlleleProfile** resources back into **GA4GH VRS (v1.3)** representations.  
+   - Shows the process of translating HL7 FHIR **Allele** resources back into **GA4GH VRS (v1.3)** representations.  
 
 ---
 
 ### 4. **Allele Factory**
 
 - **[Allele Factory](allele_factory_demo.ipynb)**
-   - This demo notebook showcases the **Allele Factory Module**, which simplifies the creation of **VRS Alleles** and **FHIR AlleleProfile** resources.
+   - This demo notebook showcases the **Allele Factory Module**, which simplifies the creation of **VRS Alleles** and **FHIR Allele** resources.
    - Since generating these profiles requires a solid understanding of the schema, this module helps users by generating an Allele with just **five input attributes**.
    - The **Allele Factory Module** reduces the learning curve by automating profile generation, making it easier for users to work with VRS and FHIR Alleles without deep prior knowledge of their schemas.
 

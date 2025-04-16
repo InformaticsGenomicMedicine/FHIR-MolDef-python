@@ -5,7 +5,7 @@ class InvalidVRSAlleleError(Exception):
     pass
 
 class InvalidAlleleProfileError(Exception):
-    """Raised when the expression is not a valid AlleleProfile."""
+    """Raised when the expression is not a valid FHIR Allele."""
     pass
 
 class InvalidSequenceTypeError(Exception):

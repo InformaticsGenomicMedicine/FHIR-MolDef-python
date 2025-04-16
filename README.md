@@ -1,10 +1,10 @@
 ## Overview
 
-Welcome to the  **FHIR-MolDef-python** repository! This repository provides a Python-based implementation of the HL7 (Health Level Seven) Fast Healthcare Interoperability Resources (FHIR) Molecular Definition standard. It enables you to create instances of the MolecularDefinition resource and supports two profiles: SequenceProfile and AlleleProfile. A profile in FHIR is a structured extension of a resource that defines specific constraints and usage guidelines for particular use cases.
+Welcome to the  **FHIR-MolDef-python** repository! This repository provides a Python-based implementation of the HL7 (Health Level Seven) Fast Healthcare Interoperability Resources (FHIR) Molecular Definition standard. It enables you to create instances of the MolecularDefinition resource and supports two profiles: Sequence and Allele. A profile in FHIR is a structured extension of a resource that defines specific constraints and usage guidelines for particular use cases.
 
-Additionally, this repository facilitates seamless, bidirectional translation between Global Alliance for Genomics and Health (GA4GH) Variant Representation Specification (VRS) Alleles and the FHIR AlleleProfile, ensuring interoperability between these two standards.
+Additionally, this repository facilitates seamless, bidirectional translation between Global Alliance for Genomics and Health (GA4GH) Variant Representation Specification (VRS) Alleles and the FHIR Allele, ensuring interoperability between these two standards.
 
-To help you get started, we provide Jupyter notebooks that serve as an educational guide. These notebooks introduce the MolecularDefinition resource, explain its profiles, and showcase the translation process between VRS Alleles and FHIR AlleleProfile with practical examples.
+To help you get started, we provide Jupyter notebooks that serve as an educational guide. These notebooks introduce the MolecularDefinition resource, explain its profiles, and showcase the translation process between VRS Alleles and FHIR Allele with practical examples.
 
 ---
 
@@ -24,12 +24,12 @@ It does **not** align with the schema provided in the HL7 FHIR 6.0.0 Ballot 2 ve
 **Generation of Molecular Definition Resources**: Effortlessly create fully compliant Molecular Definition resources based on the HL7 FHIR standard.
 
 ### Profile
-**SequenceProfile**: SequenceProfile is a specialized subclass of the MolecularDefinition resource, enabling you to create sequence-specific representations.
+**Sequence**: Sequence is a specialized subclass of the MolecularDefinition resource, enabling you to create sequence-specific representations.
 
-**AlleleProfile**: AlleleProfile is a specialized subclass of the MolecularDefinition resource, allowing you to create and manage allele-specific representations.
+**Allele**: Allele is a specialized subclass of the MolecularDefinition resource, allowing you to create and manage allele-specific representations.
 
 ### Translation
-**Bidirectional Translation**: Perform seamless, bidirectional translations between FHIR AlleleProfile and VRS Alleles (version 1.3), ensuring interoperability and data consistency across diverse platforms.
+**Bidirectional Translation**: Perform seamless, bidirectional translations between FHIR Allele and VRS Alleles (version 1.3), ensuring interoperability and data consistency across diverse platforms.
 
 ### Notebooks
 **Educational Jupyter Notebooks**: Access interactive Jupyter notebooks for a hands-on learning experience, complete with practical examples and educational insights into the implementation’s functionality.

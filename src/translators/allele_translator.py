@@ -24,12 +24,12 @@ from translators.allele_utils import (
     validate_indexing,
 )
 from normalize.allele_normalizer import AlleleNormalizer
-from profiles.alleleprofile import AlleleProfile
+from profiles.allele import Allele as FhirAllele
 from profiles.sequenceprofile import SequenceProfile
 
 
 class VrsFhirAlleleTranslation:
-    """Handles VRS <-> FHIR AlleleProfile conversion for 'contained' format."""
+    """Handles VRS <-> FHIR Allele conversion for 'contained' format."""
 
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
@@ -244,10 +244,10 @@ class VrsFhirAlleleTranslation:
     #############################################################
 
     def allele_profile_to_vrs_allele(self, expression, normalize=True):
-        """Converts an FHIR AlleleProfile object into a GA4GH VRS Allele object.
+        """Converts an FHIR Allele object into a GA4GH VRS Allele object.
 
         Args:
-            expression (AlleleProfile): A FHIR-compliant AlleleProfile containing sequence location,
+            expression (Allele): A FHIR-compliant Allele containing sequence location,
                 representation, and other metadata required for conversion.
             normalize (bool, optional): If True, returns a normalized VRS Allele using the VRS normalizer.
                 Defaults to True.
@@ -259,7 +259,7 @@ class VrsFhirAlleleTranslation:
         Returns:
             models.Allele: A GA4GH VRS Allele object.
         """
-        # Validate that the input is an AlleleProfile
+        # Validate that the input is an Allele
         is_valid_allele_profile(expression)
 
         # validating the locaiton
@@ -298,14 +298,14 @@ class VrsFhirAlleleTranslation:
         return self.norm.post_normalize_allele(allele) if normalize else allele
 
     def vrs_allele_to_allele_profile(self, expression):
-        """Converts a GA4GH VRS Allele object into a FHIR AlleleProfile.
+        """Converts a GA4GH VRS Allele object into a FHIR Allele.
 
         Args:
             expression (models.Allele): A GA4GH VRS Allele containing location and state information
-                used to reconstruct a FHIR AlleleProfile.
+                used to reconstruct a FHIR Allele.
 
         Returns:
-            AlleleProfile: A FHIR AlleleProfile object.
+            Allele: A FHIR Allele object.
         """
         refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(
             expression, self.dp
@@ -386,7 +386,7 @@ class VrsFhirAlleleTranslation:
 
         location = MolecularDefinitionLocation(sequenceLocation=seq_location)
 
-        return AlleleProfile(
+        return FhirAllele(
             contained=[sequence_profile],
             moleculeType=mol_type,
             location=[location],

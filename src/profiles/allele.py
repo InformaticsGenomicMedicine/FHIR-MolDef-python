@@ -14,7 +14,7 @@ from exceptions.fhir import (
 from resources.moleculardefinition import MolecularDefinition
 
 
-class AlleleProfile(MolecularDefinition):
+class Allele(MolecularDefinition):
     """FHIR Allele Profile
 
     Args:
@@ -24,7 +24,7 @@ class AlleleProfile(MolecularDefinition):
         ValueError: If `memberState` is included in the profile.
 
     Returns:
-        AlleleProfile: An instance of the AlleleProfile class.
+        Allele: An instance of the Allele class.
 
     """
 
@@ -47,7 +47,7 @@ class AlleleProfile(MolecularDefinition):
 
         """
         if "memberState" in values and values["memberState"] is not None:
-            raise MemberStateNotAllowedError("`memberState` is not allowed in AlleleProfile.")
+            raise MemberStateNotAllowedError("`memberState` is not allowed in Allele.")
         return values
 
     @model_validator(mode="after")
@@ -66,7 +66,7 @@ class AlleleProfile(MolecularDefinition):
         """
         if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
             raise InvalidMoleculeTypeError(
-                "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for AlleleProfile."
+                "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
             )
         return values
 
@@ -86,7 +86,7 @@ class AlleleProfile(MolecularDefinition):
         """
         if not values.location or len(values.location) > 1:
             raise LocationCardinalityError(
-                "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for AlleleProfile."
+                "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for Allele."
             )
         return values
 
@@ -106,7 +106,7 @@ class AlleleProfile(MolecularDefinition):
         """
         if not values.representation:
             raise RepresentationCardinalityError(
-                "The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for AlleleProfile."
+                "The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for Allele."
 
             )
         return values

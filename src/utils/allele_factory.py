@@ -18,14 +18,14 @@ from resources.moleculardefinition import (
 )
 from translators.allele_utils import detect_sequence_type, validate_accession
 from normalize.allele_normalizer import AlleleNormalizer
-from profiles.alleleprofile import AlleleProfile
+from profiles.allele import Allele as FhirAllele
 from profiles.sequenceprofile import SequenceProfile
 
 
 class AlleleFactory:
-    """The goal of this module is to simplify the creation of AlleleProfiles, eliminating the need to build them step by step or through the unpackaging process.
-    These AlleleProfiles will come with pre-filled attributes, allowing you to input just five key attributes: id, startQuantity, endQuantity, reference sequence, and literal value.
-    This function specifically creates an AlleleProfile for Literal Value representation.
+    """The goal of this module is to simplify the creation of FHIR Allele, eliminating the need to build them step by step or through the unpackaging process.
+    These FHIR Allele will come with pre-filled attributes, allowing you to input just five key attributes: id, startQuantity, endQuantity, reference sequence, and literal value.
+    This function specifically creates an FHIR Allele for Literal Value representation.
     """
 
     def __init__(self):
@@ -58,7 +58,7 @@ class AlleleFactory:
             end (int):  The end position of the allele (0-based interbase).
             allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
             normalize (bool, optional): Weather to normalize the vrs allele or not. Defaults to True.
-            id_value (str, optional): The unique identifier for the AlleleProfile instance. Defaults to None, and should be provided explicitly if required.
+            id_value (str, optional): The unique identifier for the FHIR Allele instance. Defaults to None, and should be provided explicitly if required.
 
         Returns:
             models.Allele: A VRS Allele object, either in normalized form or as originally constructed.
@@ -88,17 +88,17 @@ class AlleleFactory:
         allele_state: str,
         id_value: str = None,
     ):
-        """Creates a FHIR (Fast Healthcare Interoperability Resources) AlleleProfile instance. This method simplifies the creation of a FHIR AlleleProfile resource by abstracting the underlying FHIR structure and data mapping.
+        """Creates a FHIR (Fast Healthcare Interoperability Resources) Allele instance. This method simplifies the creation of a FHIR Allele resource by abstracting the underlying FHIR structure and data mapping.
 
         Args:
             context_sequence_id (str): Accession number of the reference sequence. Supported prefixes include: ("NC_", "NG_", "NM_", "NR_", "NP_")
             start (int):  The start position of the allele (0-based interbase).
             end (int):  The end position of the allele (0-based interbase).
             allele_state (str): Literal value of the allele sequence state (e.g., ACGT).
-            id_value (str, optional): The unique identifier for the AlleleProfile instance. If not provided, a default ID will be generated in the format 'ref-to-{context_sequence_id}'.
+            id_value (str, optional): The unique identifier for the FHIR Allele instance. If not provided, a default ID will be generated in the format 'ref-to-{context_sequence_id}'.
 
         Returns:
-            AlleleProfile: A fully constructed FHIR AlleleProfile resource.
+            Allele: A fully constructed FHIR Allele resource.
 
         """
         val_sequence_id = validate_accession(refseq_id=context_sequence_id)
@@ -177,7 +177,7 @@ class AlleleFactory:
 
         location = MolecularDefinitionLocation(sequenceLocation=seq_location)
 
-        return AlleleProfile(
+        return FhirAllele(
             contained=[sequence_profile],
             moleculeType=mol_type,
             location=[location],

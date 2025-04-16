@@ -7,7 +7,7 @@ from exceptions.utils import (
     InvalidSequenceTypeError,
     InvalidVRSAlleleError,
 )
-from profiles.alleleprofile import AlleleProfile
+from profiles.allele import Allele as FhirAllele
 
 
 def is_valid_vrs_allele(expression):
@@ -37,18 +37,18 @@ def is_valid_vrs_allele(expression):
 
 
 def is_valid_allele_profile(expression: object):
-    """Validates if the given expression is a valid AlleleProfile.
+    """Validates if the given expression is a valid Allele.
 
     Args:
         expression (object): The expression to validate.
 
     Raises:
-        TypeError: If the expression is not an instance of AlleleProfile.
+        TypeError: If the expression is not an instance of Allele.
 
     """
-    if not isinstance(expression, AlleleProfile):
+    if not isinstance(expression, FhirAllele):
         raise InvalidAlleleProfileError(
-            "Invalid expression type: expected an instance of AlleleProfile."
+            "Invalid expression type: expected an instance of Allele."
         )
 
 

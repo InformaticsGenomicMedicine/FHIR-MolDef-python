@@ -1,7 +1,7 @@
 import pytest
 
 from translators.allele_translator import VrsFhirAlleleTranslation
-from profiles.alleleprofile import AlleleProfile
+from profiles.allele import Allele as FhirAllele
 
 
 @pytest.fixture
@@ -98,7 +98,7 @@ def allele_translator():
 
 @pytest.fixture
 def allele_profile(example):
-    return AlleleProfile(**example)
+    return FhirAllele(**example)
 
 @pytest.fixture
 def vrs_expected_outputs():
