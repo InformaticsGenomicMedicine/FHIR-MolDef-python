@@ -7,7 +7,7 @@ from exceptions.fhir import ElementNotAllowedError, InvalidMoleculeTypeError
 from resources.moleculardefinition import MolecularDefinition
 
 
-class SequenceProfile(MolecularDefinition):
+class Sequence(MolecularDefinition):
     """FHIR Sequence Profile
 
     Args:
@@ -17,7 +17,7 @@ class SequenceProfile(MolecularDefinition):
         ValueError: If `memberState` or `location` is included in the profile.
 
     Returns:
-        SequenceProfile: An instance of the SequenceProfile class.
+        Sequence: An instance of the Sequence class.
 
     """
 
@@ -35,14 +35,14 @@ class SequenceProfile(MolecularDefinition):
     def validate_exclusions(cls, values):
         for field in ["memberState", "location"]:
             if field in values and values[field] is not None:
-                raise ElementNotAllowedError(f"`{field}` is not allowed in SequenceProfile.")
+                raise ElementNotAllowedError(f"`{field}` is not allowed in Sequence.")
         return values
 
     @model_validator(mode="after")
     def validate_moleculeType(cls, values):
         if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
             raise InvalidMoleculeTypeError(
-                "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for SequenceProfile."
+                "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Sequence."
             )
         return values
 

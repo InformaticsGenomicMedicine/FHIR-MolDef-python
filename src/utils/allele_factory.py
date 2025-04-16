@@ -19,7 +19,7 @@ from resources.moleculardefinition import (
 from translators.allele_utils import detect_sequence_type, validate_accession
 from normalize.allele_normalizer import AlleleNormalizer
 from profiles.allele import Allele as FhirAllele
-from profiles.sequenceprofile import SequenceProfile
+from profiles.sequence import Sequence as FhirSequence
 
 
 class AlleleFactory:
@@ -128,7 +128,7 @@ class AlleleFactory:
         else:
             fhir_id = self._refseq_to_fhir_id(refseq_accession=val_sequence_id)
 
-        sequence_profile = SequenceProfile(
+        sequence_profile = FhirSequence(
             id=f"ref-to-{fhir_id}",
             moleculeType=mol_type,
             representation=[representation_sequence],

@@ -25,9 +25,9 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
    - Explores the Python implementation of the **HL7 FHIR Allele**.  
    - Provides a walkthrough for constructing an Allele resource.  
 
-- **[SequenceProfile](sequence_profile_demo.ipynb)**  
-   - Showcases the Python implementation of the **HL7 FHIR SequenceProfile**.  
-   - Guides users through the step-by-step process of building a SequenceProfile resource.
+- **[Sequence](sequence_profile_demo.ipynb)**  
+   - Showcases the Python implementation of the **HL7 FHIR Sequence**.  
+   - Guides users through the step-by-step process of building a Sequence profile.
 
 ---
 

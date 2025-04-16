@@ -25,7 +25,7 @@ from translators.allele_utils import (
 )
 from normalize.allele_normalizer import AlleleNormalizer
 from profiles.allele import Allele as FhirAllele
-from profiles.sequenceprofile import SequenceProfile
+from profiles.sequence import Sequence as FhirSequence
 
 
 class VrsFhirAlleleTranslation:
@@ -333,7 +333,7 @@ class VrsFhirAlleleTranslation:
 
         fhir_id = self._refseq_to_fhir_id(refseq_accession=refseq_id)
 
-        sequence_profile = SequenceProfile(
+        sequence_profile = FhirSequence(
             id=f"ref-to-{fhir_id}",
             moleculeType=mol_type,
             representation=[representation_sequence],
