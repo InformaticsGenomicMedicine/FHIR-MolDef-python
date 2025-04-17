@@ -3,7 +3,7 @@ from fhir.resources import backboneelement, domainresource, fhirtypes
 from fhir_core.types import BooleanType, CodeType, IntegerType, StringType
 from pydantic import Field
 
-import resources.fhirtypeextra as fhirtypeextra
+import resources.fhirtypesextra as fhirtypesextra
 
 
 class MolecularDefinition(domainresource.DomainResource):
@@ -64,7 +64,7 @@ class MolecularDefinition(domainresource.DomainResource):
         None, alias="_type", title="Extension field for ``type``."
     )
 
-    location: list[fhirtypeextra.MolecularDefinitionLocationType] | None = Field(  # type: ignore
+    location: list[fhirtypesextra.MolecularDefinitionLocationType] | None = Field(  # type: ignore
         None,
         alias="location",
         title="Location of this molecule",
@@ -96,7 +96,7 @@ class MolecularDefinition(domainresource.DomainResource):
         },
     )
 
-    representation: list[fhirtypeextra.MolecularDefinitionRepresentationType] | None = Field(  # type: ignore
+    representation: list[fhirtypesextra.MolecularDefinitionRepresentationType] | None = Field(  # type: ignore
         None,
         alias="representation",
         title="Representation",
@@ -140,7 +140,7 @@ class MolecularDefinitionLocation(backboneelement.BackboneElement):
 
     __resource_type__ = "MolecularDefinitionLocation"
 
-    sequenceLocation: fhirtypeextra.MolecularDefinitionLocationSequenceLocationType | None = Field(  # type: ignore
+    sequenceLocation: fhirtypesextra.MolecularDefinitionLocationSequenceLocationType | None = Field(  # type: ignore
         None,
         alias="sequenceLocation",
         title="Location of this molecule in context of a sequence",
@@ -150,7 +150,7 @@ class MolecularDefinitionLocation(backboneelement.BackboneElement):
         },
     )
 
-    featureLocation: list[fhirtypeextra.MolecularDefinitionLocationFeatureLocationType] | None = Field(  # type: ignore
+    featureLocation: list[fhirtypesextra.MolecularDefinitionLocationFeatureLocationType] | None = Field(  # type: ignore
         None,
         alias="featureLocation",
         title="Location in context of a feature",
@@ -196,7 +196,7 @@ class MolecularDefinitionLocationSequenceLocation(backboneelement.BackboneElemen
         },
     )
 
-    coordinateInterval: fhirtypeextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalType | None = Field(  # type: ignore
+    coordinateInterval: fhirtypesextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalType | None = Field(  # type: ignore
         None,
         alias="coordinateInterval",
         title="Coordinate Interval for this location",
@@ -246,7 +246,7 @@ class MolecularDefinitionLocationSequenceLocationCoordinateInterval(
 
     __resource_type__ = "MolecularDefinitionLocationSequenceLocationCoordinateInterval"
 
-    coordinateSystem: fhirtypeextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
+    coordinateSystem: fhirtypesextra.MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
         None,
         alias="coordinateSystem",
         title="Coordinate system for this location",
@@ -465,7 +465,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    literal: fhirtypeextra.MolecularDefinitionRepresentationLiteralType | None = Field(  # type: ignore
+    literal: fhirtypesextra.MolecularDefinitionRepresentationLiteralType | None = Field(  # type: ignore
         None,
         alias="literal",
         title="A literal representation",
@@ -487,7 +487,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    extracted: fhirtypeextra.MolecularDefinitionRepresentationExtractedType | None = Field(  # type: ignore
+    extracted: fhirtypesextra.MolecularDefinitionRepresentationExtractedType | None = Field(  # type: ignore
         None,
         alias="extracted",
         title="A Molecular Sequence that is represented as an extracted portion of a different Molecular Sequence",
@@ -499,7 +499,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    repeated: fhirtypeextra.MolecularDefinitionRepresentationRepeatedType | None = Field(  # type: ignore
+    repeated: fhirtypesextra.MolecularDefinitionRepresentationRepeatedType | None = Field(  # type: ignore
         None,
         alias="repeated",
         title="A Molecular Sequence that is represented as a repeated sequence motif",
@@ -511,7 +511,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    concatenated: fhirtypeextra.MolecularDefinitionRepresentationConcatenatedType | None = Field(  # type: ignore
+    concatenated: fhirtypesextra.MolecularDefinitionRepresentationConcatenatedType | None = Field(  # type: ignore
         None,
         alias="concatenated",
         title="A Molecular Sequence that is represented as an ordered concatenation of two or more Molecular Sequences",
@@ -523,7 +523,7 @@ class MolecularDefinitionRepresentation(backboneelement.BackboneElement):
         },
     )
 
-    relative: fhirtypeextra.MolecularDefinitionRepresentationRelativeType | None = Field(  # type: ignore
+    relative: fhirtypesextra.MolecularDefinitionRepresentationRelativeType | None = Field(  # type: ignore
         None,
         alias="relative",
         title="A Molecular Definition that is represented as an ordered series of edits on a specified starting sequence",
@@ -625,7 +625,7 @@ class MolecularDefinitionRepresentationExtracted(backboneelement.BackboneElement
         },
     )
 
-    coordinateInterval: fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalType | None = Field(  # type: ignore
+    coordinateInterval: fhirtypesextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalType | None = Field(  # type: ignore
         None,
         alias="coordinateInterval",
         title="Coordinate Interval for this location",
@@ -672,7 +672,7 @@ class MolecularDefinitionRepresentationExtractedCoordinateInterval(
 
     __resource_type__ = "MolecularDefinitionRepresentationExtractedCoordinateInterval"
 
-    coordinateSystem: fhirtypeextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
+    coordinateSystem: fhirtypesextra.MolecularDefinitionRepresentationExtractedCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
         None,
         alias="coordinateSystem",
         title="The coordinate system used to define the interval that defines the subsequence to be extracted. Coordinate systems are usually 0- or 1-based",
@@ -828,7 +828,7 @@ class MolecularDefinitionRepresentationConcatenated(backboneelement.BackboneElem
 
     __resource_type__ = "MolecularDefinitionRepresentationConcatenated"
 
-    sequenceElement: list[fhirtypeextra.MolecularDefinitionRepresentationConcatenatedSequenceElementType] | None = Field(  # type: ignore
+    sequenceElement: list[fhirtypesextra.MolecularDefinitionRepresentationConcatenatedSequenceElementType] | None = Field(  # type: ignore
         None,
         alias="sequenceElement",
         title="One element of a concatenated Molecular Sequence",
@@ -925,7 +925,7 @@ class MolecularDefinitionRepresentationRelative(backboneelement.BackboneElement)
         },
     )
 
-    edit: list[fhirtypeextra.MolecularDefinitionRepresentationRelativeEditType] | None = Field(  # type: ignore
+    edit: list[fhirtypesextra.MolecularDefinitionRepresentationRelativeEditType] | None = Field(  # type: ignore
         None,
         alias="edit",
         title="An edit (change) made to a sequence",
@@ -971,7 +971,7 @@ class MolecularDefinitionRepresentationRelativeEdit(backboneelement.BackboneElem
         },
     )
 
-    coordinateInterval: fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType | None = Field(  # type: ignore
+    coordinateInterval: fhirtypesextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType | None = Field(  # type: ignore
         None,
         alias="coordinateInterval",
         title="Coordinate Interval for this location",
@@ -1035,7 +1035,7 @@ class MolecularDefinitionRepresentationRelativeEditCoordinateInterval(
 
     __resource_type__ = "MolecularDefinitionRepresentationRelativeEditCoordinateInterval"
 
-    coordinateSystem: fhirtypeextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
+    coordinateSystem: fhirtypesextra.MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType | None = Field(  # type: ignore
         None,
         alias="coordinateSystem",
         title="The coordinate system used to define the edited intervals on the starting sequence. Coordinate systems are usually 0- or 1-based",
