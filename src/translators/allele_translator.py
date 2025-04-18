@@ -7,7 +7,7 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 from ga4gh.vrs import models
 
-from api.seqrepo_api import SeqRepoAPI
+from api.seqrepo import SeqRepoAPI
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
