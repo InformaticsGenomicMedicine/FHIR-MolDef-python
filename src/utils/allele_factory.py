@@ -17,7 +17,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, validate_accession
-from normalize.allele_normalizer import AlleleNormalizer
+from normalizers.allele_normalizer import AlleleNormalizer
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 
