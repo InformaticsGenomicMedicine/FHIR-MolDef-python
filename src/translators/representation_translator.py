@@ -1,4 +1,4 @@
-from api.seqrepo import SeqRepoAPI
+from apis.seqrepo import SeqRepoAPI
 from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,

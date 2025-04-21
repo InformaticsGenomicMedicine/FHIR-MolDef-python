@@ -7,7 +7,7 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 from ga4gh.vrs import models
 
-from api.seqrepo import SeqRepoAPI
+from apis.seqrepo import SeqRepoAPI
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
@@ -23,7 +23,7 @@ from translators.allele_utils import (
     validate_accession,
     validate_indexing,
 )
-from normalize.allele_normalizer import AlleleNormalizer
+from normalizers.allele_normalizer import AlleleNormalizer
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 
