@@ -33,17 +33,10 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
 
 ### 3. **Translator**
 - **[VRS to FHIR Translation](vrs_translation_to_allele_profile_demo.ipynb)**  
-<<<<<<< HEAD
    - Demonstrates how to convert **GA4GH VRS (v1.3)** representations into HL7 FHIR **Allele** resources.  
 
 - **[FHIR to VRS Translation](allele_profile_to_vrs_translation_demo.ipynb)**  
    - Shows the process of translating HL7 FHIR **Allele** resources back into **GA4GH VRS (v1.3)** representations.  
-=======
-   - Demonstrates how to convert **GA4GH VRS (v2.0)** representations into HL7 FHIR **AlleleProfile** resources.  
-
-- **[FHIR to VRS Translation](allele_profile_to_vrs_translation_demo.ipynb)**  
-   - Shows the process of translating HL7 FHIR **AlleleProfile** resources back into **GA4GH VRS (v2.0)** representations.  
->>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5
 
 ---
 
