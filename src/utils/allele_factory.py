@@ -6,7 +6,6 @@ from fhir.resources.coding import Coding
 # from fhir.resources.meta import Meta
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
-from ga4gh.vrs import models
 
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
