@@ -1,5 +1,5 @@
 [project]
-name = "FHIR-MolDef-python" 
+name = "FHIR.MolDef" 
 version = "0.2.0" 
 description = "This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard."
 readme = "README.md"
