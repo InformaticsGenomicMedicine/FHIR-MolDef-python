@@ -1,11 +1,6 @@
 [project]
-<<<<<<< HEAD
 name = "FHIR.MolDef"
 version = "0.1.0" 
-=======
-name = "FHIR-MolDef-python" 
-version = "0.2.0" 
->>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5
 description = "This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard."
 readme = "README.md"
 authors = [
