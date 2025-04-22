@@ -27,6 +27,7 @@ from normalizers.allele_normalizer import AlleleNormalizer
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 
+from ga4gh.vrs.models import SequenceLocation,SequenceReference,LiteralSequenceExpression,sequenceString,Allele
 
 class VrsFhirAlleleTranslation:
     """Handles VRS <-> FHIR Allele conversion for 'contained' format."""
@@ -161,7 +162,7 @@ class VrsFhirAlleleTranslation:
                         "Missing `literal.value` for the `allele-state` representation."
                     )
 
-    def _translate_sequence_id(self, dp, sequence_id):
+    def _translate_sequence_id(self, dp, expression):
         """Translate a sequence ID using SeqRepo and return the RefSeq ID.
 
         Args:
@@ -174,11 +175,16 @@ class VrsFhirAlleleTranslation:
         Returns:
             str: A valid RefSeq identifier (e.g., NM_000123.3).
         """
+<<<<<<< HEAD:src/translators/allele_translator.py
         translated_ids = dp.translate_sequence_identifier(
             sequence_id, namespace="refseq"
         )
+=======
+        sequence = f"ga4gh:{expression.location.get_refget_accession()}"
+        translated_ids = dp.translate_sequence_identifier(sequence, namespace="refseq")
+>>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5:src/moldeftranslator/allele_translator.py
         if not translated_ids:
-            raise ValueError(f"No RefSeq ID found for sequence ID '{sequence_id}'.")
+            raise ValueError(f"No RefSeq ID found for sequence ID '{sequence}'.")
 
         translated_id = translated_ids[0]
         if not translated_id.startswith("refseq:"):
@@ -197,8 +203,10 @@ class VrsFhirAlleleTranslation:
         Returns:
             tuple: (refseq_id, start_pos, end_pos, alt_allele)
         """
+        #TODO: edit this
         is_valid_vrs_allele(expression)
 
+<<<<<<< HEAD:src/translators/allele_translator.py
         refseq_id = self._translate_sequence_id(
             dp, str(expression.location.sequence_id)
         )
@@ -207,6 +215,15 @@ class VrsFhirAlleleTranslation:
         alt_allele = expression.state.sequence
 
         return refseq_id, start_pos, end_pos, alt_allele
+=======
+        ga4gh_id = str(expression.id)
+        refgetAccession = self._translate_sequence_id(dp, expression)
+        start_pos = expression.location.start
+        end_pos = expression.location.end
+        alt_allele = expression.state.sequence.model_dump()
+
+        return ga4gh_id, refgetAccession, start_pos, end_pos, alt_allele
+>>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5:src/moldeftranslator/allele_translator.py
 
     def _validate_and_extract_code(self, expression):
         if not expression.contained:
@@ -284,20 +301,34 @@ class VrsFhirAlleleTranslation:
         start_pos = self._convert_decimal_to_int(start)
         end_pos = self._convert_decimal_to_int(values_needed["end"])
         alt_seq = self._validate_sequence(seq)
+        #TODO: double check this 
+        refget_accession = self.dp.derive_refget_accession(f"refseq:{values_needed['refseq']}")
+        seq_ref = SequenceReference(
+            refgetAccession=refget_accession.split("refget:")[-1]
+            )
 
-        interval = models.SequenceInterval(
-            start=models.Number(value=start_pos),
-            end=models.Number(value=end_pos),
+        seq_location = SequenceLocation(
+            sequenceReference=seq_ref,
+            start = start_pos,
+            end=end_pos,
         )
+<<<<<<< HEAD:src/translators/allele_translator.py
         location = models.SequenceLocation(
             sequence_id=f"refseq:{values_needed['refseq']}", interval=interval
+=======
+        lit_seq_expr = LiteralSequenceExpression(
+            sequence=sequenceString(alt_seq)
+>>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5:src/moldeftranslator/allele_translator.py
         )
-        state = models.LiteralSequenceExpression(sequence=alt_seq)
-
-        allele = models.Allele(location=location, state=state)
+        allele = Allele(
+            location=seq_location,
+            state=lit_seq_expr
+        )
+        # return allele
         return self.norm.post_normalize_allele(allele) if normalize else allele
 
     def vrs_allele_to_allele_profile(self, expression):
+<<<<<<< HEAD:src/translators/allele_translator.py
         """Converts a GA4GH VRS Allele object into a FHIR Allele.
 
         Args:
@@ -310,8 +341,12 @@ class VrsFhirAlleleTranslation:
         refseq_id, start_pos, end_pos, alt_allele = self._extract_vrs_values(
             expression, self.dp
         )
+=======
+        #NOTE: at this time ga4gh_id is not being used
+        ga4gh_id, refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
+>>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5:src/moldeftranslator/allele_translator.py
 
-        sequence_type = detect_sequence_type(refseq_id)
+        sequence_type = detect_sequence_type(refgetAccession)
 
         mol_type = CodeableConcept(
             coding=[
@@ -325,13 +360,18 @@ class VrsFhirAlleleTranslation:
 
         coding_ref = Coding(
             system="http://www.ncbi.nlm.nih.gov/refseq",
+<<<<<<< HEAD:src/translators/allele_translator.py
             code=refseq_id,
+=======
+            code=refgetAccession,
+            # display="TBD-THIS IS A DEMO EXAMPLE"
+>>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5:src/moldeftranslator/allele_translator.py
         )
 
         code_value = CodeableConcept(coding=[coding_ref])
         representation_sequence = MolecularDefinitionRepresentation(code=[code_value])
 
-        fhir_id = self._refseq_to_fhir_id(refseq_accession=refseq_id)
+        fhir_id = self._refseq_to_fhir_id(refseq_accession=refgetAccession)
 
         sequence_profile = FhirSequence(
             id=f"ref-to-{fhir_id}",
@@ -367,9 +407,20 @@ class VrsFhirAlleleTranslation:
         )
 
         moldef_literal = MolecularDefinitionRepresentationLiteral(value=str(alt_allele))
+<<<<<<< HEAD:src/translators/allele_translator.py
         moldef_repr = MolecularDefinitionRepresentation(
             focus=focus_value, literal=moldef_literal
         )
+=======
+        
+        # #TODO: Add this for main branch later
+        # encoding_value = CodeableConcept(
+        #     coding=[{
+        #         "system":
+        #     }]
+        # )
+        moldef_repr = MolecularDefinitionRepresentation(focus=focus_value, literal=moldef_literal)
+>>>>>>> 8e0edc5ab5fe19951193c0c8142861d7cb6062e5:src/moldeftranslator/allele_translator.py
 
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
             system=coord_system
