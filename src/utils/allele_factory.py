@@ -22,7 +22,7 @@ from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 
 from ga4gh.vrs.models import SequenceLocation,SequenceReference,LiteralSequenceExpression,sequenceString,Allele
-from api.seqrepo_api import SeqRepoAPI
+from apis.seqrepo import SeqRepoAPI
 
 class AlleleFactory:
     """The goal of this module is to simplify the creation of FHIR Allele, eliminating the need to build them step by step or through the unpackaging process.
