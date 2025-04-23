@@ -7,7 +7,7 @@ This repository contains a collection of interactive Jupyter notebooks designed 
 To get the most out of these notebooks, we recommend the following prerequisites:
    - Familiarity with **Jupyter Notebook** and **Python**.
    - An understanding of the **HL7 FHIR MolecularDefinition** schema, you can review it here: [FHIR MolecularDefinition Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html).
-   - Knowledge of the **GA4GH VRS (v2.0)** schema, which is essential for bidirectional translation. Documentation is available here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/1.3/).
+   - Knowledge of the **GA4GH VRS (v2.0)** schema, which is essential for bidirectional translation. Documentation is available here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/stable/).
 
 For setup instructions, including how to run these notebooks in **Codespaces**, refer to the main project [README](../README.md).
 
