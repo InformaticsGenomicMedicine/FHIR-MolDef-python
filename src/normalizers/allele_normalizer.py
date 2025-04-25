@@ -1,7 +1,7 @@
 # NOTE: This is just a temporary class for now.
 from ga4gh.core import ga4gh_identify
 from ga4gh.vrs import normalize as vrs_normalize
-from apis.seqrepo import SeqRepoAPI
+from api.seqrepo import SeqRepoAPI
 
 
 class AlleleNormalizer:

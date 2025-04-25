@@ -7,7 +7,7 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 
 
-from apis.seqrepo import SeqRepoAPI
+from api.seqrepo import SeqRepoAPI
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
