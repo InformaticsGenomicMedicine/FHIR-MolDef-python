@@ -5,9 +5,18 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
-
+from ga4gh.vrs.models import (
+    Allele,
+    LiteralSequenceExpression,
+    SequenceLocation,
+    SequenceReference,
+    sequenceString,
+)
 
 from api.seqrepo import SeqRepoAPI
+from normalizers.allele_normalizer import AlleleNormalizer
+from profiles.allele import Allele as FhirAllele
+from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
@@ -23,11 +32,7 @@ from translators.allele_utils import (
     validate_accession,
     validate_indexing,
 )
-from normalizers.allele_normalizer import AlleleNormalizer
-from profiles.allele import Allele as FhirAllele
-from profiles.sequence import Sequence as FhirSequence
 
-from ga4gh.vrs.models import SequenceLocation,SequenceReference,LiteralSequenceExpression,sequenceString,Allele
 
 class VrsFhirAlleleTranslation:
     """Handles VRS <-> FHIR Allele conversion for 'contained' format."""
@@ -284,7 +289,7 @@ class VrsFhirAlleleTranslation:
         start_pos = self._convert_decimal_to_int(start)
         end_pos = self._convert_decimal_to_int(values_needed["end"])
         alt_seq = self._validate_sequence(seq)
-        #TODO: double check this 
+        #TODO: double check this
         refget_accession = self.dp.derive_refget_accession(f"refseq:{values_needed['refseq']}")
         seq_ref = SequenceReference(
             refgetAccession=refget_accession.split("refget:")[-1]
@@ -366,7 +371,7 @@ class VrsFhirAlleleTranslation:
         )
 
         moldef_literal = MolecularDefinitionRepresentationLiteral(value=str(alt_allele))
-        
+
         # #TODO: Add this for main branch later
         # encoding_value = CodeableConcept(
         #     coding=[{

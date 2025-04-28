@@ -6,7 +6,18 @@ from fhir.resources.coding import Coding
 # from fhir.resources.meta import Meta
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
+from ga4gh.vrs.models import (
+    Allele,
+    LiteralSequenceExpression,
+    SequenceLocation,
+    SequenceReference,
+    sequenceString,
+)
 
+from api.seqrepo import SeqRepoAPI
+from normalizers.allele_normalizer import AlleleNormalizer
+from profiles.allele import Allele as FhirAllele
+from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
@@ -16,12 +27,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, validate_accession
-from normalizers.allele_normalizer import AlleleNormalizer
-from profiles.allele import Allele as FhirAllele
-from profiles.sequence import Sequence as FhirSequence
 
-from ga4gh.vrs.models import SequenceLocation,SequenceReference,LiteralSequenceExpression,sequenceString,Allele
-from api.seqrepo import SeqRepoAPI
 
 class AlleleFactory:
     """The goal of this module is to simplify the creation of FHIR Allele, eliminating the need to build them step by step or through the unpackaging process.

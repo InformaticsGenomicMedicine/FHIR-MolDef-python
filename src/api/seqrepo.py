@@ -4,6 +4,7 @@ from ga4gh.vrs.extras.translator import AlleleTranslator
 
 from exceptions.api import SeqRepoDataProxyCreationError
 
+
 class SeqRepoAPI:
     """Interface for interacting with a SeqRepo data source using GA4GH VRS tools.
 
@@ -50,6 +51,6 @@ class SeqRepoAPI:
 
         self.tlr = AlleleTranslator(
             data_proxy=self.seqrepo_dataproxy,
-            default_assembly_name="GRCh38", #Default value to this 
+            default_assembly_name="GRCh38", #Default value to this
             identify = True
         )
