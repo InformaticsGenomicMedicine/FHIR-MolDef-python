@@ -1,6 +1,7 @@
+from typing import ClassVar
+
 from fhir.resources import fhirtypes
-from pydantic import Field, model_validator
-from pydantic.json_schema import SkipJsonSchema
+from pydantic import model_validator
 
 from exceptions.fhir import (
     InvalidMoleculeTypeError,
@@ -27,10 +28,7 @@ class Allele(MolecularDefinition):
         Allele: An instance of the Allele class.
 
     """
-
-    memberState: SkipJsonSchema[fhirtypes.ReferenceType] = Field(  # type: ignore
-        default=None, repr=False, exclude=True
-    )
+    memberState: ClassVar[fhirtypes.ReferenceType| None] #type: ignore
 
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, values):

@@ -1,6 +1,7 @@
+from typing import ClassVar
+
 from fhir.resources import fhirtypes
-from pydantic import Field, model_validator
-from pydantic.json_schema import SkipJsonSchema
+from pydantic import model_validator
 
 import resources.fhirtypesextra as fhirtypesextra
 from exceptions.fhir import ElementNotAllowedError, InvalidMoleculeTypeError
@@ -20,15 +21,8 @@ class Sequence(MolecularDefinition):
         Sequence: An instance of the Sequence class.
 
     """
-
-    #https://github.com/pydantic/pydantic/discussions/6699#discussioncomment-8642547 (H-G-11 comment)
-    memberState: SkipJsonSchema[fhirtypes.ReferenceType] = Field(  # type: ignore
-        default=None, repr=False, exclude=True
-    )
-
-    location: SkipJsonSchema[fhirtypesextra.MolecularDefinitionLocationType] = Field(  # type: ignore
-        default=None, repr=False, exclude=True
-    )
+    memberState: ClassVar[fhirtypes.ReferenceType | None] #type: ignore
+    location: ClassVar[fhirtypesextra.MolecularDefinitionLocationType| None]  # type: ignore
 
     # Combined validator to exclude both `memberState` and `location` during validation
     @model_validator(mode="before")
