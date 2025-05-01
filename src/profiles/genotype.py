@@ -7,14 +7,13 @@ from fhir.resources import fhirtypes
 import resources.fhirtypesextra as fhirtypesextra
 
 from pydantic import model_validator
-from exceptions.fhir import ElementNotAllowedError
+from exceptions.fhir import ElementNotAllowedError,InvalidTypeError
 from resources.moleculardefinition import MolecularDefinition
 
 
 class Genotype(MolecularDefinition):
-
-    location: ClassVar[fhirtypesextra.MolecularDefinitionLocationType] | None ] #type: ignore
-    representation: ClassVar[fhirtypesextra.MolecularDefinitionRepresentationType] | None ] #type: ignore
+    location: ClassVar[fhirtypesextra.MolecularDefinitionLocationType | None]  # type: ignore
+    representation: ClassVar[fhirtypesextra.MolecularDefinitionRepresentationType | None]  # type: ignore
 
     memberState: list[fhirtypes.ReferenceType] | None = Field(  # type: ignore
         None,
@@ -43,14 +42,14 @@ class Genotype(MolecularDefinition):
             values (BaseModel): The validated model instance.
 
         Raises:
-            InvalidMoleculeTypeError: If 'type' is missing or empty.
+            InvalidTypeError: If 'type' is missing or empty.
 
         Returns:
             BaseModel: The validated model instance if the check passes.
 
         """
         if not values.type or not values.type.model_dump(exclude_unset=True):
-            raise ValueError(
+            raise InvalidTypeError(
                 "The `type` field must contain exactly one item. `type` has a 1..1 cardinality for Genotype."
             )
         return values

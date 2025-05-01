@@ -18,6 +18,11 @@ class InvalidMoleculeTypeError(FHIRException):
 
     pass
 
+class InvalidTypeError(FHIRException):
+    """Raised when 'type' does not meet its 1..1 cardinality requirement."""
+
+    pass 
+
 class LocationCardinalityError(FHIRException):
     """Raised when 'location' does not meet its 1..1 cardinality requirement."""
 
@@ -42,3 +47,4 @@ class MultipleContextStateError(FHIRException):
     """Raised when more than one 'context-state' coding is present in 'focus.coding'."""
 
     pass
+
