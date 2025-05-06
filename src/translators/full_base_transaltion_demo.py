@@ -1,9 +1,6 @@
 ########################################################################
 ##########################   BaseTranslation   #########################
 ########################################################################
-
-
-
 from fhir.resources.identifier import Identifier
 from profiles.allele import Allele
 from fhir.resources.extension import Extension
@@ -37,18 +34,16 @@ class FullVRSAlleleTranslator:
 
     def map_description(self):
         return self.vrs_allele.name or None
-    
+
     def map_extension(self, ext_obj=None, source=None):
-        # Handle top-level call (get all extensions from the source object)
         if ext_obj is None:
             source = source or self.vrs_allele
 
             if not getattr(source, "extensions", None):
                 return None
 
-            return [self.map_extension(ext, source=source) for ext in source.extensions]
+            return [self.map_extension(ext_obj=ext, source=source) for ext in source.extensions]
 
-        # Handle a single extension object
         extension = Extension(
             id=ext_obj.id,
             url=ext_obj.name,
@@ -61,7 +56,6 @@ class FullVRSAlleleTranslator:
             bool: 'valueBoolean',
             dict: 'valueCode',
             float: 'valueDecimal',
-            int: 'valueInteger'
         }
 
         for expected_type, attr_name in type_to_attr.items():
@@ -69,7 +63,6 @@ class FullVRSAlleleTranslator:
                 setattr(extension, attr_name, value)
                 break
 
-        # Handle sub-extensions
         sub_extensions = []
 
         if ext_obj.description:
@@ -82,28 +75,37 @@ class FullVRSAlleleTranslator:
 
         if ext_obj.extensions:
             for nested in ext_obj.extensions:
-                sub_extensions.append(self.map_extension(nested, source=ext_obj))
+                sub_extensions.append(self.map_extension(ext_obj= nested, source=ext_obj))
 
         if sub_extensions:
             extension.extension = sub_extensions
 
         return extension
 
+    def map_code(self):
+        #TODO: noticed that there may potentially be multiple expressions will need to create a list of codeableconepts to do this translations. 
+        for exp in self.vrs_allele.expressions:
+            fhir_code = Coding(
+                display=exp.syntax,
+                code=exp.value,
+                version=exp.syntax_version
+            )
 
-    
+            return CodeableConcept(
+                id=exp.id,
+                extension=self.map_extension(source=exp),
+                coding=[fhir_code]
+            )
+
+    def create_rep(self):
+        rep = MolecularDefinitionRepresentation(code=[self.map_code()])
+        return rep 
+
     #TODO: For right now use MolecularDefinition becuase it has much less restirctions then Allele
     def translate(self):
         return MolecularDefinition( 
             identifier=self.map_identifiers(),
             description=self.map_description(),
             extension=self.map_extension(),
-
-
+            representation=[self.create_rep()]
         )
-
-# if __name__ == "__main__":
-
-#     # vrs_allele_instance =  #TODO: input data here whenc created
-#     translator = FullVRSAlleleTranslator(vrs_allele_instance)
-#     fhir_allele = translator.translate()
-#     print(fhir_allele)
