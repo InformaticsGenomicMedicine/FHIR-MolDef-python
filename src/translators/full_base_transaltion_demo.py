@@ -32,10 +32,14 @@ class FullVRSAlleleTranslator:
     def translate(self):
         return MolecularDefinition(
             identifier=self.map_identifiers(source=self.vrs_allele),
+            #TODO: need to double check this translation
+            contained=[
+                self.map_sequence_location_sequence(),
+                self.map_sequence_reference_to_sequence_location()
+            ],
             description=self.map_description(source=self.vrs_allele),
             extension=self.map_extensions(),
-            #TODO: once code is done make sure to un mark this:
-            # location = [self.create_location()],
+            location = [self.create_location()], #TODO: need to double check the translations 
             representation=[self.create_representation()]
         )
 
@@ -176,23 +180,27 @@ class FullVRSAlleleTranslator:
         )
 
         return coord_interval
-
-    #TODO: revisit this: Need to figure out where sequence needs to go in locaiton compared to fhir. because if we place it in sequenceLocaiton.seuqenceContext its a 1..1 cardinality
+    
     def map_sequence_location(self):
+        return MolecularDefinitionLocationSequenceLocation(
+            sequenceContext=Reference(reference=f"#{self.vrs_allele.location.id}", type="MolecularDefinition"),
+            coordinateInterval = self.map_coordiante_interval()
+
+        )
+    
+    # NOTE: I think vrs sequenceLocation.sequence and sequencelocation.sequenceReference should go into a SequenceContained values
+    # This way we can put both sequenceLocation.sequence and sequenceLocation.sequenceRefernce in contained list. 
+
+    # #TODO: revisit this: Need to figure out where sequence needs to go in locaiton compared to fhir. because if we place it in sequenceLocaiton.seuqenceContext its a 1..1 cardinality
+    def map_sequence_location_sequence(self):
         representation_sequence = MolecularDefinitionRepresentation(literal=self.vrs_allele.location.sequence)
 
         sequence_profile = FhirSequence(
             representation=[representation_sequence],
         )
-        seq_context = Reference(
-            #referencing the location.id
-            reference=f"#{self.vrs_allele.location.id}", type="MolecularDefinition"
-        )
-        MolecularDefinitionLocationSequenceLocation(
-            SequenceContext = seq_context
-        )
+        return sequence_profile
 
-    #TODO: revisit this: The same as teh above statement. sequenceReference fits est with sequencelocation.seuqenctCtontext but this is a 1..1 cardinality. might need to create a loop to see if one is present then cant transalte the other.
+    # #TODO: revisit this: The same as teh above statement. sequenceReference fits est with sequencelocation.seuqenctCtontext but this is a 1..1 cardinality. might need to create a loop to see if one is present then cant transalte the other.
     def map_sequence_reference_to_sequence_location(self):
 
         rep_lit_sequence =  MolecularDefinitionRepresentationLiteral(value = self.vrs_allele.location.sequenceReference.sequence,
@@ -229,14 +237,7 @@ class FullVRSAlleleTranslator:
             moleculeType=molecular_tyep,
             representation=[representation_sequence],
         )
-        
-        seq_context = Reference(
-            #NOTE: this id might not be the best thing to place here its not a required field so some people might actually not use it
-            reference=f"#{self.vrs_allele.location.sequenceReference.id}", type="MolecularDefinition"
-        )
-        MolecularDefinitionLocationSequenceLocation(
-            SequenceContext = seq_context
-        )
+        return sequence_profile
 
 
     # TODO: need to create a custom validation that if vrs_allele.location.sequenceReference.iriReference an error gets thrown as we cannot translate this yet
@@ -244,7 +245,8 @@ class FullVRSAlleleTranslator:
     def create_location(self):
         MolecularDefinitionLocation(
             id=self.vrs_allele.location.id,
-            extension=self.map_location_extensions()
+            extension=self.map_location_extensions(),
+            sequenceLocation=self.map_sequence_location()
         )
 
     # ─── Literal Representation Mappers ───
