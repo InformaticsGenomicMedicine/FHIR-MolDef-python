@@ -59,11 +59,12 @@ class FullVRSAlleleTranslator:
             identifiers.append(Identifier(value=source.name))
 
         if getattr(source, "digest", None):
-            identifiers.append(Identifier(system=source.digest))
+            identifiers.append(Identifier(value=source.digest,
+                                          system="https://vrs.ga4gh.org/en/stable/conventions/computed_identifiers.html#truncated-digest-sha512t24u"))
 
         return identifiers or None
 
-    def map_description(source):
+    def map_description(self,source):
         return getattr(source, "description", None)
 
     # ─── Extension Mappers ───
@@ -108,15 +109,16 @@ class FullVRSAlleleTranslator:
         type_map = {
             str: "valueString",
             bool: "valueBoolean",
-            dict: "valueCode",
+            # dict: "valueCode", #NOTE: after review not sure if using value code is the correct thing to do. 
             float: "valueDecimal",
-            #TODO: figure out how to handle list from vrs and Null values
+            #TODO: figure out how to handle list from vrs 
+            type(None): None, # Null values #TODO: Test this
         }
         for expected_type, attr_name in type_map.items():
             if isinstance(value, expected_type):
                 setattr(extension, attr_name, value)
                 return
-        raise ValueError("Only support extension values of types: str, bool, dict, float.")
+        raise ValueError("Only support extension values of types: str, bool, and float.")
 
     def _map_named_extensions(self, source, url_base):
         exts = []
@@ -155,7 +157,7 @@ class FullVRSAlleleTranslator:
         return self._map_named_extensions(
             source=self.vrs_allele.location,
             #NOTE: this is a made up URL
-            url_base="http://example.org/fhir/StructureDefinition/sequence-location"
+            url_base="https://example.org/fhir/StructureDefinition/"
         )
 
     def map_coordiante_interval(self):
@@ -251,7 +253,7 @@ class FullVRSAlleleTranslator:
 
     # ─── Literal Representation Mappers ───
 
-    def map_code(self):
+    def map_rep_code(self):
         concepts = []
 
         if not getattr(self.vrs_allele, "expressions", None):
@@ -261,7 +263,7 @@ class FullVRSAlleleTranslator:
             fhir_code = Coding(
                 display=exp.syntax,
                 code=exp.value,
-                version=exp.syntax_version
+                version=exp.syntax_version #
             )
 
             cc = CodeableConcept(
@@ -277,7 +279,7 @@ class FullVRSAlleleTranslator:
         return self._map_named_extensions(
             source=self.vrs_allele.state,
             #NOTE: this is a made up URL
-            url_base="http://example.org/fhir/LiteralRepresentation"
+            url_base="https://example.org/fhir/StructureDefinition/"
         )
 
     def map_literal_representation(self):
@@ -290,7 +292,7 @@ class FullVRSAlleleTranslator:
 
     def create_representation(self):
         represntation = MolecularDefinitionRepresentation(
-            code = self.map_code(),
+            code = self.map_rep_code(),
             literal = self.map_literal_representation()
         )
         return represntation
