@@ -142,7 +142,17 @@ class VRSAlleleToFHIRTranslator:
         exts.extend(self._map_aliases_sub(source, url_base))
         exts.extend(self.map_extensions(source=source) or [])
         return exts
-
+    
+    def _map_refseq_extensions(self, source, url_base):
+        #NOTE location includes digest where literal sequence location expression doesnt
+        exts = []
+        exts.extend(self._map_name_sub(source, url_base))
+        exts.extend(self._map_description_sub(source, url_base))
+        exts.extend(self._map_aliases_sub(source, url_base))
+        exts.extend(self._map_digest_sub(source, url_base))
+        exts.extend(self.map_extensions(source=source) or [])
+        return exts
+    
     def _map_name_sub(self, source, url_base):
         if getattr(source, "name", None):
             return [Extension(
@@ -267,10 +277,107 @@ class VRSAlleleToFHIRTranslator:
             startQuantity=start,
             endQuantity=end,
         )
-    
+    #NOTE: we can only have one sequenceContext. 
+    # need to build a method that checks if sequenceRefernce or sequence is present if both are present then we can default to one. 
     def _map_sequence_location(self,ao):
         return MolecularDefinitionLocationSequenceLocation(
-            sequenceContext=Reference(reference=f"#{ao.location.id}", type="MolecularDefinition"),
+            #TODO: There needs to be a way where we can change from _reference_locaiton_sequence and _reference_sequence_reference
+            sequenceContext=self._reference_location_sequence(), 
             coordinateInterval = self._map_coordinate_interval(ao)
         )
+    
+    def build_location_sequence(self, ao):
+        sequence_id = "vrs-location-sequence"
+        sequence_value = getattr(ao.location, "sequence", "")
 
+        rep_sequence = MolecularDefinitionRepresentationLiteral(value=sequence_value)
+
+        return FhirSequence(
+            id=sequence_id,
+            representation=[rep_sequence]
+        )
+    
+    def build_location_reference_sequence(self, ao):
+        source = getattr(ao.location, "referenceSequence", None)
+        if not source:
+            return None
+
+        seqref_id = getattr(source, "id", "")
+        seqref_description = getattr(source, "description", "")
+        seqref_refgetAccession = getattr(source, "refgetAccession", "")
+        seqref_residueAlphabet = getattr(source, "residueAlphabet", "")
+        seqref_sequence = getattr(source, "sequence", "")
+        seqref_moleculeType = getattr(source, "moleculeType", "")
+
+        rep_sequence = MolecularDefinitionRepresentationLiteral(
+            value=seqref_sequence,
+            encoding=CodeableConcept(
+                coding=[Coding(
+                    system="vrs 2.0 codes for alphabet",
+                    code=seqref_residueAlphabet
+                )]
+            )
+        )
+
+        representation_sequence = MolecularDefinitionRepresentation(
+            code=[CodeableConcept(
+                coding=[Coding(
+                    system="GA4GH RefGet identifier for the referenced sequence",
+                    code=seqref_refgetAccession
+                )]
+            )],
+            literal=rep_sequence
+        )
+
+        molecule_type = CodeableConcept(
+            coding=[Coding(
+                system="vrs 2.0 codes for alphabet",
+                code=seqref_moleculeType
+            )]
+        )
+
+        return FhirSequence(
+            id=seqref_id,
+            moleculeType=molecule_type,
+            description=seqref_description,
+            extension=self._map_refseq_extensions(source=source),
+            representation=[representation_sequence]
+        )
+    
+    def _reference_location_sequence(self):
+        return Reference(
+            type="Sequence",
+            reference="#vrs-location-sequence",
+            display="VRS location.sequence as contained FHIR Sequence"
+        )
+    
+    def _reference_sequence_reference(self):
+        return Reference(
+            type="Sequence",
+            reference="#vrs-location-sequenceReference",
+            display = "VRS location.sequenceReference as contaiend FHIR Sequence"
+        )
+
+    # def _map_locaiton_sequence(self,ao):
+    #     sequence_id = "vrs-location-sequence"
+    #     sequence_value = getattr(ao.location, "sequence", "")
+
+    #     rep_sequence = MolecularDefinitionRepresentation(literal=sequence_value)
+
+    #     sequence_profile = FhirSequence(
+    #         id = sequence_id,
+    #         representation=[rep_sequence],
+    #     )
+
+    #     return 
+
+    #     #TODO: lets discuss ao.location.sequence 
+    #     # sequence is a sequenceString with a cardinality of 0..1 and is described as The literal sequence encoded by the sequenceReference at these coordinates.
+    #     # should map to location.seqLocation.seqContext
+    #     # MolecularDefinitionLocationSequenceLocation(sequenceContext=Reference())
+    #     Reference(
+    #         type="SequenceProfile"
+    #         reference = f"#{sequence_id}",
+    #         display= "Referncing the VRS locaiton sequence value."
+    #     )
+    # #TODO: Lets discuss ao.location.sequenceReference
