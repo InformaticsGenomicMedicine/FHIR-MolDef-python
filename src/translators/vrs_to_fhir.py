@@ -21,6 +21,7 @@ class VRSAlleleToFHIRTranslator:
     def full_allele_translator(self,vrs_allele=None):
         return MolecularDefinition(
             identifier= self.map_identifiers(vrs_allele),
+            contained=[self.map_contained(vrs_allele)],
             description = self.map_description(vrs_allele),
             extension = self.map_extensions(vrs_allele),
             location = self.map_location(vrs_allele),
@@ -277,15 +278,28 @@ class VRSAlleleToFHIRTranslator:
             startQuantity=start,
             endQuantity=end,
         )
-    #NOTE: we can only have one sequenceContext. 
-    # need to build a method that checks if sequenceRefernce or sequence is present if both are present then we can default to one. 
-    def _map_sequence_location(self,ao):
+    
+    def _map_sequence_location(self, ao):
+        if getattr(ao.location, "sequence", ""):
+            sequence_context = self._reference_location_sequence()
+        elif getattr(ao.location, "referenceSequence", None):
+            sequence_context = self._reference_sequence_reference()
+        else:
+            raise ValueError("Neither 'sequence' nor 'referenceSequence' is defined in ao.location, but one is required.")
+
         return MolecularDefinitionLocationSequenceLocation(
-            #TODO: There needs to be a way where we can change from _reference_locaiton_sequence and _reference_sequence_reference
-            sequenceContext=self._reference_location_sequence(), 
-            coordinateInterval = self._map_coordinate_interval(ao)
+            sequenceContext=sequence_context, #NOTE: This is a required field. So if sequence and referenceSequence isn't present we need to substitute it with something. 
+            coordinateInterval=self._map_coordinate_interval(ao)
         )
     
+    def map_contained(self, ao):
+        if getattr(ao.location, "sequence", ""):
+            return self.build_location_sequence(ao)
+        elif getattr(ao.location, "referenceSequence", None):
+            return self.build_location_reference_sequence(ao)
+        else:
+            return None
+        
     def build_location_sequence(self, ao):
         sequence_id = "vrs-location-sequence"
         sequence_value = getattr(ao.location, "sequence", "")
@@ -357,27 +371,7 @@ class VRSAlleleToFHIRTranslator:
             reference="#vrs-location-sequenceReference",
             display = "VRS location.sequenceReference as contaiend FHIR Sequence"
         )
-
-    # def _map_locaiton_sequence(self,ao):
-    #     sequence_id = "vrs-location-sequence"
-    #     sequence_value = getattr(ao.location, "sequence", "")
-
-    #     rep_sequence = MolecularDefinitionRepresentation(literal=sequence_value)
-
-    #     sequence_profile = FhirSequence(
-    #         id = sequence_id,
-    #         representation=[rep_sequence],
-    #     )
-
-    #     return 
-
     #     #TODO: lets discuss ao.location.sequence 
     #     # sequence is a sequenceString with a cardinality of 0..1 and is described as The literal sequence encoded by the sequenceReference at these coordinates.
     #     # should map to location.seqLocation.seqContext
     #     # MolecularDefinitionLocationSequenceLocation(sequenceContext=Reference())
-    #     Reference(
-    #         type="SequenceProfile"
-    #         reference = f"#{sequence_id}",
-    #         display= "Referncing the VRS locaiton sequence value."
-    #     )
-    # #TODO: Lets discuss ao.location.sequenceReference
