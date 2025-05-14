@@ -193,7 +193,17 @@ class VRSAlleleToFHIRTranslator:
     # Mapping Literal Sequence Expression
 
     def map_lit_to_rep_lit_expr(self,ao):
+        focus_value = CodeableConcept(
+            coding=[
+                Coding(
+                    system="http://hl7.org/fhir/moleculardefinition-focus",
+                    code="allele-state",
+                )
+            ]
+        )
+
         rep = MolecularDefinitionRepresentation(
+            focus=focus_value,
             code = self._map_codeable_concept(ao),
             literal= self._map_literal_representation(ao)
         )
