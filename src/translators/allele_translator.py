@@ -317,12 +317,11 @@ class VrsFhirAlleleTranslation:
         sequence_type = detect_sequence_type(refgetAccession)
 
         mol_type = CodeableConcept(
-            coding=[
-                {
-                    "system": "http://hl7.org/fhir/sequence-type",
-                    "code": sequence_type.lower(),
-                    "display": f"{sequence_type} Sequence",
-                }
+            coding=[Coding(
+                    system =  "http://hl7.org/fhir/sequence-type",
+                    code =  sequence_type.lower(),
+                    display =  f"{sequence_type} Sequence",
+        )
             ]
         )
 
@@ -350,12 +349,11 @@ class VrsFhirAlleleTranslation:
         end_quant = Quantity(value=int(end_pos))
 
         coord_system = CodeableConcept(
-            coding=[
-                {
-                    "system": "http://loinc.org",
-                    "code": "LA30100-4",
-                    "display": "0-based interval counting",
-                }
+            coding=[Coding(
+                    sysetm =  "http://loinc.org",
+                    code =  "LA30100-4",
+                    display =  "0-based interval counting",
+            )
             ]
         )
         seq_context = Reference(
