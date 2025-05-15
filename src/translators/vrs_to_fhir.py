@@ -5,6 +5,8 @@ from fhir.resources.identifier import Identifier
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 
+
+from api.seqrepo import SeqRepoAPI
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
     MolecularDefinition,
@@ -15,8 +17,13 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
+from translators.allele_utils import detect_sequence_type
 
 class VRSAlleleToFHIRTranslator:
+
+    def __init__(self):
+        self.seqrepo_api = SeqRepoAPI()
+        self.dp = self.seqrepo_api.seqrepo_dataproxy
 
     def full_allele_translator(self,vrs_allele=None):
         return MolecularDefinition(
@@ -24,8 +31,8 @@ class VRSAlleleToFHIRTranslator:
             contained=[self.map_contained(vrs_allele)],
             description = self.map_description(vrs_allele),
             extension = self.map_extensions(vrs_allele),
-            location = self.map_location(vrs_allele),
-            representation = self.map_lit_to_rep_lit_expr(vrs_allele)
+            location = [self.map_location(vrs_allele)],
+            representation = [self.map_lit_to_rep_lit_expr(vrs_allele)]
         )
 
 # --------------------------------------------------------------------------------------------
@@ -266,7 +273,8 @@ class VRSAlleleToFHIRTranslator:
     def map_location(self,ao):
         return MolecularDefinitionLocation(
             id = ao.location.id,
-            extension = self._map_location_extensions(source=ao),
+            extension = self._map_location_extensions(source=ao,
+                                                      url_base="https://example.org/fhir/StructureDefinition/"),
             sequenceLocation=self._map_sequence_location(ao)
         )
     
@@ -310,14 +318,51 @@ class VRSAlleleToFHIRTranslator:
         else:
             return None
         
+    #NOTE:This is the same code as what is put in allele_translator.py
+    def _translate_sequence_id(self, dp, expression):
+        """Translate a sequence ID using SeqRepo and return the RefSeq ID.
+
+        Args:
+            dp (SeqRepo DataProxy): The data proxy used to translate the sequence.
+            sequence_id (str): The sequence ID to be translated.
+
+        Raises:
+            ValueError: If translation fails or if format is unexpected.
+
+        Returns:
+            str: A valid RefSeq identifier (e.g., NM_000123.3).
+        """
+        sequence = f"ga4gh:{expression.location.get_refget_accession()}"
+        translated_ids = dp.translate_sequence_identifier(sequence, namespace="refseq")
+        if not translated_ids:
+            raise ValueError(f"No RefSeq ID found for sequence ID '{sequence}'.")
+
+        translated_id = translated_ids[0]
+        if not translated_id.startswith("refseq:"):
+            raise ValueError(f"Unexpected ID format in '{translated_id}'")
+
+        _, refseq_id = translated_id.split(":")
+        return refseq_id
+    
     def build_location_sequence(self, ao):
         sequence_id = "vrs-location-sequence"
-        sequence_value = getattr(ao.location, "sequence", "")
+        sequence_value = str(getattr(ao.location, "sequence", ""))
 
-        rep_sequence = MolecularDefinitionRepresentationLiteral(value=sequence_value)
+        rep_literal = MolecularDefinitionRepresentationLiteral(value=sequence_value)
+        rep_sequence = MolecularDefinitionRepresentation(literal=rep_literal)
+        refgetAccession = self._translate_sequence_id(dp= self.dp, expression = ao)
+        sequence_type = detect_sequence_type(refgetAccession)
+
+        molecule_type = CodeableConcept(
+            coding=[Coding(
+                system="TBD", #TODO: THIS IS NOT Correct double check, note sure if we need this. 
+                code=sequence_type
+            )]
+        )
 
         return FhirSequence(
             id=sequence_id,
+            moleculeType=molecule_type,
             representation=[rep_sequence]
         )
     
@@ -337,7 +382,7 @@ class VRSAlleleToFHIRTranslator:
             value=seqref_sequence,
             encoding=CodeableConcept(
                 coding=[Coding(
-                    system="vrs 2.0 codes for alphabet",
+                    system="vrs 2.0 codes for alphabet",#TODO: Double check
                     code=seqref_residueAlphabet
                 )]
             )
@@ -355,7 +400,7 @@ class VRSAlleleToFHIRTranslator:
 
         molecule_type = CodeableConcept(
             coding=[Coding(
-                system="vrs 2.0 codes for alphabet",
+                system="vrs 2.0 codes for moleculeType",#TODO: Double check
                 code=seqref_moleculeType
             )]
         )
