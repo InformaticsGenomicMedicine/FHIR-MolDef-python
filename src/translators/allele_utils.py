@@ -27,6 +27,7 @@ def is_valid_vrs_allele(expression):
             "The location type must be 'SequenceLocation'.",
         ),
         (
+            #With VRS 2.0 we also have state.type = "ReferenceSequenceExpression": We will need to support this in the future. 
             expression.state.type == "LiteralSequenceExpression",
             "The state type must be 'LiteralSequenceExpression'.",
         ),
