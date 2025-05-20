@@ -314,7 +314,7 @@ class VRSAlleleToFHIRTranslator:
 
         return self._map_lse_extensions(
             source=ao.state,
-            url_base="https://example.org/fhir/StructureDefinition/"
+            url_base="https://example.org/fhir/StructureDefinition"
             )
 
     def _map_literal_representation(self,ao):
@@ -350,7 +350,7 @@ class VRSAlleleToFHIRTranslator:
         return MolecularDefinitionLocation(
             id = ao.location.id,
             extension = self._map_location_extensions(source=ao,
-                                                      url_base="https://example.org/fhir/StructureDefinition/"),
+                                                      url_base="https://example.org/fhir/StructureDefinition"),
             sequenceLocation=self._map_sequence_location(ao)
         )
 
