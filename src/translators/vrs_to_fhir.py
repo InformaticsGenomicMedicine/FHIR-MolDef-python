@@ -18,12 +18,14 @@ from resources.moleculardefinition import (
 )
 from translators.allele_utils import detect_sequence_type, is_valid_vrs_allele
 
+from translators.fhir_system_uris import FHIR_IDENTIFIER_SYSTEMS
 
 class VRSAlleleToFHIRTranslator:
 
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
+        self.identifier_systems = FHIR_IDENTIFIER_SYSTEMS
 
     def full_allele_translator(self,vrs_allele=None):
         #TODO: change MolecularDefinition to AlleleProfile
@@ -33,17 +35,20 @@ class VRSAlleleToFHIRTranslator:
             identifier= self.map_identifiers(vrs_allele),
             contained=[self.map_contained(vrs_allele)],
             description = self.map_description(vrs_allele),
-            extension = self.map_extensions(vrs_allele),
+            #NOTE: At this time we will note be supproting Exension.
+            # extension = self.map_extensions(vrs_allele),
             location = [self.map_location(vrs_allele)],
             representation = [self.map_lit_to_rep_lit_expr(vrs_allele)]
         )
 
 
 # --------------------------------------------------------------------------------------------
+
     # Mapping identifiers
     def map_identifiers(self,ao):
         """Putting all the Identifiers together"""
         identifiers = []
+        #TODO: for every Identifiers we need to add a system with a url 
         identifiers.extend(self._map_id(ao))
         identifiers.extend(self._map_name(ao))
         identifiers.extend(self._map_aliases(ao))
@@ -54,21 +59,21 @@ class VRSAlleleToFHIRTranslator:
         """Mapping a vrs.id to a fhir Identifier"""
         value = getattr(ao,'id',None)
         if value:
-            return [Identifier(value=value)]
+            return [Identifier(value=value, system=self.identifier_systems['id'])]
         return []
 
     def _map_name(self,ao):
         """Mapping a vrs.name to a fhir Identifier"""
         value = getattr(ao,'name',None)
         if value:
-            return [Identifier(value=value)]
+            return [Identifier(value=value,system=self.identifier_systems['name'])]
         return []
 
     def _map_aliases(self,ao):
         """Mapping a vrs.aliases to a fhir Identifier"""
         value = getattr(ao,"aliases", None)
         if value:
-            return [Identifier(value=alias) for alias in ao.aliases]
+            return [Identifier(value=alias, system=self.identifier_systems['aliases']) for alias in ao.aliases]
         return []
 
     def _map_digest(self, ao):
@@ -76,7 +81,7 @@ class VRSAlleleToFHIRTranslator:
         value = getattr(ao,'digest',None)
         if value:
             # NOTE: url of vrs webpage that discribes the digest. This will be hard coded
-            return [Identifier(value=value, system="https://vrs.ga4gh.org/en/stable/conventions/computed_identifiers.html#truncated-digest-sha512t24u")]
+            return [Identifier(value=value, system=self.identifier_systems['digest'])]
         return []
 
 # --------------------------------------------------------------------------------------------
