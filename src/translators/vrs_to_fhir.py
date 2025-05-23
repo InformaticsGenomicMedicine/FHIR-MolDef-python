@@ -18,14 +18,14 @@ from resources.moleculardefinition import (
 )
 from translators.allele_utils import detect_sequence_type, is_valid_vrs_allele
 
-from translators.fhir_system_uris import FHIR_IDENTIFIER_SYSTEMS
+from translators.fhir_vrs_mappings import allele_identifiers
 
 class VRSAlleleToFHIRTranslator:
 
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
-        self.identifier_systems = FHIR_IDENTIFIER_SYSTEMS
+        self.allele_identifiers = allele_identifiers
 
     def full_allele_translator(self,vrs_allele=None):
         #TODO: change MolecularDefinition to AlleleProfile
@@ -59,21 +59,21 @@ class VRSAlleleToFHIRTranslator:
         """Mapping a vrs.id to a fhir Identifier"""
         value = getattr(ao,'id',None)
         if value:
-            return [Identifier(value=value, system=self.identifier_systems['id'])]
+            return [Identifier(value=value, system=self.allele_identifiers['id'])]
         return []
 
     def _map_name(self,ao):
         """Mapping a vrs.name to a fhir Identifier"""
         value = getattr(ao,'name',None)
         if value:
-            return [Identifier(value=value,system=self.identifier_systems['name'])]
+            return [Identifier(value=value,system=self.allele_identifiers['name'])]
         return []
 
     def _map_aliases(self,ao):
         """Mapping a vrs.aliases to a fhir Identifier"""
         value = getattr(ao,"aliases", None)
         if value:
-            return [Identifier(value=alias, system=self.identifier_systems['aliases']) for alias in ao.aliases]
+            return [Identifier(value=alias, system=self.allele_identifiers['aliases']) for alias in ao.aliases]
         return []
 
     def _map_digest(self, ao):
@@ -81,7 +81,7 @@ class VRSAlleleToFHIRTranslator:
         value = getattr(ao,'digest',None)
         if value:
             # NOTE: url of vrs webpage that discribes the digest. This will be hard coded
-            return [Identifier(value=value, system=self.identifier_systems['digest'])]
+            return [Identifier(value=value, system=self.allele_identifiers['digest'])]
         return []
 
 # --------------------------------------------------------------------------------------------
