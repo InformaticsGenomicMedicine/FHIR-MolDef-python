@@ -6,6 +6,7 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 
 from api.seqrepo import SeqRepoAPI
+from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
     MolecularDefinition,
@@ -17,8 +18,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, is_valid_vrs_allele
-
-from translators.fhir_vrs_mappings import allele_identifiers
+from translators.vrs_json_pointers import allele_identifiers
 
 class VRSAlleleToFHIRTranslator:
 
@@ -31,17 +31,34 @@ class VRSAlleleToFHIRTranslator:
         #TODO: change MolecularDefinition to AlleleProfile
         is_valid_vrs_allele(vrs_allele)
 
-        return MolecularDefinition(
+        return FhirAllele(
             identifier= self.map_identifiers(vrs_allele),
             contained=[self.map_contained(vrs_allele)],
             description = self.map_description(vrs_allele),
+            #For this to pass as a FHIR Allele we need to capture the moleculeType:
+            moleculeType=self.map_mol_type(vrs_allele),
             #NOTE: At this time we will note be supproting Exension.
             # extension = self.map_extensions(vrs_allele),
             location = [self.map_location(vrs_allele)],
             representation = [self.map_lit_to_rep_lit_expr(vrs_allele)]
         )
 
+# --------------------------------------------------------------------------------------------
+    def map_mol_type(self,ao):
 
+        refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
+
+        sequence_type = detect_sequence_type(refget_accession)
+
+        return CodeableConcept(
+            coding=[
+                Coding(
+                    system="http://hl7.org/fhir/sequence-type",
+                    code=sequence_type.lower(),
+                    display=f"{sequence_type} Sequence"
+                )
+            ]
+        )
 # --------------------------------------------------------------------------------------------
 
     # Mapping identifiers
