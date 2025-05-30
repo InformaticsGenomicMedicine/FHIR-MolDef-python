@@ -45,7 +45,13 @@ class VRSAlleleToFHIRTranslator:
             location = [self.map_location(vrs_allele)],
             representation = [self.map_lit_to_rep_lit_expr(vrs_allele)]
         )
+# --------------------------------------------------------------------------------------------
 
+    def _extract_str(self, val):
+        if hasattr(val, "root"):
+            return val.root
+        raise TypeError(f"Expected a string or RootModel[str], got {type(val)}")
+    
 # --------------------------------------------------------------------------------------------
     def map_mol_type(self,ao):
 
@@ -362,7 +368,7 @@ class VRSAlleleToFHIRTranslator:
         state = getattr(ao, "state", None)
 
         id_ = getattr(state, "id", None)
-        value = str(getattr(state, "sequence", ""))
+        value = self._extract_str(getattr(state, "sequence", ""))
 
         return MolecularDefinitionRepresentationLiteral(
             id=id_,
@@ -478,7 +484,7 @@ class VRSAlleleToFHIRTranslator:
         TODO: need to decide if we want system present, currently there is nothing there. 
         """
         sequence_id = "vrs-location-sequence"
-        sequence_value = str(getattr(ao.location, "sequence", ""))
+        sequence_value = self._extract_str(getattr(ao.location, "sequence", ""))
 
         rep_literal = MolecularDefinitionRepresentationLiteral(value=sequence_value)
         rep_sequence = MolecularDefinitionRepresentation(literal=rep_literal)
@@ -509,10 +515,8 @@ class VRSAlleleToFHIRTranslator:
         seqref_description = getattr(source, "description", "")
         seqref_refgetAccession = getattr(source, "refgetAccession", "")
         seqref_residueAlphabet = getattr(source, "residueAlphabet", "")
-        seqref_sequence = getattr(source, "sequence", "")
+        seqref_sequence = self._extract_str(getattr(source, "sequence", ""))
         seqref_moleculeType = getattr(source, "moleculeType", "")
-        if hasattr(seqref_sequence, "root"):
-            seqref_sequence = seqref_sequence.root
 
         rep_sequence = MolecularDefinitionRepresentationLiteral(
             value=seqref_sequence,
@@ -569,12 +573,3 @@ class VRSAlleleToFHIRTranslator:
     #     # should map to location.seqLocation.seqContext
     #     # MolecularDefinitionLocationSequenceLocation(sequenceContext=Reference())
 
-    # def _extract_str(self, val): #NOTE: keeping running into a pydantic error due to value not being a string need to extract it from the root. 
-    #     """Ensure val is a string, or extract it from Pydantic root models."""
-    #     if isinstance(val, str):
-    #         return val
-    #     elif hasattr(val, "root"):
-    #         return val.root
-    #     elif hasattr(val, "value"):
-    #         return val.value
-    #     return str(val)
