@@ -23,6 +23,7 @@ from translators.vrs_json_pointers import (
     literal_sequence_expression_identifiers as LSE_PTRS,
     sequence_location_identifiers as SEQ_LOC_PTRS,
     sequence_reference_identifiers as SEQ_REF_PTRS,
+    extension_identifiers as EXT_PTRS
 )
 
 class VRSAlleleToFHIRTranslator:
@@ -36,7 +37,7 @@ class VRSAlleleToFHIRTranslator:
 
         return FhirAllele(
             identifier= self.map_identifiers(vrs_allele),
-            contained=[self.map_contained(vrs_allele)],
+            contained=self.map_contained(vrs_allele),
             description = self.map_description(vrs_allele),
             moleculeType=self.map_mol_type(vrs_allele),
             #NOTE: At this time we will note be supproting Exension.
@@ -130,12 +131,14 @@ class VRSAlleleToFHIRTranslator:
         """
         extension = Extension(
             id=ext_obj.id,
-            url=ext_obj.name
+            # url=ext_obj.name #NOTE THIS might need to chagne so we can inpoint the value the the URI
         )
 
-        self._assign_extension_value(extension, ext_obj.value)
+        # self._assign_extension_value(extension, ext_obj.value)#NOTE THIS might need to chagne so we can inpoint the value the the URI
 
         sub_exts = []
+        sub_exts.extend(self._map_name_subext(ext_obj))
+        sub_exts.extend(self._map_value_subext(ext_obj))
         sub_exts.extend(self._map_description_subext(ext_obj))
         sub_exts.extend(self._map_nested_extensions(ext_obj))
 
@@ -144,10 +147,20 @@ class VRSAlleleToFHIRTranslator:
 
         return extension
 
+    def _map_name_subext(self,ext_obj):
+        if getattr(ext_obj, "name", None):
+                return [Extension(url=EXT_PTRS['name'],
+                                valueString=ext_obj.description)]
+    def _map_value_subext(self,ext_obj):
+        if getattr(ext_obj, "value", None):
+                return [Extension(url=EXT_PTRS['value'],
+                                valueString=ext_obj.description)]
+
     def _map_description_subext(self, ext_obj):
         """Creates a FHIR Extension for the description attribute of the given extension object, if present. Note here description acts as a sub-extension"""
         if getattr(ext_obj, "description", None):
-            return [Extension(url="description", valueString=ext_obj.description)]
+            return [Extension(url=EXT_PTRS['description'],
+                               valueString=ext_obj.description)]
         return []
 
     def _map_nested_extensions(self, ext_obj):
@@ -370,7 +383,7 @@ class VRSAlleleToFHIRTranslator:
         """"""
         return MolecularDefinitionLocation(
             id = ao.location.id,
-            extension = self._map_location_extensions(source=ao),
+            extension = self._map_location_extensions(source=ao.location),
             sequenceLocation=self._map_sequence_location(ao))
 
     def _map_coordinate_interval(self,ao):
@@ -404,13 +417,13 @@ class VRSAlleleToFHIRTranslator:
         """
         if getattr(ao.location, "sequence", ""):
             sequence_context = self._reference_location_sequence()
-        elif getattr(ao.location, "referenceSequence", None):
+        elif getattr(ao.location, "sequenceReference", None):
             sequence_context = self._reference_sequence_reference()
         else:
-            raise ValueError("Neither 'sequence' nor 'referenceSequence' is defined in ao.location, but one is required.")
+            raise ValueError("Neither 'sequence' nor 'sequenceReference' is defined in ao.location, but one is required.")
 
         return MolecularDefinitionLocationSequenceLocation(
-            sequenceContext=sequence_context, #NOTE: This is a required field. So if sequence and referenceSequence isn't present we need to substitute it with something.
+            sequenceContext=sequence_context, #NOTE: This is a required field. So if sequence and sequenceReference isn't present we need to substitute it with something.
             coordinateInterval=self._map_coordinate_interval(ao)
         )
 
@@ -418,12 +431,19 @@ class VRSAlleleToFHIRTranslator:
         """
         Maps the contained attribute of an allele object to the appropriate FHIR location representation based on its sequence or sequenceReference.
         """
+        contained = []
+
         if getattr(ao.location, "sequence", ""):
-            return self.build_location_sequence(ao)
-        elif getattr(ao.location, "referenceSequence", None):
-            return self.build_location_reference_sequence(ao)
-        else:
-            return None
+            seq = self.build_location_sequence(ao)
+            if seq:
+                contained.append(seq)
+
+        if getattr(ao.location, "sequenceReference", None):
+            ref_seq = self.build_location_reference_sequence(ao)
+            if ref_seq:
+                contained.append(ref_seq)
+
+        return contained or None
 
     #NOTE:This is the same code as what is put in allele_translator.py
     def _translate_sequence_id(self, dp, expression):
@@ -481,7 +501,7 @@ class VRSAlleleToFHIRTranslator:
         """
         Builds a SequenceProfile object when location.sequenceReference is present. Again we need to create a SequenceProfile and place this in the contained in the ALleleProfile that we are translating. 
         """
-        source = getattr(ao.location, "referenceSequence", None)
+        source = getattr(ao.location, "sequenceReference", None)
         if not source:
             return None
 
@@ -491,6 +511,8 @@ class VRSAlleleToFHIRTranslator:
         seqref_residueAlphabet = getattr(source, "residueAlphabet", "")
         seqref_sequence = getattr(source, "sequence", "")
         seqref_moleculeType = getattr(source, "moleculeType", "")
+        if hasattr(seqref_sequence, "root"):
+            seqref_sequence = seqref_sequence.root
 
         rep_sequence = MolecularDefinitionRepresentationLiteral(
             value=seqref_sequence,
@@ -546,3 +568,13 @@ class VRSAlleleToFHIRTranslator:
     #     # sequence is a sequenceString with a cardinality of 0..1 and is described as The literal sequence encoded by the sequenceReference at these coordinates.
     #     # should map to location.seqLocation.seqContext
     #     # MolecularDefinitionLocationSequenceLocation(sequenceContext=Reference())
+
+    # def _extract_str(self, val): #NOTE: keeping running into a pydantic error due to value not being a string need to extract it from the root. 
+    #     """Ensure val is a string, or extract it from Pydantic root models."""
+    #     if isinstance(val, str):
+    #         return val
+    #     elif hasattr(val, "root"):
+    #         return val.root
+    #     elif hasattr(val, "value"):
+    #         return val.value
+    #     return str(val)
