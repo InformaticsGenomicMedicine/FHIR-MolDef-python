@@ -9,7 +9,6 @@ from api.seqrepo import SeqRepoAPI
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
-    MolecularDefinition,
     MolecularDefinitionLocation,
     MolecularDefinitionLocationSequenceLocation,
     MolecularDefinitionLocationSequenceLocationCoordinateInterval,
@@ -18,13 +17,14 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, is_valid_vrs_allele
+from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
+from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import (
-    allele_identifiers as ALLELE_PTRS,
     literal_sequence_expression_identifiers as LSE_PTRS,
-    sequence_location_identifiers as SEQ_LOC_PTRS,
-    sequence_reference_identifiers as SEQ_REF_PTRS,
-    extension_identifiers as EXT_PTRS
 )
+from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC_PTRS
+from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
+
 
 class VRSAlleleToFHIRTranslator:
 
@@ -51,7 +51,7 @@ class VRSAlleleToFHIRTranslator:
         if hasattr(val, "root"):
             return val.root
         raise TypeError(f"Expected a string or RootModel[str], got {type(val)}")
-    
+
 # --------------------------------------------------------------------------------------------
     def map_mol_type(self,ao):
 
@@ -74,7 +74,7 @@ class VRSAlleleToFHIRTranslator:
     def map_identifiers(self,ao):
         """Putting all the Identifiers together"""
         identifiers = []
-        #TODO: for every Identifiers we need to add a system with a url 
+        #TODO: for every Identifiers we need to add a system with a url
         identifiers.extend(self._map_id(ao))
         identifiers.extend(self._map_name(ao))
         identifiers.extend(self._map_aliases(ao))
@@ -156,11 +156,11 @@ class VRSAlleleToFHIRTranslator:
     def _map_name_subext(self,ext_obj):
         if getattr(ext_obj, "name", None):
                 return [Extension(url=EXT_PTRS['name'],
-                                valueString=ext_obj.description)]
+                                valueString=ext_obj.name)]
     def _map_value_subext(self,ext_obj):
         if getattr(ext_obj, "value", None):
                 return [Extension(url=EXT_PTRS['value'],
-                                valueString=ext_obj.description)]
+                                valueString=ext_obj.value)]
 
     def _map_description_subext(self, ext_obj):
         """Creates a FHIR Extension for the description attribute of the given extension object, if present. Note here description acts as a sub-extension"""
@@ -493,7 +493,7 @@ class VRSAlleleToFHIRTranslator:
 
         molecule_type = CodeableConcept(
             coding=[Coding(
-                system="TBD", #TODO: THIS IS NOT Correct double check, note sure if we need this.
+                system="http://hl7.org/fhir/sequence-type",
                 code=sequence_type
             )]
         )
