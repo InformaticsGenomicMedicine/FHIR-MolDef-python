@@ -511,12 +511,13 @@ class VRSAlleleToFHIRTranslator:
         if not source:
             return None
 
-        seqref_id = getattr(source, "id", "")
-        seqref_description = getattr(source, "description", "")
+        seqref_id = "vrs-location-sequenceReference"
         seqref_refgetAccession = getattr(source, "refgetAccession", "")
         seqref_residueAlphabet = getattr(source, "residueAlphabet", "")
         seqref_sequence = self._extract_str(getattr(source, "sequence", ""))
         seqref_moleculeType = getattr(source, "moleculeType", "")
+        #TODO: dont know how to represent ciruclar
+
 
         rep_sequence = MolecularDefinitionRepresentationLiteral(
             value=seqref_sequence,
@@ -544,11 +545,9 @@ class VRSAlleleToFHIRTranslator:
                 code=seqref_moleculeType
             )]
         )
-
         return FhirSequence(
             id=seqref_id,
             moleculeType=molecule_type,
-            description=seqref_description,
             extension=self._map_refseq_extensions(source=source),
             representation=[representation_sequence]
         )
