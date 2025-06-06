@@ -1,11 +1,17 @@
-from ga4gh.vrs.models import Allele, SequenceLocation, SequenceReference, sequenceString
 from ga4gh.core.models import Extension
+from ga4gh.vrs.models import (
+    Allele,
+    LiteralSequenceExpression,
+    SequenceLocation,
+    SequenceReference,
+    sequenceString,
+)
 
 from api.seqrepo import SeqRepoAPI
 from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
-from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC
 from translators.vrs_json_pointers import literal_sequence_expression_identifiers as LSE
+from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC
 
 
 class FhirToVrsAllele:
@@ -23,6 +29,8 @@ class FhirToVrsAllele:
             aliases=meta['aliases'],
             digest=meta['digest'],
             description=ao.description,
+            location=self._map_sequence_location(ao),
+            state = self._map_literal_sequence_expression(ao)
         )
 
     def _map_meta(self,ao):
@@ -45,90 +53,88 @@ class FhirToVrsAllele:
     def _map_sequence_location(self,ao):
         coord = self._capture_coordinates(ao)
         top_ext = self._extract_location_fields(ao.location)[0]
-        recursive_extensions = top_ext.get('extensions', [])
 
-        extension_objects = []
-        for ext in recursive_extensions:
-            sub_extensions = [
-                Extension(
-                    id=sub_ext.get('id'),
-                    name=sub_ext.get('name'),
-                    value=sub_ext.get('value'),
-                    description= sub_ext.get('description')
-                )
-                for sub_ext in ext.get('extensions', [])
-            ]
-
-            extension_objects.append(
-                Extension(
-                    id=ext.get('id'),
-                    name=ext.get('name'),
-                    value=ext.get('value'),
-                    description= ext.get('description'),
-                    extensions=sub_extensions or None
-                )
-            )
+        extension_objects = self._map_extension(top_ext)
+        #TODO: rename these
+        seq, _ = self._capture_contained(ao)
+        lit_seq = self._capture_seuqence_contained_valeus(seq)
 
         return SequenceLocation(
             id=top_ext['id'],
             name=top_ext['name'],
             description=top_ext['description'],
-            extensions=extension_objects or None,
+            extensions=extension_objects,
             digest=top_ext['digest'],
             aliases=top_ext['aliases'],
             type = "SequenceLocation",
-            sequenceReference=self._map_sequence_reference(),
+            sequenceReference=self._map_sequence_reference(ao),
             start=coord['start'],
             end=coord['end'],
-            # sequence= # This needs to come from the contained value above
+            sequence=sequenceString(lit_seq)# This needs to come from the contained value above
             )
 
-    def _capture_coordinates(self,ao):
-        coordinates = {}
-        for loc in ao.location:
-            coordinates['start'] = loc.id.sequenceLocation.coordinateInterval.startQuantity
-            coordinates['end'] = loc.id.sequenceLocation.coordinateInterval.endQuantity
-        return coordinates
+    def _capture_coordinates(self, ao):
+        loc = ao.location[0]
+        return {
+            'start': loc.sequenceLocation.coordinateInterval.startQuantity.value,
+            'end': loc.sequenceLocation.coordinateInterval.endQuantity.value
+        }
 
     def _map_sequence_reference(self,ao):
-        top_ext = self._extract_location_fields(ao.representation)[0]
-        recursive_extensions = top_ext.get('extensions', [])
+        top_ext = self._extract_location_fields(ao.location)[0]
+        extension_objects = self._map_extension(ext=top_ext)
+        #TODO: rename these
+        _,sequenceReference = self._capture_contained(ao)
 
-        extension_objects = []
-        
-        for ext in recursive_extensions:
-            sub_extensions = [
-                Extension(
-                    id=sub_ext.get('id'),
-                    name=sub_ext.get('name'),
-                    value=sub_ext.get('value'),
-                    description= sub_ext.get('description')
-                )
-                for sub_ext in ext.get('extensions', [])
-            ]
-
-            extension_objects.append(
-                Extension(
-                    id=ext.get('id'),
-                    name=ext.get('name'),
-                    value=ext.get('value'),
-                    description= ext.get('description'),
-                    extensions=sub_extensions or None
-                )
-            )
+        refgetAccession,moleculeType,residueAlphabet,lit_seq = self._capture_sequenceReference_contained_values(sequenceReference)
 
         return SequenceReference(
             id =top_ext['id'] ,
             name = top_ext['name'],
-            description =top_ext['description'] ,
+            description =top_ext['description'],
             aliases = top_ext['aliases'],
-            extensions=extension_objects or None,
-            # sequence=sequenceString()
+            extensions=extension_objects,
+            refgetAccession = refgetAccession, #top_ext['digest'], #need to capture this from contained value
+            residueAlphabet = residueAlphabet,
+            moleculeType=moleculeType,
+            sequence=sequenceString(lit_seq)
         )
 
 #------------------------------------------------------------------------------------------------------------------------------------------------#
-    
+
+    def _map_literal_sequence_expression(self,ao):
+        top_ext = self._extract_literal_fields(ao.representation)[0]
+        extension_objects = self._map_extension(top_ext)
+
+        return LiteralSequenceExpression(
+            id=top_ext['id'],
+            name=top_ext['name'],
+            description=top_ext['description'],
+            aliases = top_ext['aliases'],
+            extensions=extension_objects,
+            sequence=sequenceString(self._capture_sequence(ao))
+        )
+
+    def _capture_sequence(self,ao):
+        return ao.representation[0].literal.value
 #------------------------------------------------------------------------------------------------------------------------------------------------#
+    def _map_extension(self, ext):
+        recursive_extensions = ext.get('extensions', [])
+        extension_objects = []
+
+        for ext_dict in recursive_extensions:
+            sub_extensions = self._map_extension(ext_dict)
+
+            extension_objects.append(
+                Extension(
+                    id=ext_dict.get('id'),
+                    name=ext_dict.get('name'),
+                    value=ext_dict.get('value'),
+                    description=ext_dict.get('description'),
+                    extensions=sub_extensions or None
+                )
+            )
+        return extension_objects or None
 
     def _extract_location_fields(self,location_obj):
         results = []
@@ -170,9 +176,9 @@ class FhirToVrsAllele:
             literal = getattr(rep, "literal", None)
             if literal is None:
                 continue
-            
+
             result = {
-                "id": getattr(rep.literal.id, "id", None),
+                "id": getattr(rep.literal, "id", None),
                 "name": None,
                 "description": None,
                 "aliases": [],
@@ -196,8 +202,8 @@ class FhirToVrsAllele:
                         result["extensions"].extend(nested)
             results.append(result)
 
-            return results
-        
+        return results
+
     def _extract_nested_extensions(self,extension_list):
         results = []
 
@@ -231,5 +237,30 @@ class FhirToVrsAllele:
         return results
 
 #------------------------------------------------------------------------------------------------------------------------------------------------#
+    def _capture_contained(self,ao):
 
+        contained = ao.contained
+
+        contained_values = {
+            "vrs-location-sequence": None,
+            "vrs-location-sequenceReference": None
+        }
+
+        for values in contained:
+            if values.id == "vrs-location-sequence":
+                contained_values['vrs-location-sequence'] = values
+            elif values.id == "vrs-location-sequenceReference":
+                contained_values['vrs-location-sequenceReference'] = values
+            else:
+                raise ValueError("contained values didn't include vrs-location-sequence or vrs-location-sequenceReference")
+
+        return contained_values['vrs-location-sequence'], contained_values['vrs-location-sequenceReference']
+
+    def _capture_seuqence_contained_valeus(self,sequence):
+        
+        return sequence.representation[0].literal.value
+
+    def _capture_sequenceReference_contained_values(self,sequenceReference):
+
+        return sequenceReference.representation[0].code[0].coding[0].code, sequenceReference.moleculeType.coding[0].code, sequenceReference.representation[0].literal.encoding.coding[0].code, sequenceReference.representation[0].literal.value
 
