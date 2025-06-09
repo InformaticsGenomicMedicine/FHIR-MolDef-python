@@ -5,6 +5,7 @@ from ga4gh.vrs.models import (
     SequenceLocation,
     SequenceReference,
     sequenceString,
+    Expression
 )
 
 from api.seqrepo import SeqRepoAPI
@@ -29,6 +30,7 @@ class FhirToVrsAllele:
             aliases=meta['aliases'],
             digest=meta['digest'],
             description=ao.description,
+            expressions= self._map_expression(ao),
             location=self._map_sequence_location(ao),
             state = self._map_literal_sequence_expression(ao)
         )
@@ -48,6 +50,17 @@ class FhirToVrsAllele:
                 values.setdefault('aliases', []).append(identifier.value)
 
         return values
+
+    def _map_expression(self,ao):
+
+        vals = ao.representation[0].code[0]
+
+        return [Expression(
+            id= vals.id,
+            syntax = vals.coding[0].display,
+            value = vals.coding[0].code,
+            syntax_version = vals.coding[0].version
+        )]
 #------------------------------------------------------------------------------------------------------------------------------------------------#
 
     def _map_sequence_location(self,ao):
