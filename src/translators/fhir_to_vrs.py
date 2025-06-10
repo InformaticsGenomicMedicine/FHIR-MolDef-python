@@ -51,16 +51,21 @@ class FhirToVrsAllele:
 
         return values
 
-    def _map_expression(self,ao):
-
+    def _map_expression(self, ao):
         vals = ao.representation[0].code[0]
+        ext_vals = ao.representation[0].code[0].extension
 
-        return [Expression(
-            id= vals.id,
-            syntax = vals.coding[0].display,
-            value = vals.coding[0].code,
-            syntax_version = vals.coding[0].version
-        )]
+        extension_objects = self._extract_nested_expression_extensions(ext_vals)
+
+        return [
+            Expression(
+                id=vals.id,
+                extensions=extension_objects,
+                syntax=vals.coding[0].display,
+                value=vals.coding[0].code,
+                syntax_version=vals.coding[0].version,
+            )
+        ]
 #------------------------------------------------------------------------------------------------------------------------------------------------#
 
     def _map_sequence_location(self,ao):
@@ -132,7 +137,7 @@ class FhirToVrsAllele:
         return ao.representation[0].literal.value
 #------------------------------------------------------------------------------------------------------------------------------------------------#
     def _map_extension(self, ext):
-        recursive_extensions = ext.get('extensions', [])
+        recursive_extensions = ext.get('extension', []) #TODO: double check
         extension_objects = []
 
         for ext_dict in recursive_extensions:
@@ -245,6 +250,37 @@ class FhirToVrsAllele:
                 if nested_blocks:
                     block["extensions"] = nested_blocks
 
+                results.append(block)
+
+        return results
+    
+    def _extract_nested_expression_extensions(self,extension_list):
+        results = []
+
+        for ext in extension_list or []:
+            inner = getattr(ext, "extension", []) or []
+
+            block = {}
+
+            nested_blocks = []
+            for inner_ext in inner:
+                inner_url = getattr(inner_ext, "url", "") or ""
+                inner_val = getattr(inner_ext, "valueString", None)
+
+                if EXT_PTRS["name"] in inner_url:
+                    block["name"] = inner_val
+                elif EXT_PTRS["value"] in inner_url:
+                    block["value"] = inner_val
+                elif EXT_PTRS["description"] in inner_url:
+                    block["description"] = inner_val
+                elif getattr(inner_ext, "extension", None):
+                    nested_blocks.extend(
+                        self._extract_nested_expression_extensions([inner_ext])
+                    )
+            if nested_blocks:
+                block["extensions"] = nested_blocks
+
+            if block: 
                 results.append(block)
 
         return results
