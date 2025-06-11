@@ -75,7 +75,7 @@ class FhirToVrsAllele:
         extension_objects = self._map_extension(top_ext)
         #TODO: rename these
         seq, _ = self._capture_contained(ao)
-        lit_seq = self._capture_seuqence_contained_valeus(seq)
+        lit_seq = self._capture_sequence_contained_values(seq)
 
         return SequenceLocation(
             id=top_ext['id'],
@@ -301,11 +301,11 @@ class FhirToVrsAllele:
             elif values.id == "vrs-location-sequenceReference":
                 contained_values['vrs-location-sequenceReference'] = values
             else:
-                raise ValueError("contained values didn't include vrs-location-sequence or vrs-location-sequenceReference")
+                raise ValueError("Missing expected contained values: 'vrs-location-sequence' or 'vrs-location-sequenceReference'")
 
         return contained_values['vrs-location-sequence'], contained_values['vrs-location-sequenceReference']
 
-    def _capture_seuqence_contained_valeus(self,sequence):
+    def _capture_sequence_contained_values(self,sequence):
         
         return sequence.representation[0].literal.value
 
