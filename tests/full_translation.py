@@ -128,6 +128,7 @@ output = {
     },
     { # This contained value is coming from vrs.location.sequenceReference 
       "resourceType": "MolecularDefinition",
+      "id": "vrs-location-sequenceReference",
       "extension": [
         {
           "id": "sequence_reference.extension:1", # vrs.location.sequenceReference.extensions.id
