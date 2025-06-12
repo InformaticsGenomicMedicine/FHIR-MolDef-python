@@ -396,3 +396,121 @@ output = {
     }
   ]
 }
+
+# fhir_to_vrs_output 
+{
+  'id': 'ga4gh:VA.j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L', # fhir.allele.identifier.system & fhir.allele.identifier.value
+  'type': 'Allele',
+  'name': 'V600E', # fhir.allele.identifier.system & fhir.allele.identifier.value
+  'description': 'BRAF V600E variant', # fhir.allele.description
+  'aliases': ['VAL600GLU', 'V640E', 'VAL640GLU'], # fhir.allele.identifier.system & fhir.allele.identifier.value
+  'extensions': None,
+  'digest': 'j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L', # fhir.allele.identifier.system & fhir.allele.identifier.value
+  'expressions': [
+    {
+      'id': 'expression:1', # fhir.allele.representation.code.id
+      'extensions': [
+        {
+          'id': 'sub-expression:1', # fhir.allele.representation.code.extension.id
+          'extensions': [
+            {
+              'id': 'sub-sub-expression:2', # fhir.allele.representation.code.extension.extension.id
+              'extensions': None,
+              'name': 'expression.sub.name.2', # fhir.allele.representation.code.extension.extension.name
+              'value': 'expression.sub.value,2', # fhir.allele.representation.code.extension.extension.value
+              'description': 'expression.description.2' # fhir.allele.representation.code.extension.extension.description
+            }
+          ],
+          'name': 'expression.name.1', # fhir.allele.representation.code.extension.name
+          'value': 'expression.value.1', # fhir.allele.representation.code.extension.value
+          'description': 'expression.description.1' # fhir.allele.representation.code.extension.description
+        }
+      ],
+      'syntax': 'hgvs.p', # fhir.allele.representation.code.coding.display
+      'value': 'NP_004324.2:p.Val600Glu', # fhir.allele.representation.code.coding.code
+      'syntax_version': '21.0' # fhir.allele.representation.code.coding.version
+    }
+  ],
+  'location': {
+    'id': 'ga4gh:SL.t-3DrWALhgLdXHsupI-e-M00aL3HgK3y', # fhir.allele.location[0].id
+    'type': 'SequenceLocation',
+    'name': 'NP_004324.2', # fhir.allele.location[0].extension[0].url & fhir.allele.location[0].extension[0].value
+    'description': 'My location description', # fhir.allele.location[0].extension[1].url & fhir.allele.location[0].extension[1].value
+    'aliases': ['Ensembl:ENSP00000288602.6'], # fhir.allele.location[0].extension[2].url & fhir.allele.location[0].extension[2].value
+    'extensions': [
+      {
+        'id': 'sequence_location.extension:1', # fhir.allele.location[0].extension[4].id
+        'extensions': [
+          {
+            'id': 'sequence_location.sub_extension:1', # fhir.allele.location[0].extension[4].extension[3].id
+            'extensions': None,
+            'name': 'sequence_location.sub_extension.name', # fhir.allele.location[0].extension[4].extension[3].extension[0].url & fhir.allele.location[0].extension[4].extension[3].extension[0].value
+            'value': 'sequence_location.sub_extension.value', # fhir.allele.location[0].extension[4].extension[3].extension[1].url & fhir.allele.location[0].extension[4].extension[3].extension[1].value
+            'description': 'sequence_location.sub_extension.description' # fhir.allele.location[0].extension[4].extension[3].extension[2].url & fhir.allele.location[0].extension[4].extension[3].extension[2].value
+          }
+        ],
+        'name': 'sequence_location.name', # fhir.allele.location[0].extension[4].extension[0].url & fhir.allele.location[0].extension[4].extension[0].value
+        'value': 'sequence_location.value', # fhir.allele.location[0].extension[4].extension[1].url & fhir.allele.location[0].extension[4].extension[1].value
+        'description': 'sequence_location.description' # fhir.allele.location[0].extension[4].extension[2].url & fhir.allele.location[0].extension[4].extension[2].value
+      }
+    ],
+    'digest': 't-3DrWALhgLdXHsupI-e-M00aL3HgK3y', # fhir.allele.location[0].extension[3].url & fhir.allele.location[0].extension[3].value
+    'sequenceReference': {
+      'id': 'ga4gh:SL.t-3DrWALhgLdXHsupI-e-M00aL3HgK3y', # fhir.allele.location[0].id
+      'type': 'SequenceReference',
+      'name': 'NP_004324.2', # fhir.allele.location[0].extension[0].url &  fhir.allele.location[0].extension[0].value
+      'description': 'My location description', # fhir.allele.location[0].extension[1].url &  fhir.allele.location[0].extension[1].value
+      'aliases': ['Ensembl:ENSP00000288602.6'], # fhir.allele.location[0].extension[2].url &  fhir.allele.location[0].extension[2].value
+      'extensions': [
+        {
+          'id': 'sequence_reference.extension:1', # fhir.allele.contained[1].extension[0].extension[3].id
+          'extensions': [
+            {
+              'id': 'sequence_reference.sub_extension:1', # fhir.allele.contained[1].extension[0].extension[3].id
+              'extensions': None,
+              'name': 'sequence_reference.sub_extension.name', # fhir.allele.contained[1].extension[0].extension[3].extension[0].url & fhir.allele.contained[1].extension[0].extension[3].extension[0].value
+              'value': 'sequence_reference.sub_extension.value', # fhir.allele.contained[1].extension[0].extension[3].extension[1].url & fhir.allele.contained[1].extension[0].extension[3].extension[1].value
+              'description': 'sequence_reference.sub_extension.description' # fhir.allele.contained[1].extension[0].extension[3].extension[2].url & fhir.allele.contained[1].extension[0].extension[3].extension[2].value
+            }
+          ],
+          'name': 'sequence_reference.name', # fhir.allele.contained[1].extension[0].extension[0].url & fhir.allele.contained[1].extension[0].extension[0].value
+          'value': 'sequence_reference.value', # fhir.allele.contained[1].extension[0].extension[1].url & fhir.allele.contained[1].extension[0].extension[1].value
+          'description': 'sequence_reference.description' # fhir.allele.contained[1].extension[0].extension[2].url & fhir.allele.contained[1].extension[0].extension[2].value
+        }
+      ],
+      'refgetAccession': 'SQ.cQvw4UsHHRRlogxbWCB8W-mKD4AraM9y', # fhir.allele.contained[1].representation[0].code[0].coding[0].code
+      'residueAlphabet': 'aa', # fhir.allele.contained[1].representation[0].literal.encoding.coding[0].code
+      'circular': None,
+      'sequence': 'V', # fhir.allele.contained[0].representation[0].literal.value
+      'moleculeType': 'protein' # fhir.allele.contained[1].moleculeType.coding[0].code
+    },
+    'start': 599, # fhir.allele.location[0].sequenceLocation.coordinateInterval.startQuantity.value
+    'end': 600, # fhir.allele.location[0].sequenceLocation.coordinateInterval.endQuantity.value
+    'sequence': 'V' # fhir.allele.contained[0].representation[0].literal.value
+  },
+  'state': {
+    'id': 'state:1', # fhir.allele.representation[0].literal.id
+    'type': 'LiteralSequenceExpression',
+    'name': 'state', # fhir.allele.representation[0].literal.extension.url & fhir.allele.representation[0].literal.extension.system
+    'description': 'My description for state', # fhir.allele.representation[0].literal.extension.url & fhir.allele.representation[0].literal.extension.system
+    'aliases': ['my_sequence'], # fhir.allele.representation[0].literal.extension.url & fhir.allele.representation[0].literal.extension.system
+    'extensions': [
+      {
+        'id': 'state.extension:1', # fhir.allele.representation[0].literal.extension[3].id
+        'extensions': [
+          {
+            'id': 'state.sub_extension:1', # fhir.allele.representation[0].literal.extension[3].extension[3].id
+            'extensions': None,
+            'name': 'state.sub_extension.name', # fhir.allele.representation[0].literal.extension[3].extension[3].extension[0].url and # fhir.allele.representation[0].literal.extension[3].extension[3].extension[0].value 
+            'value': 'state.sub_extension.value', # fhir.allele.representation[0].literal.extension[3].extension[3].extension[1].url and # fhir.allele.representation[0].literal.extension[3].extension[3].extension[1].value 
+            'description': 'state.sub_extension.description' # fhir.allele.representation[0].literal.extension[3].extension[3].extension[2].url and # fhir.allele.representation[0].literal.extension[3].extension[3].extension[2].value 
+          }
+        ],
+        'name': 'state.name', # fhir.allele.representation[0].literal.extension[3].extension[0].url and # fhir.allele.representation[0].literal.extension[3].extension[0].value 
+        'value': 'state.value',  # fhir.allele.representation[0].literal.extension[3].extension[1].url and # fhir.allele.representation[0].literal.extension[3].extension[1].value 
+        'description': 'state.description' # fhir.allele.representation[0].literal.extension[3].extension[2].url and # fhir.allele.representation[0].literal.extension[3].extension[2].value 
+      }
+    ],
+    'sequence': 'E' # fhir.allele.representation[0].literal.value
+  }
+}
