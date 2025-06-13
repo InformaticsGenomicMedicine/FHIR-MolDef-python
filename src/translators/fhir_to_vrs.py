@@ -13,6 +13,7 @@ from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import literal_sequence_expression_identifiers as LSE
 from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC
+from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF
 
 
 class FhirToVrsAllele:
@@ -110,7 +111,6 @@ class FhirToVrsAllele:
         """
         start, end = self._get_coordinates(ao)
         location_data = self._extract_location_fields(ao.location)[0]
-
         sequence, _ = self._extract_contained_sequences(ao)
         literal_sequence = self._extract_contained_sequence_value(sequence)
         mapped_extensions = self._map_extension(location_data['extensions'])
@@ -150,22 +150,26 @@ class FhirToVrsAllele:
         Returns:
             SequenceReference: A fully populated VRS 2.0 `SequenceReference` object including identifiers, sequence string, and relevant extensions.
         """
-        location_data = self._extract_location_fields(ao.location)[0]
         _, sequenceReference = self._extract_contained_sequences(ao)
+        # location_data = self._extract_location_fields(ao.location)[0]
+        ref_seq_data = self._extract_reference_sequence_fields(sequenceReference)[0]
+        # seq_ref_ext = self._extract_nested_extensions(sequenceReference.extension)
 
-        seq_ref_ext = self._extract_nested_extensions(sequenceReference.extension)
-        mapped_extensions = self._map_extension(seq_ref_ext)
+        # mapped_extensions = self._map_extension(seq_ref_ext)
+        mapped_extensions = self._map_extension(ref_seq_data['extensions'])
+
         refget_accession,molecule_type,residue_alphabet,literal_sequence = self._extract_contained_sequence_reference_details(sequenceReference)
 
         return SequenceReference(
-            id =location_data['id'] ,
-            name = location_data['name'],
-            description =location_data['description'],
-            aliases = location_data['aliases'],
+            id =ref_seq_data['id'] ,
+            name = ref_seq_data['name'],
+            description =ref_seq_data['description'],
+            aliases = ref_seq_data['aliases'],
             extensions=mapped_extensions,
             refgetAccession = refget_accession,
             residueAlphabet = residue_alphabet,
             moleculeType=molecule_type,
+            circular=False, #NOTE: this is hard coded
             sequence=sequenceString(literal_sequence)
         )
 
@@ -381,7 +385,39 @@ class FhirToVrsAllele:
             results.append(result)
 
         return results
+    
+    def _extract_reference_sequence_fields(self,ref_seq):
+        results = []
 
+        result = {
+            "id": None, # getattr(ref_seq, "id", None)
+            "name": None,
+            "description": None,
+            "digest": None,
+            "aliases": [],
+            "extensions": []
+        }
+
+        for ext in getattr(ref_seq, "extension", []):
+            url = getattr(ext, "url", "") or ""
+            val = getattr(ext, "valueString", None)
+            
+            if SEQ_REF['id'] in url:
+                result['id'] = val 
+            if SEQ_REF["name"] in url:
+                result["name"] = val
+            elif SEQ_REF["description"] in url:
+                result["description"] = val
+            elif SEQ_REF["aliases"] in url:
+                result["aliases"].append(val)
+            elif getattr(ext, "id", None):
+                nested = self._extract_nested_extensions([ext])
+                if nested:
+                    result["extensions"].extend(nested)
+        results.append(result)
+
+        return results
+    
     def _extract_nested_extensions(self,extension_list):
         """Recursively extracts structured metadata from nested FHIR extensions.
 
