@@ -234,18 +234,30 @@ class VRSAlleleToFHIRTranslator:
         NOTE location includes digest where literal sequence location expression doesn’t
         """
         exts = []
+        exts.extend(self._map_id_sub(source, url_base=SEQ_REF_PTRS['id']))
         exts.extend(self._map_name_sub(source, url_base=SEQ_REF_PTRS['name']))
         exts.extend(self._map_description_sub(source, url_base=SEQ_REF_PTRS['description']))
         exts.extend(self._map_aliases_sub(source, url_base=SEQ_REF_PTRS['aliases']))
         exts.extend(self.map_extensions(source=source) or [])
         return exts
+    
+    def _map_id_sub(self, source, url_base):
+        """
+        Creates a FHIR Extension for the 'id' attribute if present in the source object.
+        
+        """
+        if getattr(source, "id", None):
+            return [Extension(
+                url=url_base,
+                valueString=source.id
+            )]
+        return []
 
     def _map_name_sub(self, source, url_base):
         """
         Creates a FHIR Extension for the 'name' attribute if present in the source object.
         
         """
-        """"""
         if getattr(source, "name", None):
             return [Extension(
                 url=url_base,
@@ -511,7 +523,7 @@ class VRSAlleleToFHIRTranslator:
         if not source:
             return None
 
-        seqref_id = "vrs-location-sequenceReference"
+        seqref_id = "vrs-location-sequenceReference" 
         seqref_refgetAccession = getattr(source, "refgetAccession", "")
         seqref_residueAlphabet = getattr(source, "residueAlphabet", "")
         seqref_sequence = self._extract_str(getattr(source, "sequence", ""))
