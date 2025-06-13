@@ -151,11 +151,8 @@ class FhirToVrsAllele:
             SequenceReference: A fully populated VRS 2.0 `SequenceReference` object including identifiers, sequence string, and relevant extensions.
         """
         _, sequenceReference = self._extract_contained_sequences(ao)
-        # location_data = self._extract_location_fields(ao.location)[0]
-        ref_seq_data = self._extract_reference_sequence_fields(sequenceReference)[0]
-        # seq_ref_ext = self._extract_nested_extensions(sequenceReference.extension)
+        ref_seq_data = self._extract_reference_sequence_fields(sequenceReference)[0] # TODO: see if i can get rid of the indexting
 
-        # mapped_extensions = self._map_extension(seq_ref_ext)
         mapped_extensions = self._map_extension(ref_seq_data['extensions'])
 
         refget_accession,molecule_type,residue_alphabet,literal_sequence = self._extract_contained_sequence_reference_details(sequenceReference)
@@ -401,7 +398,7 @@ class FhirToVrsAllele:
         for ext in getattr(ref_seq, "extension", []):
             url = getattr(ext, "url", "") or ""
             val = getattr(ext, "valueString", None)
-            
+
             if SEQ_REF['id'] in url:
                 result['id'] = val 
             if SEQ_REF["name"] in url:
