@@ -1,7 +1,7 @@
 #source: https://github.com/cancervariants/metakb/blob/staging/server/tests/conftest.py#L548 
 #made up example data but extra
 
-example_synthetic_data = {
+vrs_synthetic_data = {
     "id": "ga4gh:VA.j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L",
     "type": "Allele",
     "name": "V600E",
@@ -127,4 +127,349 @@ example_synthetic_data = {
         ],
         "aliases": ["my_sequence"]
     }
+}
+
+fhir_synthetic_data = {
+  "resourceType": "MolecularDefinition",
+  "contained": [
+    {
+      "resourceType": "MolecularDefinition",
+      "id": "vrs-location-sequence",
+      "moleculeType": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/sequence-type",
+            "code": "protein"
+          }
+        ]
+      },
+      "representation": [
+        {
+          "literal": {
+            "value": "V"
+          }
+        }
+      ]
+    },
+    {
+      "resourceType": "MolecularDefinition",
+      "id": "vrs-location-sequenceReference",
+      "extension": [
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/id",
+          "valueString": "sequence_reference.id"
+        },
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/name",
+          "valueString": "sequence_reference.name"
+        },
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/description",
+          "valueString": "sequence_reference.description"
+        },
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/aliases",
+          "valueString": "sequence_reference.aliase"
+        },
+        {
+          "id": "sequence_reference.extension:1",
+          "extension": [
+            {
+              "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+              "valueString": "sequence_reference.extension.name"
+            },
+            {
+              "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+              "valueString": "sequence_reference.extension.value"
+            },
+            {
+              "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+              "valueString": "sequence_reference.extension.description"
+            },
+            {
+              "id": "sequence_reference.sub_extension:1",
+              "extension": [
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+                  "valueString": "sequence_reference.sub_extension.name"
+                },
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+                  "valueString": "sequence_reference.sub_extension.value"
+                },
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+                  "valueString": "sequence_reference.sub_extension.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "moleculeType": {
+        "coding": [
+          {
+            "system": "vrs 2.0 codes for moleculeType",
+            "code": "protein"
+          }
+        ]
+      },
+      "representation": [
+        {
+          "code": [
+            {
+              "coding": [
+                {
+                  "system": "GA4GH RefGet identifier for the referenced sequence",
+                  "code": "SQ.cQvw4UsHHRRlogxbWCB8W-mKD4AraM9y"
+                }
+              ]
+            }
+          ],
+          "literal": {
+            "encoding": {
+              "coding": [
+                {
+                  "system": "vrs 2.0 codes for alphabet",
+                  "code": "aa"
+                }
+              ]
+            },
+            "value": "V"
+          }
+        }
+      ]
+    }
+  ],
+  "identifier": [
+    {
+      "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/Allele#properties/id",
+      "value": "ga4gh:VA.j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L"
+    },
+    {
+      "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/Allele#properties/name",
+      "value": "V600E"
+    },
+    {
+      "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/Allele#properties/aliases",
+      "value": "VAL600GLU"
+    },
+    {
+      "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/Allele#properties/aliases",
+      "value": "V640E"
+    },
+    {
+      "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/Allele#properties/aliases",
+      "value": "VAL640GLU"
+    },
+    {
+      "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/Allele#properties/digest",
+      "value": "j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L"
+    }
+  ],
+  "description": "BRAF V600E variant",
+  "moleculeType": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sequence-type",
+        "code": "protein",
+        "display": "protein Sequence"
+      }
+    ]
+  },
+  "location": [
+    {
+      "id": "ga4gh:SL.t-3DrWALhgLdXHsupI-e-M00aL3HgK3y",
+      "extension": [
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceLocation#properties/name",
+          "valueString": "NP_004324.2"
+        },
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceLocation#properties/description",
+          "valueString": "My location description"
+        },
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceLocation#properties/aliases",
+          "valueString": "Ensembl:ENSP00000288602.6"
+        },
+        {
+          "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceLocation#properties/digest",
+          "valueString": "t-3DrWALhgLdXHsupI-e-M00aL3HgK3y"
+        },
+        {
+          "id": "sequence_location.extension:1",
+          "extension": [
+            {
+              "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+              "valueString": "sequence_location.name"
+            },
+            {
+              "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+              "valueString": "sequence_location.value"
+            },
+            {
+              "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+              "valueString": "sequence_location.description"
+            },
+            {
+              "id": "sequence_location.sub_extension:1",
+              "extension": [
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+                  "valueString": "sequence_location.sub_extension.name"
+                },
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+                  "valueString": "sequence_location.sub_extension.value"
+                },
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+                  "valueString": "sequence_location.sub_extension.description"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "sequenceLocation": {
+        "sequenceContext": {
+          "reference": "#vrs-location-sequence",
+          "type": "Sequence",
+          "display": "VRS location.sequence as contained FHIR Sequence"
+        },
+        "coordinateInterval": {
+          "coordinateSystem": {
+            "system": {
+              "coding": [
+                {
+                  "system": "http://loinc.org",
+                  "code": "LA30100-4",
+                  "display": "0-based interval counting"
+                }
+              ]
+            }
+          },
+          "startQuantity": {
+            "value": 599.0
+          },
+          "endQuantity": {
+            "value": 600.0
+          }
+        }
+      }
+    }
+  ],
+  "representation": [
+    {
+      "focus": {
+        "coding": [
+          {
+            "system": "http://hl7.org/fhir/moleculardefinition-focus",
+            "code": "allele-state"
+          }
+        ]
+      },
+      "code": [
+        {
+          "id": "expression:1",
+          "extension": [
+            {
+              "id": "sub-expression:1",
+              "extension": [
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+                  "valueString": "expression.name.1"
+                },
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+                  "valueString": "expression.value.1"
+                },
+                {
+                  "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+                  "valueString": "expression.description.1"
+                },
+                {
+                  "id": "sub-sub-expression:2",
+                  "extension": [
+                    {
+                      "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+                      "valueString": "expression.sub.name.2"
+                    },
+                    {
+                      "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+                      "valueString": "expression.sub.value,2"
+                    },
+                    {
+                      "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+                      "valueString": "expression.description.2"
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "coding": [
+            {
+              "version": "21.0",
+              "code": "NP_004324.2:p.Val600Glu",
+              "display": "hgvs.p"
+            }
+          ]
+        }
+      ],
+      "literal": {
+        "id": "state:1",
+        "extension": [
+          {
+            "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/LiteralSequenceExpression#properties/name",
+            "valueString": "state"
+          },
+          {
+            "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/LiteralSequenceExpression#properties/description",
+            "valueString": "My description for state"
+          },
+          {
+            "url": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/LiteralSequenceExpression#properties/aliases",
+            "valueString": "my_sequence"
+          },
+          {
+            "id": "state.extension:1",
+            "extension": [
+              {
+                "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+                "valueString": "state.name"
+              },
+              {
+                "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+                "valueString": "state.value"
+              },
+              {
+                "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+                "valueString": "state.description"
+              },
+              {
+                "id": "state.sub_extension:1",
+                "extension": [
+                  {
+                    "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/name",
+                    "valueString": "state.sub_extension.name"
+                  },
+                  {
+                    "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/value",
+                    "valueString": "state.sub_extension.value"
+                  },
+                  {
+                    "url": "https://github.com/ga4gh/gks-core/blob/1.0/schema/gks-core/json/Extension#properties/description",
+                    "valueString": "state.sub_extension.description"
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "value": "E"
+      }
+    }
+  ]
 }
