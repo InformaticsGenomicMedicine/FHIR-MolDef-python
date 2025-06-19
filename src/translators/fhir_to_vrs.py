@@ -110,7 +110,7 @@ class FhirToVrsAllele:
         literal sequence, and mapped extensions.
         """
         start, end = self._get_coordinates(ao)
-        location_data = self._extract_location_fields(ao.location)[0]
+        location_data = self._extract_location_fields(ao.location) 
         sequence, _ = self._extract_contained_sequences(ao)
         literal_sequence = self._extract_contained_sequence_value(sequence)
         mapped_extensions = self._map_extension(location_data['extensions'])
@@ -151,7 +151,7 @@ class FhirToVrsAllele:
             SequenceReference: A fully populated VRS 2.0 `SequenceReference` object including identifiers, sequence string, and relevant extensions.
         """
         _, sequenceReference = self._extract_contained_sequences(ao)
-        ref_seq_data = self._extract_reference_sequence_fields(sequenceReference)[0] # TODO: see if i can get rid of the indexting
+        ref_seq_data = self._extract_reference_sequence_fields(sequenceReference)
 
         mapped_extensions = self._map_extension(ref_seq_data['extensions'])
 
@@ -246,7 +246,7 @@ class FhirToVrsAllele:
             LiteralSequenceExpression: A VRS-compliant object that encapsulates a literal 
         sequence and its associated metadata and extensions.
         """
-        lse_data = self._extract_literal_fields(ao.representation)[0]
+        lse_data = self._extract_literal_fields(ao.representation)
         mapped_extensions = self._map_extension(lse_data['extensions'])
 
         return LiteralSequenceExpression(
@@ -305,7 +305,6 @@ class FhirToVrsAllele:
         Returns:
             list[dict]: A list of dictionaries, one per location object, each containing: id,name, description, digest, aliases ,extensions 
         """
-        results = []
 
         for loc in location_obj:
             result = {
@@ -333,9 +332,9 @@ class FhirToVrsAllele:
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)
-            results.append(result)
+            
 
-        return results
+        return result 
 
     def _extract_literal_fields(self,representation_obj):
         """Extracts metadata fields from FHIR literal sequence representations.
@@ -349,7 +348,6 @@ class FhirToVrsAllele:
             list[dict]: A list of dictionaries, each representing one literal sequence 
         expression, containing: id, name, description, aliases, extensions 
         """
-        results = []
 
         for rep in representation_obj:
             literal = getattr(rep, "literal", None)
@@ -379,12 +377,10 @@ class FhirToVrsAllele:
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)
-            results.append(result)
 
-        return results
+        return result
     
     def _extract_reference_sequence_fields(self,ref_seq):
-        results = []
 
         result = {
             "id": None, # getattr(ref_seq, "id", None)
@@ -411,9 +407,8 @@ class FhirToVrsAllele:
                 nested = self._extract_nested_extensions([ext])
                 if nested:
                     result["extensions"].extend(nested)
-        results.append(result)
 
-        return results
+        return result
     
     def _extract_nested_extensions(self,extension_list):
         """Recursively extracts structured metadata from nested FHIR extensions.
