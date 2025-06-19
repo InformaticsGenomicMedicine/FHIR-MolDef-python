@@ -39,6 +39,7 @@ class VRSAlleleToFHIRTranslator:
             identifier= self.map_identifiers(vrs_allele),
             contained=self.map_contained(vrs_allele),
             description = self.map_description(vrs_allele),
+            # NOTE: The moleculeType is inferred based on the refget accession.
             moleculeType=self.map_mol_type(vrs_allele),
             #NOTE: At this time we will not be supporting Exension.
             # extension = self.map_extensions(vrs_allele),
@@ -74,7 +75,6 @@ class VRSAlleleToFHIRTranslator:
     def map_identifiers(self,ao):
         """Putting all the Identifiers together"""
         identifiers = []
-        #TODO: for every Identifiers we need to add a system with a url
         identifiers.extend(self._map_id(ao))
         identifiers.extend(self._map_name(ao))
         identifiers.extend(self._map_aliases(ao))
@@ -106,7 +106,6 @@ class VRSAlleleToFHIRTranslator:
         """Mapping a vrs.digest to a fhir Identifier, hard coded system in this to reference the vrs digest in system"""
         value = getattr(ao,'digest',None)
         if value:
-            # NOTE: url of vrs webpage that discribes the digest. This will be hard coded
             return [Identifier(value=value, system=ALLELE_PTRS['digest'])]
         return []
 
@@ -137,10 +136,7 @@ class VRSAlleleToFHIRTranslator:
         """
         extension = Extension(
             id=ext_obj.id,
-            # url=ext_obj.name #NOTE THIS might need to change so we can identify the value the the URI
         )
-
-        # self._assign_extension_value(extension, ext_obj.value)#NOTE THIS might need to change so we can identify the value the the URI
 
         sub_exts = []
         sub_exts.extend(self._map_name_subext(ext_obj))
@@ -579,8 +575,4 @@ class VRSAlleleToFHIRTranslator:
             reference="#vrs-location-sequenceReference",
             display = "VRS location.sequenceReference as contained FHIR Sequence"
         )
-    #     #TODO: lets discuss ao.location.sequence
-    #     # sequence is a sequenceString with a cardinality of 0..1 and is described as The literal sequence encoded by the sequenceReference at these coordinates.
-    #     # should map to location.seqLocation.seqContext
-    #     # MolecularDefinitionLocationSequenceLocation(sequenceContext=Reference())
 
