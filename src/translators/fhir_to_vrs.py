@@ -165,7 +165,7 @@ class FhirToVrsAllele:
             extensions=mapped_extensions,
             refgetAccession = refget_accession,
             residueAlphabet = residue_alphabet,
-            moleculeType=molecule_type,
+            moleculeType=self._validate_molecule_type(molecule_type),
             circular=False, #NOTE: this is hard coded
             sequence=sequenceString(literal_sequence)
         )
@@ -226,12 +226,37 @@ class FhirToVrsAllele:
         """
         representation = seq_ref.representation[0]
         code = representation.code[0].coding[0].code
-        # TODO: VRS moleculeType:("genomic", "RNA", "mRNA", or "protein") Thats not the same for FHIR, so you need to create a validation step, where it only supports rna, dna, and protein.
         molecule_type = seq_ref.moleculeType.coding[0].code
         residue_alphabet = representation.literal.encoding.coding[0].code
         sequence = representation.literal.value
 
         return code, molecule_type, residue_alphabet, sequence
+    
+    def _validate_molecule_type(self, mt):
+        """Validates and converts a FHIR molecule type to its VRS-compliant equivalent.
+
+        Args:
+            mt (str): A molecule type from a FHIR resource. Expected values are 'dna', 'rna', or 'protein' 
+              (case-insensitive).
+
+        Raises:
+            ValueError: If the input molecule type is not one of the expected FHIR types.
+
+        Returns:
+            str: A molecule type string compatible with VRS. One of 'genomic', 'RNA', or 'protein'.
+        """
+        mapped_molType = {
+            'dna': 'genomic',
+            'rna': 'RNA',
+            'protein': 'protein'
+        }
+
+        mt = mt.lower()
+
+        if mt in mapped_molType:
+            return mapped_molType[mt]
+
+        raise ValueError(f"Unsupported moleculeType: '{mt}'. Expected one of: dna, rna, protein.")
 
 # ========== Literal Sequence Expression Mapping ==========
 
