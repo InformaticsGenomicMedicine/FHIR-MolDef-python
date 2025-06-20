@@ -432,6 +432,9 @@ class FhirToVrsAllele:
                 nested = self._extract_nested_extensions([ext])
                 if nested:
                     result["extensions"].extend(nested)
+        
+        if not result["aliases"]:
+            result["aliases"] = None
 
         return result
     
