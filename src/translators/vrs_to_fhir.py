@@ -49,6 +49,8 @@ class VRSAlleleToFHIRTranslator:
 # --------------------------------------------------------------------------------------------
 
     def _extract_str(self, val):
+        if val is None:
+            return None
         if hasattr(val, "root"):
             return val.root
         raise TypeError(f"Expected a string or RootModel[str], got {type(val)}")
@@ -392,7 +394,7 @@ class VRSAlleleToFHIRTranslator:
         NOTE:
             location.id maps to FHIR location id
             extension: we are using a custom extension for location
-            sequenceLocation: this is a mandatory field, and we use either use the sequenceReference or Sequence in location	 to populate this field.
+            sequenceLocation: this is a mandatory field, and we use either use the sequenceReference or Sequence in location to populate this field.
         """
         """"""
         return MolecularDefinitionLocation(
@@ -515,44 +517,71 @@ class VRSAlleleToFHIRTranslator:
         """
         Builds a SequenceProfile object when location.sequenceReference is present. Again we need to create a SequenceProfile and place this in the contained in the ALleleProfile that we are translating. 
         """
-        source = getattr(ao.location, "sequenceReference", None)
-        if not source:
-            return None
+        #TODO: refactor this code to make it much cleaner.
+        
+        source = ao.location.sequenceReference
 
         seqref_id = "vrs-location-sequenceReference" 
-        seqref_refgetAccession = getattr(source, "refgetAccession", "")
-        seqref_residueAlphabet = getattr(source, "residueAlphabet", "")
-        seqref_sequence = self._extract_str(getattr(source, "sequence", ""))
-        seqref_moleculeType = getattr(source, "moleculeType", "")
+        seqref_refgetAccession = getattr(source, "refgetAccession", None)
+        seqref_residueAlphabet = getattr(source, "residueAlphabet", None)
+        seqref_sequence = self._extract_str(getattr(source, "sequence", None))
+        seqref_moleculeType = getattr(source, "moleculeType", None)
+
         #TODO: don't know how to represent circular
+        #NOTE: Here is the problem that we are running into. seqref_sequence and seqref_residueAlphabet are not required fields but seqref_refgetAccession is. 
+        # if we are going to represent seqref_residueAlphabet then we need seqref_sequence because we are placing seqref_residueAlphabet in the MolDefRepLit and this requires value and thats where we place it refget_sequence.
+        # So if sequence isn't present then we dont represnt it. but if it is present and seqref_residueAlphabet isn't present we can extract it from seqref_refgetAccession. 
+        
+        # "na" = nucleic acid, This includes both DNA and RNA
+        # "aa" = amino acid, This means protein sequences
 
+        residueALphabet_map = { 
+            'DNA': 'na',
+            'RNA': 'na',
+            'protein': 'aa'
+        }
 
-        rep_sequence = MolecularDefinitionRepresentationLiteral(
-            value=seqref_sequence,
-            encoding=CodeableConcept(
-                coding=[Coding(
-                    system="vrs 2.0 codes for alphabet",#TODO: Double check
-                    code=seqref_residueAlphabet
-                )]
+        # if sequence isn't present thatne we arent going to include it. 
+        if seqref_sequence is None:
+            rep_sequence = None
+        else:
+            if seqref_residueAlphabet is None:
+                refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
+                seqref_moleculeType = detect_sequence_type(refget_accession)
+                if seqref_moleculeType in residueALphabet_map:
+                    seqref_residueAlphabet = residueALphabet_map[seqref_moleculeType]
+            rep_sequence = MolecularDefinitionRepresentationLiteral(
+                value=seqref_sequence,
+                encoding=CodeableConcept(
+                    coding=[Coding(
+                        system=SEQ_REF_PTRS['residueAlphabet'],#TODO: Double check
+                        code=seqref_residueAlphabet
+                    )]
+                )
             )
-        )
 
         representation_sequence = MolecularDefinitionRepresentation(
             code=[CodeableConcept(
                 coding=[Coding(
-                    system="GA4GH RefGet identifier for the referenced sequence",
+                    system=SEQ_REF_PTRS['refgetAccession'],
                     code=seqref_refgetAccession
                 )]
             )],
             literal=rep_sequence
         )
 
+        # NOTE: If seqref_moleculeType not present then we are going to extract it from refgetAccession because its a required field. 
+        if seqref_moleculeType is None:
+            refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
+            seqref_moleculeType = detect_sequence_type(refget_accession)
+
         molecule_type = CodeableConcept(
             coding=[Coding(
-                system="vrs 2.0 codes for moleculeType",#TODO: Double check
+                system=SEQ_REF_PTRS['moleculeType'],  # TODO: Double check
                 code=seqref_moleculeType
             )]
         )
+
         return FhirSequence(
             id=seqref_id,
             moleculeType=molecule_type,
