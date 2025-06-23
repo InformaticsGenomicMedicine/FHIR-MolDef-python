@@ -520,9 +520,9 @@ class VRSAlleleToFHIRTranslator:
         #TODO: refactor this code to make it much cleaner.
         
         source = ao.location.sequenceReference
+        seqref_id = "vrs-location-sequenceReference"
+        seqref_refgetAccession = source.refgetAccession
 
-        seqref_id = "vrs-location-sequenceReference" 
-        seqref_refgetAccession = getattr(source, "refgetAccession", None)
         seqref_residueAlphabet = getattr(source, "residueAlphabet", None)
         seqref_sequence = self._extract_str(getattr(source, "sequence", None))
         seqref_moleculeType = getattr(source, "moleculeType", None)
@@ -535,30 +535,22 @@ class VRSAlleleToFHIRTranslator:
         # "na" = nucleic acid, This includes both DNA and RNA
         # "aa" = amino acid, This means protein sequences
 
-        residueALphabet_map = { 
-            'DNA': 'na',
-            'RNA': 'na',
-            'protein': 'aa'
-        }
-
-        # if sequence isn't present thatne we arent going to include it. 
-        if seqref_sequence is None:
-            rep_sequence = None
-        else:
+        rep_sequence = None
+        if seqref_sequence:
             if seqref_residueAlphabet is None:
-                refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
-                seqref_moleculeType = detect_sequence_type(refget_accession)
-                if seqref_moleculeType in residueALphabet_map:
-                    seqref_residueAlphabet = residueALphabet_map[seqref_moleculeType]
-            rep_sequence = MolecularDefinitionRepresentationLiteral(
-                value=seqref_sequence,
-                encoding=CodeableConcept(
-                    coding=[Coding(
-                        system=SEQ_REF_PTRS['residueAlphabet'],#TODO: Double check
-                        code=seqref_residueAlphabet
-                    )]
+                seqref_moleculeType = self._extract_seqref_moleculeType(ao)
+                seqref_residueAlphabet = self._infer_residue_alphabet(seqref_moleculeType)
+
+            if seqref_residueAlphabet:
+                rep_sequence = MolecularDefinitionRepresentationLiteral(
+                    value=seqref_sequence,
+                    encoding=CodeableConcept(
+                        coding=[Coding(
+                            system=SEQ_REF_PTRS['residueAlphabet'],
+                            code=seqref_residueAlphabet
+                        )]
+                    )
                 )
-            )
 
         representation_sequence = MolecularDefinitionRepresentation(
             code=[CodeableConcept(
@@ -570,14 +562,12 @@ class VRSAlleleToFHIRTranslator:
             literal=rep_sequence
         )
 
-        # NOTE: If seqref_moleculeType not present then we are going to extract it from refgetAccession because its a required field. 
         if seqref_moleculeType is None:
-            refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
-            seqref_moleculeType = detect_sequence_type(refget_accession)
+            seqref_moleculeType = self._extract_seqref_moleculeType(ao)
 
         molecule_type = CodeableConcept(
             coding=[Coding(
-                system=SEQ_REF_PTRS['moleculeType'],  # TODO: Double check
+                system=SEQ_REF_PTRS['moleculeType'],
                 code=seqref_moleculeType
             )]
         )
@@ -588,6 +578,18 @@ class VRSAlleleToFHIRTranslator:
             extension=self._map_refseq_extensions(source=source),
             representation=[representation_sequence]
         )
+    
+    def _extract_seqref_moleculeType(self,ao):
+        refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
+        return detect_sequence_type(refget_accession)
+    
+    def _infer_residue_alphabet(self, molecule_type):
+        residue_alphabet = {
+            'DNA': 'na',
+            'RNA': 'na',
+            'protein': 'aa'
+        }
+        return residue_alphabet.get(molecule_type)
 
     def _reference_location_sequence(self):
         """Creating reference objects for location.sequence"""
@@ -604,4 +606,3 @@ class VRSAlleleToFHIRTranslator:
             reference="#vrs-location-sequenceReference",
             display = "VRS location.sequenceReference as contained FHIR Sequence"
         )
-
