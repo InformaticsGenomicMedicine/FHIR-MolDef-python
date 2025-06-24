@@ -238,7 +238,7 @@ class VRSAlleleToFHIRTranslator:
         exts.extend(self._map_aliases_sub(source, url_base=SEQ_REF_PTRS['aliases']))
         exts.extend(self.map_extensions(source=source) or [])
         return exts
-    
+
     def _map_id_sub(self, source, url_base):
         """
         Creates a FHIR Extension for the 'id' attribute if present in the source object.
@@ -431,7 +431,7 @@ class VRSAlleleToFHIRTranslator:
         """
         Maps a VRS Allele Object's location to a MolecularDefinitionLocationSequenceLocation, handling sequence context resolution.
         """
-        if getattr(ao.location, "sequence", ""):
+        if getattr(ao.location, "sequence", None):
             sequence_context = self._reference_location_sequence()
         elif getattr(ao.location, "sequenceReference", None):
             sequence_context = self._reference_sequence_reference()
@@ -518,7 +518,7 @@ class VRSAlleleToFHIRTranslator:
         Builds a SequenceProfile object when location.sequenceReference is present. Again we need to create a SequenceProfile and place this in the contained in the ALleleProfile that we are translating. 
         """
         #TODO: refactor this code to make it much cleaner.
-        
+
         source = ao.location.sequenceReference
         seqref_id = "vrs-location-sequenceReference"
         seqref_refgetAccession = source.refgetAccession
@@ -528,10 +528,10 @@ class VRSAlleleToFHIRTranslator:
         seqref_moleculeType = getattr(source, "moleculeType", None)
 
         #TODO: don't know how to represent circular
-        #NOTE: Here is the problem that we are running into. seqref_sequence and seqref_residueAlphabet are not required fields but seqref_refgetAccession is. 
+        #NOTE: Here is the problem that we are running into. seqref_sequence and seqref_residueAlphabet are not required fields but seqref_refgetAccession is.
         # if we are going to represent seqref_residueAlphabet then we need seqref_sequence because we are placing seqref_residueAlphabet in the MolDefRepLit and this requires value and thats where we place it refget_sequence.
-        # So if sequence isn't present then we dont represnt it. but if it is present and seqref_residueAlphabet isn't present we can extract it from seqref_refgetAccession. 
-        
+        # So if sequence isn't present then we dont represnt it. but if it is present and seqref_residueAlphabet isn't present we can extract it from seqref_refgetAccession.
+
         # "na" = nucleic acid, This includes both DNA and RNA
         # "aa" = amino acid, This means protein sequences
 
@@ -578,11 +578,11 @@ class VRSAlleleToFHIRTranslator:
             extension=self._map_refseq_extensions(source=source),
             representation=[representation_sequence]
         )
-    
+
     def _extract_seqref_moleculeType(self,ao):
         refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
         return detect_sequence_type(refget_accession)
-    
+
     def _infer_residue_alphabet(self, molecule_type):
         residue_alphabet = {
             'DNA': 'na',

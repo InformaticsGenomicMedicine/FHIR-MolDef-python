@@ -110,7 +110,7 @@ class FhirToVrsAllele:
         literal sequence, and mapped extensions.
         """
         start, end = self._get_coordinates(ao)
-        location_data = self._extract_location_fields(ao.location) 
+        location_data = self._extract_location_fields(ao.location)
         sequence, _ = self._extract_contained_sequences(ao)
         literal_sequence = self._extract_contained_sequence_value(sequence)
         mapped_extensions = self._map_extension(location_data['extensions'])
@@ -126,7 +126,7 @@ class FhirToVrsAllele:
             sequenceReference=self._map_sequence_reference(ao),
             start=start,
             end=end,
-            sequence=sequenceString(literal_sequence) # coming from contained value
+            sequence=literal_sequence # coming from contained value
             )
 
     def _get_coordinates(self, ao):
@@ -167,7 +167,7 @@ class FhirToVrsAllele:
             residueAlphabet = residue_alphabet,
             moleculeType=self._validate_molecule_type(molecule_type),
             circular=False, #NOTE: this is hard coded
-            sequence=sequenceString(literal_sequence)
+            sequence=literal_sequence
         )
 
 # ========== Contained Resource Parsing ==========
@@ -194,8 +194,8 @@ class FhirToVrsAllele:
             elif resource.id == "vrs-location-sequenceReference":
                 seq_ref = resource
 
-        if not seq or not seq_ref:
-            raise ValueError("Missing expected contained values: 'vrs-location-sequence' or 'vrs-location-sequenceReference'")
+        if seq is None and seq_ref is None:
+            raise ValueError("Both 'vrs-location-sequence' and 'vrs-location-sequenceReference' are missing.")
 
         return seq, seq_ref
 
@@ -209,7 +209,9 @@ class FhirToVrsAllele:
         Returns:
             str: The literal sequence string (e.g., nucleotide bases or amino acid residues).
         """
-        return sequence.representation[0].literal.value
+        if sequence is None:
+            return None
+        return sequenceString(sequence.representation[0].literal.value)
 
     def _extract_contained_sequence_reference_details(self,seq_ref):
         """Extracts sequence reference metadata from a contained sequenceReference resource.
@@ -224,14 +226,31 @@ class FhirToVrsAllele:
             - residueAlphabet (str): The encoding alphabet for the sequence ("na" or "aa").
             - sequence (str): A literal representation of the sequence.
         """
+        # These are always present
         representation = seq_ref.representation[0]
-        code = representation.code[0].coding[0].code
+        refgetAccession = representation.code[0].coding[0].code
         molecule_type = seq_ref.moleculeType.coding[0].code
-        residue_alphabet = representation.literal.encoding.coding[0].code
-        sequence = representation.literal.value
 
-        return code, molecule_type, residue_alphabet, sequence
-    
+        residue_alphabet = None
+        sequence = None
+
+        if hasattr(representation, "literal") and hasattr(representation.literal, "encoding"):
+            residue_alphabet = representation.literal.encoding.coding[0].code
+            sequence = sequenceString(representation.literal.value)
+
+        if residue_alphabet is None:
+            residue_alphabet = self._infer_residue_alphabet(molecule_type)
+
+        return refgetAccession, molecule_type, residue_alphabet, sequence
+
+    def _infer_residue_alphabet(self, molecule_type):
+        residue_alphabet = {
+            'DNA': 'na',
+            'RNA': 'na',
+            'protein': 'aa'
+        }
+        return residue_alphabet.get(molecule_type)
+
     def _validate_molecule_type(self, mt):
         """Validates and converts a FHIR molecule type to its VRS-compliant equivalent.
 
@@ -357,9 +376,9 @@ class FhirToVrsAllele:
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)
-            
 
-        return result 
+
+        return result
 
     def _extract_literal_fields(self,representation_obj):
         """Extracts metadata fields from FHIR literal sequence representations.
@@ -404,7 +423,7 @@ class FhirToVrsAllele:
                         result["extensions"].extend(nested)
 
         return result
-    
+
     def _extract_reference_sequence_fields(self,ref_seq):
 
         result = {
@@ -421,7 +440,7 @@ class FhirToVrsAllele:
             val = getattr(ext, "valueString", None)
 
             if SEQ_REF['id'] in url:
-                result['id'] = val 
+                result['id'] = val
             if SEQ_REF["name"] in url:
                 result["name"] = val
             elif SEQ_REF["description"] in url:
@@ -432,12 +451,12 @@ class FhirToVrsAllele:
                 nested = self._extract_nested_extensions([ext])
                 if nested:
                     result["extensions"].extend(nested)
-        
+
         if not result["aliases"]:
             result["aliases"] = None
 
         return result
-    
+
     def _extract_nested_extensions(self,extension_list):
         """Recursively extracts structured metadata from nested FHIR extensions.
 
