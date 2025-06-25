@@ -8,7 +8,12 @@ from exceptions.utils import (
     InvalidVRSAlleleError,
 )
 from profiles.allele import Allele as FhirAllele
+from api.seqrepo import SeqRepoAPI 
+from ga4gh.vrs.normalize import denormalize_reference_length_expression
+from ga4gh.vrs.models import LiteralSequenceExpression
 
+seqrepo_api = SeqRepoAPI()
+dp = seqrepo_api.seqrepo_dataproxy
 
 def is_valid_vrs_allele(expression):
     """Validation step to ensure that the expression is a valid VRS Allele object.
@@ -130,3 +135,23 @@ def validate_indexing(coord_system, start):
         )
 
     return start + adjustments[coord_system]
+
+def translate_rle_to_lse(ao):
+    sequence = f"ga4gh:{ao.location.get_refget_accession()}"
+    
+    aliases = dp.translate_sequence_identifier(sequence, 'refseq')
+    refseq_id = aliases[0].split(':')[1]
+
+    ref_seq = dp.get_sequence(identifier=refseq_id,
+                              start=ao.location.start,
+                              end=ao.location.end)
+
+    if ao.state.type == "ReferenceLengthExpression":
+        alt_seq = denormalize_reference_length_expression(
+            ref_seq=ref_seq,
+            repeat_subunit_length=ao.state.repeatSubunitLength,
+            alt_length=ao.state.length
+        )
+        ao.state = LiteralSequenceExpression(sequence=alt_seq)
+
+    return ao
