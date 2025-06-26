@@ -35,6 +35,9 @@ class VRSAlleleToFHIRTranslator:
     def full_allele_translator(self,vrs_allele=None):
         is_valid_vrs_allele(vrs_allele)
 
+        if vrs_allele.state.type == "ReferenceLengthExpression":
+            vrs_allele = self.seq_expr_translator.translate_rle_to_lse(vrs_allele)
+
         return FhirAllele(
             identifier= self.map_identifiers(vrs_allele),
             contained=self.map_contained(vrs_allele),

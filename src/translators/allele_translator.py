@@ -32,6 +32,7 @@ from translators.allele_utils import (
     validate_accession,
     validate_indexing,
 )
+from translators.sequence_expression_translator import SequenceExpressionTranslator
 
 
 class VrsFhirAlleleTranslation:
@@ -41,6 +42,7 @@ class VrsFhirAlleleTranslation:
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
         self.norm = AlleleNormalizer()
+        self.rsl_to = SequenceExpressionTranslator()
 
     ##############################################################
 
@@ -311,6 +313,10 @@ class VrsFhirAlleleTranslation:
         return self.norm.post_normalize_allele(allele) if normalize else allele
 
     def vrs_allele_to_allele_profile(self, expression):
+
+        if expression.state.type == "ReferenceLengthExpression":
+            expression = self.rsl_to.translate_rle_to_lse(expression)
+        
         #NOTE: at this time ga4gh_id is not being used
         ga4gh_id, refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
 
@@ -350,7 +356,7 @@ class VrsFhirAlleleTranslation:
 
         coord_system = CodeableConcept(
             coding=[Coding(
-                    sysetm =  "http://loinc.org",
+                    system="http://loinc.org",
                     code =  "LA30100-4",
                     display =  "0-based interval counting",
             )
