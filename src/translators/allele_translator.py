@@ -370,12 +370,6 @@ class VrsFhirAlleleTranslation:
 
         moldef_literal = MolecularDefinitionRepresentationLiteral(value=str(alt_allele))
 
-        # #TODO: Add this for main branch later
-        # encoding_value = CodeableConcept(
-        #     coding=[{
-        #         "system":
-        #     }]
-        # )
         moldef_repr = MolecularDefinitionRepresentation(focus=focus_value, literal=moldef_literal)
 
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
