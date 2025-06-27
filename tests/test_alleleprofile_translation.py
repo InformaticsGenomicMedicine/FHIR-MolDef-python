@@ -1,6 +1,6 @@
 import pytest
 
-from translators.allele_translator import VrsFhirAlleleTranslation
+from translators.vrs_fhir_translator import VrsFhirAlleleTranslation
 from profiles.allele import Allele as FhirAllele
 
 
