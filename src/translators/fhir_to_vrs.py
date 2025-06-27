@@ -16,13 +16,13 @@ from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_L
 from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF
 
 
-class FhirToVrsAllele:
+class FhirToVrsAlleleTranslator:
 
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
 
-    def full_allele_translator(self,ao):
+    def translate_allele_to_vrs(self,ao):
         """Converts a FHIR Allele Profile object into a fully populated VRS 2.0 Allele object.
 
         Args:
@@ -59,18 +59,23 @@ class FhirToVrsAllele:
             - 'digest' (str): A computed digest or hash of the allele.
             - 'aliases' (list of str): A list of alternate identifiers for the allele.
         """
-        keys = ['id','name','digest','aliases']
-        values = {'aliases':[]}
+        values = {'aliases': []}
 
         for identifier in ao.identifier:
-            for key in keys:
-                if ALLELE_PTRS[key] in identifier.system:
+            for key, system_uri in ALLELE_PTRS.items():
+                if system_uri in identifier.system:
                     if key == 'aliases':
-                        values['aliases'].append(identifier.value)
+                        values.setdefault('aliases', []).append(identifier.value)
                     else:
-                        values[key] = identifier.value
-        return values
+                        values[key] = identifier.value or None
 
+        for key in ['id', 'name', 'digest']:
+            values.setdefault(key, None)
+        
+        if not values['aliases']:
+            values['aliases'] = None
+
+        return values
 # ========== Expressions Mapping ==========
 
     def _map_expressions(self, ao):
@@ -83,6 +88,9 @@ class FhirToVrsAllele:
             list[Expression]: A list containing a single VRS `Expression` object with
             extracted syntax, value, version, and optional extensions.
         """
+        if not ao.representation[0].code:
+            return None
+        
         code = ao.representation[0].code[0]
         coding = code.coding[0]
         extensions = self._extract_nested_extensions(code.extension)
@@ -377,6 +385,8 @@ class FhirToVrsAllele:
                     if nested:
                         result["extensions"].extend(nested)
 
+            if not result["aliases"]:
+                result["aliases"] = None
 
         return result
 
@@ -422,12 +432,15 @@ class FhirToVrsAllele:
                     if nested:
                         result["extensions"].extend(nested)
 
+        if not result["aliases"]:
+            result["aliases"] = None
+
         return result
 
     def _extract_reference_sequence_fields(self,ref_seq):
 
         result = {
-            "id": None, # getattr(ref_seq, "id", None)
+            "id": None,
             "name": None,
             "description": None,
             "digest": None,

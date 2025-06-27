@@ -35,7 +35,7 @@ from translators.allele_utils import (
 from translators.sequence_expression_translator import SequenceExpressionTranslator
 
 
-class VrsFhirAlleleTranslation:
+class VrsFhirAlleleTranslator:
     """Handles VRS <-> FHIR Allele conversion for 'contained' format."""
 
     def __init__(self):
@@ -113,7 +113,6 @@ class VrsFhirAlleleTranslation:
             int: The validated and converted integer value.
 
         """
-        # check if the value is a decimal
         if not isinstance(value, Decimal):
             raise TypeError("Value is not a valid Decimal value.")
 
@@ -204,16 +203,14 @@ class VrsFhirAlleleTranslation:
         Returns:
             tuple: (refseq_id, start_pos, end_pos, alt_allele)
         """
-        #TODO: edit this
         is_valid_vrs_allele(expression)
 
-        ga4gh_id = str(expression.id)
         refgetAccession = self._translate_sequence_id(dp, expression)
         start_pos = expression.location.start
         end_pos = expression.location.end
         alt_allele = expression.state.sequence.model_dump()
 
-        return ga4gh_id, refgetAccession, start_pos, end_pos, alt_allele
+        return refgetAccession, start_pos, end_pos, alt_allele
 
     def _validate_and_extract_code(self, expression):
         if not expression.contained:
@@ -250,7 +247,7 @@ class VrsFhirAlleleTranslation:
 
     #############################################################
 
-    def allele_profile_to_vrs_allele(self, expression, normalize=True):
+    def translate_allele_to_vrs(self, expression, normalize=True):
         """Converts an FHIR Allele object into a GA4GH VRS Allele object.
 
         Args:
@@ -266,10 +263,8 @@ class VrsFhirAlleleTranslation:
         Returns:
             models.Allele: A GA4GH VRS Allele object.
         """
-        # Validate that the input is an Allele
         is_valid_allele_profile(expression)
 
-        # validating the locaiton
         location_data = self._is_valid_sequence_location(expression.location)
 
         values_needed = {
@@ -291,7 +286,7 @@ class VrsFhirAlleleTranslation:
         start_pos = self._convert_decimal_to_int(start)
         end_pos = self._convert_decimal_to_int(values_needed["end"])
         alt_seq = self._validate_sequence(seq)
-        #TODO: double check this
+
         refget_accession = self.dp.derive_refget_accession(f"refseq:{values_needed['refseq']}")
         seq_ref = SequenceReference(
             refgetAccession=refget_accession.split("refget:")[-1]
@@ -309,16 +304,15 @@ class VrsFhirAlleleTranslation:
             location=seq_location,
             state=lit_seq_expr
         )
-        # return allele
+
         return self.norm.post_normalize_allele(allele) if normalize else allele
 
-    def vrs_allele_to_allele_profile(self, expression):
+    def translate_allele_to_fhir(self, expression):
 
         if expression.state.type == "ReferenceLengthExpression":
             expression = self.rsl_to.translate_rle_to_lse(expression)
         
-        #NOTE: at this time ga4gh_id is not being used
-        ga4gh_id, refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
+        refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
 
         sequence_type = detect_sequence_type(refgetAccession)
 

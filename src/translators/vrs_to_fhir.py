@@ -26,13 +26,13 @@ from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_L
 from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
 
 
-class VRSAlleleToFHIRTranslator:
+class VrsToFhirAlleleTranslator:
 
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
 
-    def full_allele_translator(self,vrs_allele=None):
+    def translate_allele_to_fhir(self,vrs_allele=None):
         is_valid_vrs_allele(vrs_allele)
 
         if vrs_allele.state.type == "ReferenceLengthExpression":
