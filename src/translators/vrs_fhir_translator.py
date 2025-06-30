@@ -311,7 +311,7 @@ class VrsFhirAlleleTranslator:
 
         if expression.state.type == "ReferenceLengthExpression":
             expression = self.rsl_to.translate_rle_to_lse(expression)
-        
+
         refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
 
         sequence_type = detect_sequence_type(refgetAccession)

@@ -158,6 +158,7 @@ class VrsToFhirAlleleTranslator:
         if getattr(ext_obj, "name", None):
                 return [Extension(url=EXT_PTRS['name'],
                                 valueString=ext_obj.name)]
+
     def _map_value_subext(self,ext_obj):
         if getattr(ext_obj, "value", None):
                 return [Extension(url=EXT_PTRS['value'],

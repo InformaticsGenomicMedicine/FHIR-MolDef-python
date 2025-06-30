@@ -71,7 +71,7 @@ class FhirToVrsAlleleTranslator:
 
         for key in ['id', 'name', 'digest']:
             values.setdefault(key, None)
-        
+
         if not values['aliases']:
             values['aliases'] = None
 
@@ -90,7 +90,7 @@ class FhirToVrsAlleleTranslator:
         """
         if not ao.representation[0].code:
             return None
-        
+
         code = ao.representation[0].code[0]
         coding = code.coding[0]
         extensions = self._extract_nested_extensions(code.extension)
@@ -252,6 +252,15 @@ class FhirToVrsAlleleTranslator:
         return refgetAccession, molecule_type, residue_alphabet, sequence
 
     def _infer_residue_alphabet(self, molecule_type):
+        """Infers the residue alphabet category based on the moleculeType attribute.
+
+        Args:
+            molecule_type (str): The type of molecule (e.g., 'DNA', 'RNA', or 'protein').
+
+        Returns:
+            str or None: Returns 'na' for nucleic acids (DNA or RNA), 'aa' for proteins,
+        or None if the molecule type is unrecognized.
+        """
         residue_alphabet = {
             'DNA': 'na',
             'RNA': 'na',
@@ -259,11 +268,11 @@ class FhirToVrsAlleleTranslator:
         }
         return residue_alphabet.get(molecule_type)
 
-    def _validate_molecule_type(self, mt):
+    def _validate_molecule_type(self, molecule_type):
         """Validates and converts a FHIR molecule type to its VRS-compliant equivalent.
 
         Args:
-            mt (str): A molecule type from a FHIR resource. Expected values are 'dna', 'rna', or 'protein' 
+            molecule_type (str): A molecule type from a FHIR resource. Expected values are 'dna', 'rna', or 'protein' 
               (case-insensitive).
 
         Raises:
@@ -278,12 +287,12 @@ class FhirToVrsAlleleTranslator:
             'protein': 'protein'
         }
 
-        mt = mt.lower()
+        molecule_type = molecule_type.lower()
 
-        if mt in mapped_molType:
-            return mapped_molType[mt]
+        if molecule_type in mapped_molType:
+            return mapped_molType[molecule_type]
 
-        raise ValueError(f"Unsupported moleculeType: '{mt}'. Expected one of: dna, rna, protein.")
+        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, protein.")
 
 # ========== Literal Sequence Expression Mapping ==========
 
@@ -399,8 +408,8 @@ class FhirToVrsAlleleTranslator:
             in extensions.
 
         Returns:
-            list[dict]: A list of dictionaries, each representing one literal sequence 
-        expression, containing: id, name, description, aliases, extensions 
+           dict: A dictionary representing the last literal sequence expression found. 
+        Includes the fields: id, name, description, aliases, and extensions. 
         """
 
         for rep in representation_obj:
@@ -438,7 +447,15 @@ class FhirToVrsAlleleTranslator:
         return result
 
     def _extract_reference_sequence_fields(self,ref_seq):
+        """Extract metadata fields from a FHIR `sequenceReference` resource.
 
+        Args:
+            ref_seq (object): A FHIR resource object representing a contained `sequenceReference`.
+
+        Returns:
+           dict: A dictionary containing the extracted fields: id, name, description, 
+            digest, aliases, and extensions.
+        """
         result = {
             "id": None,
             "name": None,
