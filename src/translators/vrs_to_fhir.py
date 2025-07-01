@@ -32,7 +32,7 @@ class VrsToFhirAlleleTranslator:
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
 
-    def translate_allele_to_fhir(self,vrs_allele=None):
+    def translate_allele_to_fhir(self,vrs_allele):
         is_valid_vrs_allele(vrs_allele)
 
         if vrs_allele.state.type == "ReferenceLengthExpression":
@@ -52,6 +52,17 @@ class VrsToFhirAlleleTranslator:
 # --------------------------------------------------------------------------------------------
 
     def _extract_str(self, val):
+        """Extract a string value from the input, which may be a plain string or a Pydantic RootModel.
+
+        Args:
+            val (str,object): The input value. Expected to be either a string or an object with a 'root' attribute
+
+        Raises:
+            TypeError: If the input is neither a string nor a compatible RootModel-like object.
+
+        Returns:
+            str | None: The extracted string if valid, or None if the input is None.
+        """
         if val is None:
             return None
         if hasattr(val, "root"):
@@ -60,6 +71,14 @@ class VrsToFhirAlleleTranslator:
 
 # --------------------------------------------------------------------------------------------
     def map_mol_type(self,ao):
+        """Maps the molecular type of a sequence to a FHIR CodeableConcept using its refget accession.
+
+        Args:
+            ao (object): A VRS Allele object referencing a Refget accession.
+
+        Returns:
+            CodeableConcept: A FHIR-compliant CodeableConcept indicating the sequence type (e.g., DNA, RNA, or AA) based on the detected molecular type.
+        """
 
         refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
 
@@ -78,7 +97,14 @@ class VrsToFhirAlleleTranslator:
 
     # Mapping identifiers
     def map_identifiers(self,ao):
-        """Putting all the Identifiers together"""
+        """Maps various identifier fields from the input object to a list of FHIR Identifier instances.
+
+        Args:
+            ao (object): A VRS Allele object that may include metadata such as id, name, aliases, and computed identifier.
+
+        Returns:
+            list[Identifier] | None: A list of FHIR Identifier objects, or None if no identifiers are present.
+        """
         identifiers = []
         identifiers.extend(self._map_id(ao))
         identifiers.extend(self._map_name(ao))
@@ -87,28 +113,28 @@ class VrsToFhirAlleleTranslator:
         return identifiers or None
 
     def _map_id(self,ao):
-        """Mapping a vrs.id to a fhir Identifier"""
+        """Maps a VRS id to a FHIR Identifier, setting the system to reflect its origin in the VRS specification."""
         value = getattr(ao,'id',None)
         if value:
             return [Identifier(value=value, system=ALLELE_PTRS['id'])]
         return []
 
     def _map_name(self,ao):
-        """Mapping a vrs.name to a fhir Identifier"""
+        """Maps a VRS name to a FHIR Identifier, setting the system to reflect its origin in the VRS specification."""
         value = getattr(ao,'name',None)
         if value:
             return [Identifier(value=value,system=ALLELE_PTRS['name'])]
         return []
 
     def _map_aliases(self,ao):
-        """Mapping a vrs.aliases to a fhir Identifier"""
+        """Maps a VRS aliases to a FHIR Identifier, setting the system to reflect its origin in the VRS specification."""
         value = getattr(ao,"aliases", None)
         if value:
             return [Identifier(value=alias, system=ALLELE_PTRS['aliases']) for alias in ao.aliases]
         return []
 
     def _map_digest(self, ao):
-        """Mapping a vrs.digest to a fhir Identifier, hard coded system in this to reference the vrs digest in system"""
+        """Maps a VRS digest to a FHIR Identifier, setting the system to reflect its origin in the VRS specification."""
         value = getattr(ao,'digest',None)
         if value:
             return [Identifier(value=value, system=ALLELE_PTRS['digest'])]
@@ -117,7 +143,7 @@ class VrsToFhirAlleleTranslator:
 # --------------------------------------------------------------------------------------------
     # Mapping description
     def map_description(self,ao):
-        """vrs.description will go to fhir description.markdown. This can be used in multiple areas of the translation"""
+        """Maps the VRS description to FHIR's description.markdown."""
         return getattr(ao,'description', None)
 
 # --------------------------------------------------------------------------------------------
@@ -126,9 +152,14 @@ class VrsToFhirAlleleTranslator:
 # --------------------------------------------------------------------------------------------
     # Mapping Extensions
 
-    def map_extensions(self,source=None):
-        """
-        Maps VRS extension objects from the source to their FHIR representation using the _map_ext method.
+    def map_extensions(self,source):
+        """ Maps VRS extensions from the input object to a list of FHIR Extension instances.
+
+        Args:
+            source (object): The input object, expected to have an 'extensions' attribute.
+            
+        Returns:
+            list | None: A list of FHIR Extension objects, or None if no extensions are present.
         """
         vrs_exts = getattr(source,"extensions", None)
         if not vrs_exts:
@@ -136,8 +167,13 @@ class VrsToFhirAlleleTranslator:
         return [self._map_ext(ext_obj) for ext_obj in vrs_exts]
 
     def _map_ext(self, ext_obj):
-        """
-        Maps a VRS extension object to a FHIR Extension instance.
+        """Maps a VRS Extension object to a FHIR Extension, including its sub-extensions.
+
+        Args:
+            ext_obj (object): A VRS Extension object containing fields such as id, name, value, description, and possibly nested extensions.
+
+        Returns:
+            Extension: A FHIR Extension object representing the input VRS extension and its nested structure.
         """
         extension = Extension(
             id=ext_obj.id,
@@ -155,26 +191,26 @@ class VrsToFhirAlleleTranslator:
         return extension
 
     def _map_name_subext(self,ext_obj):
+        """Returns a FHIR Extension for the 'name' field, if present."""
         if getattr(ext_obj, "name", None):
                 return [Extension(url=EXT_PTRS['name'],
                                 valueString=ext_obj.name)]
-
+    # TODO: need to incorpret _assign_extension_value
     def _map_value_subext(self,ext_obj):
+        """Returns a FHIR Extension for the 'value' field, if present."""
         if getattr(ext_obj, "value", None):
                 return [Extension(url=EXT_PTRS['value'],
                                 valueString=ext_obj.value)]
 
     def _map_description_subext(self, ext_obj):
-        """Creates a FHIR Extension for the description attribute of the given extension object, if present. Note here description acts as a sub-extension"""
+        """Returns a FHIR sub-extension for the 'description' field, if present."""
         if getattr(ext_obj, "description", None):
             return [Extension(url=EXT_PTRS['description'],
                                valueString=ext_obj.description)]
         return []
 
     def _map_nested_extensions(self, ext_obj):
-        """
-        Returns a list of mapped extensions from the given object if it has extensions, otherwise returns an empty list. Note this is how we work with nested extensions if they are present.
-        """
+        """Maps and returns nested extensions as FHIR sub-extensions, or an empty list if none are present."""
         if not getattr(ext_obj, "extensions", None):
             return []
         return [self._map_ext(nested) for nested in ext_obj.extensions]
@@ -205,10 +241,14 @@ class VrsToFhirAlleleTranslator:
     # Mapping Sub-Extensions
 
     def _map_location_extensions(self, source):
-        """
-        Aggregates and returns a list of location-related extension mappings from the given source object.
-        """
+        """Generates a list of FHIR `Extension` instances based on attributes from a VRS.Location object (`name`, `description`, `aliases`, `digest`, `extensions`).
 
+        Args:
+            source (object):A VRS.Location object that may contain `name`, `description`, `aliases`, `digest`, and `extensions` attributes.
+
+        Returns:
+            List: A list of FHIR `Extension` objects created from the VRS.Location attributes.
+        """
         exts = []
         exts.extend(self._map_name_sub(source, url_base=SEQ_LOC_PTRS['name']))
         exts.extend(self._map_description_sub(source, url_base=SEQ_LOC_PTRS['description']))
@@ -218,9 +258,13 @@ class VrsToFhirAlleleTranslator:
         return exts
 
     def _map_lse_extensions(self, source):
-        """
-        Aggregates and returns a list of FHIR extension mappings for a given source object using various sub-mapping methods.
-        NOTE location includes digest where literal sequence location expression doesn’t
+        """Generates a list of FHIR `Extension` instances based on attributes from a VRS.State.LiteralSequenceExpression object (`name`, `description`, `aliases`, `extensions`).
+
+        Args:
+            source (object):A VRS.State.LiteralSequenceExpression object that may contain `name`, `description`, `aliases`, and `extensions` attributes.
+
+        Returns:
+            List: A list of FHIR `Extension` objects created from the VRS.State.LiteralSequenceExpression attributes.
         """
 
         exts = []
@@ -230,11 +274,16 @@ class VrsToFhirAlleleTranslator:
         exts.extend(self.map_extensions(source=source) or [])
         return exts
 
-    def _map_refseq_extensions(self, source):
+    def _map_seqref_extensions(self, source):
+        """Generates a list of FHIR `Extension` instances based on attributes from a VRS.Location.sequenceReference object (`id`, `name`, `description`, `aliases`, `extensions`).
+
+        Args:
+            source (object):A VRS.Location.sequenceReference object that may contain `id`, `name`, `description`, `aliases`, `extensions` attributes.
+
+        Returns:
+            List: A list of FHIR `Extension` objects created from the VRS.Location.sequenceReference attributes.
         """
-        Aggregates and returns a list of RefSeq-related FHIR extensions mapped from the source object.
-        NOTE location includes digest where literal sequence location expression doesn’t
-        """
+
         exts = []
         exts.extend(self._map_id_sub(source, url_base=SEQ_REF_PTRS['id']))
         exts.extend(self._map_name_sub(source, url_base=SEQ_REF_PTRS['name']))
@@ -244,10 +293,7 @@ class VrsToFhirAlleleTranslator:
         return exts
 
     def _map_id_sub(self, source, url_base):
-        """
-        Creates a FHIR Extension for the 'id' attribute if present in the source object.
-        
-        """
+        """Returns a FHIR `Extension` for the `id` attribute if present in the source object."""
         if getattr(source, "id", None):
             return [Extension(
                 url=url_base,
@@ -256,10 +302,7 @@ class VrsToFhirAlleleTranslator:
         return []
 
     def _map_name_sub(self, source, url_base):
-        """
-        Creates a FHIR Extension for the 'name' attribute if present in the source object.
-        
-        """
+        """Returns a FHIR `Extension` for the `name` attribute if present in the source object."""
         if getattr(source, "name", None):
             return [Extension(
                 url=url_base,
@@ -268,11 +311,7 @@ class VrsToFhirAlleleTranslator:
         return []
 
     def _map_description_sub(self, source, url_base):
-        """
-        Map the 'description' attribute from the source object to a FHIR Extension if present.
-        For this particular extension we are hard coding the url because that is required by fhir. This URL is made up. 
-        """
-
+        """Returns a FHIR `Extension` for the `description` attribute if present in the source object."""
         if getattr(source, "description", None):
             return [Extension(
                 url=url_base,
@@ -281,9 +320,7 @@ class VrsToFhirAlleleTranslator:
         return []
 
     def _map_aliases_sub(self, source, url_base):
-        """
-        Creates a list of FHIR Extension objects for each alias found in the source object.
-        """
+        """Returns a FHIR `Extension` for the `aliases` attribute if present in the source object."""
         aliases = getattr(source, "aliases", []) or []
         return [
             Extension(
@@ -294,9 +331,7 @@ class VrsToFhirAlleleTranslator:
         ]
 
     def _map_digest_sub(self, source, url_base):
-        """
-        Creates a FHIR Extension for the 'digest' attribute of the source object if it exists.
-        """
+        """Returns a FHIR `Extension` for the `digest` attribute if present in the source object."""
         if getattr(source, "digest", None):
             return [Extension(
                 url=url_base,
@@ -305,12 +340,16 @@ class VrsToFhirAlleleTranslator:
         return []
 # --------------------------------------------------------------------------------------------
     # Mapping Literal Sequence Expression
-
     def map_lit_to_rep_lit_expr(self,ao):
+        """Maps a VRS Allele State to a FHIR MolecularDefinitionRepresentation with a literal sequence expression 
+
+        Args:
+            ao (Object): A VRS Allele object containing literal sequence expression. 
+
+        Returns:
+            Object: A FHIR representation of the allele with focus, code, and literal fields populated.
         """
-        Maps an allele object to a MolecularDefinitionRepresentation with focus, code, and literal fields populated.
-        # NOTE: focus_value this is hard coded because its required by AlleleProfile
-        """
+        # NOTE: this is hard coded because its required in the FHIR Allele Schema.
         focus_value = CodeableConcept(
             coding=[
                 Coding(
@@ -329,11 +368,12 @@ class VrsToFhirAlleleTranslator:
 
     def _map_coding(self, exp):
         """
-        Maps a VRS expression to a FHIR Coding object using its syntax, value, and syntax_version attributes.
-        NOTE: mappings look like this: 
-            vrs.syntax -> rep.code.cc.coding.display
-            vrs.value -> rep.code.cc.coding.code
-            vrs.syntax_version -> rep.code.cc.coding.version
+        Maps a VRS expression to a FHIR Coding object using its syntax, value, and syntax_version.
+
+        Maps:
+            - vrs.syntax         -> Coding.display  
+            - vrs.value          -> Coding.code  
+            - vrs.syntax_version -> Coding.version
         """
 
         return Coding(
@@ -344,8 +384,12 @@ class VrsToFhirAlleleTranslator:
 
     def _map_codeable_concept(self,ao):
         """
-        Maps the 'expressions' attribute of the input object to a list of FHIR CodeableConcept instances.
-        NOTE: we are using extenion method from above as well as the map_coding method 
+        Maps the `expressions` attribute of the input object to a list of FHIR CodeableConcept instances.
+
+        Each expression is converted to a CodeableConcept using:
+          - vrs.expressions.id -> CodeableConcept.id
+          - map_extensions(exp) -> CodeableConcept.extension
+          - _map_coding(exp) -> CodeableConcept.coding
         """
         expressions = getattr(ao, "expressions", None)
         if not expressions:
@@ -364,8 +408,7 @@ class VrsToFhirAlleleTranslator:
 
     def _map_representation_extensions(self,ao):
         """
-        Maps representation extensions from the given allele object (ao) using the _map_lse_extensions helper.
-        NOTE: extension here is using one of the custom extension methods. 
+        Maps representation extensions from the vrs allele state using a custom extension method (_map_lse_extensions).
         """
 
         return self._map_lse_extensions(
@@ -373,12 +416,14 @@ class VrsToFhirAlleleTranslator:
 
     def _map_literal_representation(self,ao):
         """
-        Maps a VRS Allele Object's literal sequence expression (LSE) state to a MolecularDefinitionRepresentationLiteral instance.
-        NOTE: extension here is using one of the custom extension methods. 
-            vrs.lse.id -> moldefreplit.id
-            This extension the name goes to url adn the value of the name goes to the value[x] (this is the same for the other attributes)
-            vrs.lse.sequence -> moldefreplit.value
+        Maps a VRS Allele object's literal sequence expression (LSE) to a FHIR MolecularDefinitionRepresentationLiteral.
+
+        Maps:
+            - vrs.state.id -> id,
+            - vrs.state.sequence -> value
+            -  Additional fields → extension (via custom extension mapping) 
         """
+
         state = getattr(ao, "state", None)
 
         id_ = getattr(state, "id", None)
@@ -394,13 +439,13 @@ class VrsToFhirAlleleTranslator:
     # Mapping Location
     def map_location(self,ao):
         """
-        Maps an vrs location to a MolecularDefinitionLocation FHIR resource.
-        NOTE:
-            location.id maps to FHIR location id
-            extension: we are using a custom extension for location
-            sequenceLocation: this is a mandatory field, and we use either use the sequenceReference or Sequence in location to populate this field.
+        Maps a VRS location to a FHIR MolecularDefinitionLocation resource.
+
+        Notes:
+          - `location.id` → MolecularDefinitionLocation.id
+          - `extension` is populated using a custom mapping of location extensions
+          - `sequenceLocation` is mandatory and populated from `sequenceReference` or `sequence` in the location
         """
-        """"""
         return MolecularDefinitionLocation(
             id = ao.location.id,
             extension = self._map_location_extensions(source=ao.location),
@@ -408,12 +453,10 @@ class VrsToFhirAlleleTranslator:
 
     def _map_coordinate_interval(self,ao):
         """
-        Maps an vrs allele start and end to FHIR MolecularDefinitionLocationSequenceLocationCoordinateInterval.
-        NOTE: 
-            vrs only uses 0-based interbase	indexing so this is hard coded. 
+        Maps a VRS allele's start and end coordinates to a FHIR CoordinateInterval using 0-based interbase indexing.
         """
-
         start, end = Quantity(value=int(ao.location.start)),Quantity(value=int(ao.location.end))
+        #NOTE: This is hard coded
         coord_system = CodeableConcept(
             coding=[Coding(
                 system="http://loinc.org",
@@ -432,8 +475,17 @@ class VrsToFhirAlleleTranslator:
         )
 
     def _map_sequence_location(self, ao):
-        """
-        Maps a VRS Allele Object's location to a MolecularDefinitionLocationSequenceLocation, handling sequence context resolution.
+        """Maps a VRS Allele object's location to a FHIR MolecularDefinitionLocationSequenceLocation, using either `sequence` or `sequenceReference` to set the sequence context.
+
+
+        Args:
+            ao (object): A VRS Allele object containing a `location` with either `sequence` or `sequenceReference`.
+
+        Raises:
+            ValueError: If neither `sequence` nor `sequenceReference` is present in the location.
+
+        Returns:
+            MolecularDefinitionLocationSequenceLocation: A FHIR object containing sequence context and coordinate interval..
         """
         if getattr(ao.location, "sequence", None):
             sequence_context = self._reference_location_sequence()
@@ -448,12 +500,17 @@ class VrsToFhirAlleleTranslator:
         )
 
     def map_contained(self, ao):
-        """
-        Maps the contained attribute of an allele object to the appropriate FHIR location representation based on its sequence or sequenceReference.
+        """Constructs and returns a list of FHIR SequenceProfile resources to be embedded in the `contained` section of an AlleleProfile, based on the VRS Allele.locaiotion.seequence and Allele.location.sequenceReference.
+
+        Args:
+            ao (object): A VRS allele object expected to contain a `location` attribute with either a `sequence` (string) or a `sequenceReference`.
+
+        Returns:
+            list:  A list of FHIR SequenceProfile resources.
         """
         contained = []
 
-        if getattr(ao.location, "sequence", ""):
+        if getattr(ao.location, "sequence", ""): #TODO: Double check this, this might need to be None instead of ""
             seq = self.build_location_sequence(ao)
             if seq:
                 contained.append(seq)
@@ -492,10 +549,17 @@ class VrsToFhirAlleleTranslator:
         return refseq_id
 
     def build_location_sequence(self, ao):
-        """
-        Builds a SequenceProfile object when location.sequence is present. NOTE: moleculeType is a requirement in SequenceProfile so we need to capture this and we do so by using 
-        _translate_sequence_id. 
-        TODO: need to decide if we want system present, currently there is nothing there. 
+        """Constructs a FHIR SequenceProfile resource when `location.sequence` is present on the allele object.
+
+        Notes:
+        - `moleculeType` is a required field and is derived from the Refget accession.
+        - The `system` field in the coding block is currently hardcoded to the FHIR sequence-type URL.
+        
+        Args:
+            ao (object): An vrs allele object containing a `location.sequence` attribute.
+
+        Returns:
+            FhirSequence: A FHIR SequenceProfile resource built from the sequence data.
         """
         sequence_id = "vrs-location-sequence"
         sequence_value = self._extract_str(getattr(ao.location, "sequence", ""))
@@ -518,11 +582,14 @@ class VrsToFhirAlleleTranslator:
         )
 
     def build_location_reference_sequence(self, ao):
-        """
-        Builds a SequenceProfile object when location.sequenceReference is present. Again we need to create a SequenceProfile and place this in the contained in the ALleleProfile that we are translating. 
-        """
-        #TODO: refactor this code to make it much cleaner.
+        """Constructs a FHIR SequenceProfile resource when `location.sequenceReference` is present on the allele object.
 
+        Args:
+            ao (object): An allele object containing a `location.sequenceReference`.
+
+        Returns:
+            FhirSequence: A FHIR SequenceProfile resource built from the sequenceReference data.
+        """
         source = ao.location.sequenceReference
         seqref_id = "vrs-location-sequenceReference"
         seqref_refgetAccession = source.refgetAccession
@@ -530,15 +597,12 @@ class VrsToFhirAlleleTranslator:
         seqref_residueAlphabet = getattr(source, "residueAlphabet", None)
         seqref_sequence = self._extract_str(getattr(source, "sequence", None))
         seqref_moleculeType = getattr(source, "moleculeType", None)
+        #NOTE: Circular is currently not represnted when we are going from vrs to fhir. 
 
-        #TODO: don't know how to represent circular
-        #NOTE: Here is the problem that we are running into. seqref_sequence and seqref_residueAlphabet are not required fields but seqref_refgetAccession is.
-        # if we are going to represent seqref_residueAlphabet then we need seqref_sequence because we are placing seqref_residueAlphabet in the MolDefRepLit and this requires value and thats where we place it refget_sequence.
-        # So if sequence isn't present then we dont represnt it. but if it is present and seqref_residueAlphabet isn't present we can extract it from seqref_refgetAccession.
-
-        # "na" = nucleic acid, This includes both DNA and RNA
-        # "aa" = amino acid, This means protein sequences
-
+        # NOTE: While only `refgetAccession` is required, if `sequence` is provided and we want to include `residueAlphabet`, 
+        # we must include both — since `residueAlphabet` is tied to the literal representation, which requires a sequence value. 
+        # If `residueAlphabet` is missing but `sequence` is present, we can infer it from `refgetAccession`.
+        
         rep_sequence = None
         if seqref_sequence:
             if seqref_residueAlphabet is None:
@@ -579,15 +643,17 @@ class VrsToFhirAlleleTranslator:
         return FhirSequence(
             id=seqref_id,
             moleculeType=molecule_type,
-            extension=self._map_refseq_extensions(source=source),
+            extension=self._map_seqref_extensions(source=source),
             representation=[representation_sequence]
         )
 
     def _extract_seqref_moleculeType(self,ao):
+        """Infers the molecule type by translating the sequence ID and detecting its sequence type."""
         refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
         return detect_sequence_type(refget_accession)
 
     def _infer_residue_alphabet(self, molecule_type):
+        """Maps the molecule type to the corresponding residue alphabet code ('na' or 'aa')."""
         residue_alphabet = {
             'DNA': 'na',
             'RNA': 'na',
