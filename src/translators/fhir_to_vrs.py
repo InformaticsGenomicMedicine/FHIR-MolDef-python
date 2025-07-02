@@ -8,7 +8,6 @@ from ga4gh.vrs.models import (
     sequenceString,
 )
 
-from api.seqrepo import SeqRepoAPI
 from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import literal_sequence_expression_identifiers as LSE
@@ -17,10 +16,6 @@ from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_
 
 
 class FhirToVrsAlleleTranslator:
-
-    def __init__(self):
-        self.seqrepo_api = SeqRepoAPI()
-        self.dp = self.seqrepo_api.seqrepo_dataproxy
 
     def translate_allele_to_vrs(self,ao):
         """Converts a FHIR Allele Profile object into a fully populated VRS 2.0 Allele object.
@@ -379,7 +374,7 @@ class FhirToVrsAlleleTranslator:
 
             for ext in getattr(loc, "extension", []):
                 url = getattr(ext, "url", "") or ""
-                val = getattr(ext, "valueString", None)
+                val = self._get_extension_value(ext)
 
                 if SEQ_LOC["name"] in url:
                     result["name"] = val
@@ -428,7 +423,7 @@ class FhirToVrsAlleleTranslator:
 
             for ext in getattr(literal, "extension", []):
                 url = getattr(ext, "url", "") or ""
-                val = getattr(ext, "valueString", None)
+                val = self._get_extension_value(ext)
 
                 if LSE["name"] in url:
                     result["name"] = val
@@ -467,7 +462,7 @@ class FhirToVrsAlleleTranslator:
 
         for ext in getattr(ref_seq, "extension", []):
             url = getattr(ext, "url", "") or ""
-            val = getattr(ext, "valueString", None)
+            val = self._get_extension_value(ext)
 
             if SEQ_REF['id'] in url:
                 result['id'] = val
@@ -506,7 +501,7 @@ class FhirToVrsAlleleTranslator:
 
             for inner_ext in inner_extensions:
                 inner_url = getattr(inner_ext, "url", "") or ""
-                inner_val = getattr(inner_ext, "valueString", None)
+                inner_val = self._get_extension_value(inner_ext)
 
                 if EXT_PTRS["name"] in inner_url:
                     result["name"] = inner_val
@@ -524,5 +519,24 @@ class FhirToVrsAlleleTranslator:
 
         return results
 
+    def _get_extension_value(self, ext):
+        """Extracts a supported value from a FHIR Extension.
+
+        Checks for the following extension value types, in order:
+        - valueString (string)
+        - valueBoolean (boolean)
+        - valueDecimal (decimal)
+
+        Args:
+            ext (obj): A FHIR Extension object potentially containing one of the supported value fields.
+
+        Returns:
+            Union[str, bool, float, None]: The first available value found, or None if none are set.
+        """
+        for attr in ["valueString", "valueBoolean", "valueDecimal"]:
+            val = getattr(ext, attr, None)
+            if val is not None:
+                return val
+        return None
 
 
