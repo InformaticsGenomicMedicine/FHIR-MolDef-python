@@ -16,7 +16,11 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.allele_utils import detect_sequence_type, is_valid_vrs_allele
+from translators.allele_utils import (
+    detect_sequence_type,
+    is_valid_vrs_allele,
+    translate_sequence_id
+)
 from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import (
@@ -81,7 +85,7 @@ class VrsToFhirAlleleTranslator:
             CodeableConcept: A FHIR-compliant CodeableConcept indicating the sequence type (e.g., DNA, RNA, or AA) based on the detected molecular type.
         """
 
-        refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
+        refget_accession = translate_sequence_id(dp=self.dp, expression=ao)
 
         sequence_type = detect_sequence_type(refget_accession)
 
@@ -524,32 +528,6 @@ class VrsToFhirAlleleTranslator:
 
         return contained or None
 
-    #NOTE:This is the same code as what is put in allele_translator.py
-    def _translate_sequence_id(self, dp, expression):
-        """Translate a sequence ID using SeqRepo and return the RefSeq ID.
-
-        Args:
-            dp (SeqRepo DataProxy): The data proxy used to translate the sequence.
-            sequence_id (str): The sequence ID to be translated.
-
-        Raises:
-            ValueError: If translation fails or if format is unexpected.
-
-        Returns:
-            str: A valid RefSeq identifier (e.g., NM_000123.3).
-        """
-        sequence = f"ga4gh:{expression.location.get_refget_accession()}"
-        translated_ids = dp.translate_sequence_identifier(sequence, namespace="refseq")
-        if not translated_ids:
-            raise ValueError(f"No RefSeq ID found for sequence ID '{sequence}'.")
-
-        translated_id = translated_ids[0]
-        if not translated_id.startswith("refseq:"):
-            raise ValueError(f"Unexpected ID format in '{translated_id}'")
-
-        _, refseq_id = translated_id.split(":")
-        return refseq_id
-
     def build_location_sequence(self, ao):
         """Constructs a FHIR SequenceProfile resource when `location.sequence` is present on the allele object.
 
@@ -568,7 +546,7 @@ class VrsToFhirAlleleTranslator:
 
         rep_literal = MolecularDefinitionRepresentationLiteral(value=sequence_value)
         rep_sequence = MolecularDefinitionRepresentation(literal=rep_literal)
-        refgetAccession = self._translate_sequence_id(dp= self.dp, expression = ao)
+        refgetAccession = translate_sequence_id(dp= self.dp, expression = ao)
         sequence_type = detect_sequence_type(refgetAccession)
 
         molecule_type = CodeableConcept(
@@ -651,7 +629,7 @@ class VrsToFhirAlleleTranslator:
 
     def _extract_seqref_moleculeType(self,ao):
         """Infers the molecule type by translating the sequence ID and detecting its sequence type."""
-        refget_accession = self._translate_sequence_id(dp=self.dp, expression=ao)
+        refget_accession = translate_sequence_id(dp=self.dp, expression=ao)
         return detect_sequence_type(refget_accession)
 
     def _infer_residue_alphabet(self, molecule_type):

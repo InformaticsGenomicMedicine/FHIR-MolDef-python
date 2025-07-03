@@ -31,6 +31,7 @@ from translators.allele_utils import (
     is_valid_vrs_allele,
     validate_accession,
     validate_indexing,
+    translate_sequence_id
 )
 from translators.sequence_expression_translator import SequenceExpressionTranslator
 
@@ -168,31 +169,6 @@ class VrsFhirAlleleTranslator:
                         "Missing `literal.value` for the `allele-state` representation."
                     )
 
-    def _translate_sequence_id(self, dp, expression):
-        """Translate a sequence ID using SeqRepo and return the RefSeq ID.
-
-        Args:
-            dp (SeqRepo DataProxy): The data proxy used to translate the sequence.
-            sequence_id (str): The sequence ID to be translated.
-
-        Raises:
-            ValueError: If translation fails or if format is unexpected.
-
-        Returns:
-            str: A valid RefSeq identifier (e.g., NM_000123.3).
-        """
-        sequence = f"ga4gh:{expression.location.get_refget_accession()}"
-        translated_ids = dp.translate_sequence_identifier(sequence, namespace="refseq")
-        if not translated_ids:
-            raise ValueError(f"No RefSeq ID found for sequence ID '{sequence}'.")
-
-        translated_id = translated_ids[0]
-        if not translated_id.startswith("refseq:"):
-            raise ValueError(f"Unexpected ID format in '{translated_id}'")
-
-        _, refseq_id = translated_id.split(":")
-        return refseq_id
-
     def _extract_vrs_values(self, expression, dp):
         """Extract GA4GH ID, RefSeq ID, start, end, and sequence from a VRS Allele.
 
@@ -205,7 +181,7 @@ class VrsFhirAlleleTranslator:
         """
         is_valid_vrs_allele(expression)
 
-        refgetAccession = self._translate_sequence_id(dp, expression)
+        refgetAccession = translate_sequence_id(dp, expression)
         start_pos = expression.location.start
         end_pos = expression.location.end
         alt_allele = expression.state.sequence.model_dump()
