@@ -526,6 +526,7 @@ class FhirToVrsAlleleTranslator:
         - valueString (string)
         - valueBoolean (boolean)
         - valueDecimal (decimal)
+        - valueInteger (integer)
 
         Args:
             ext (obj): A FHIR Extension object potentially containing one of the supported value fields.
@@ -533,7 +534,7 @@ class FhirToVrsAlleleTranslator:
         Returns:
             Union[str, bool, float, None]: The first available value found, or None if none are set.
         """
-        for attr in ["valueString", "valueBoolean", "valueDecimal"]:
+        for attr in ["valueString", "valueBoolean", "valueDecimal", "valueInteger"]:
             val = getattr(ext, attr, None)
             if val is not None:
                 return val

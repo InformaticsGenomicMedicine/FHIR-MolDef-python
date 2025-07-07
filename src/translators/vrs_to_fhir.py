@@ -231,7 +231,8 @@ class VrsToFhirAlleleTranslator:
         type_map = {
             str: "valueString",
             bool: "valueBoolean",
-            float: "valueDecimal"
+            float: "valueDecimal",
+            int: "valueInteger"
         }
 
         for expected_type, attr_name in type_map.items():
