@@ -259,7 +259,7 @@ class VrsToFhirAlleleTranslator:
         exts.extend(self._map_aliases_sub(source, url_base=SEQ_LOC_PTRS['aliases']))
         exts.extend(self._map_digest_sub(source, url_base=SEQ_LOC_PTRS['digest']))
         exts.extend(self.map_extensions(source=source) or [])
-        return exts
+        return exts or None
 
     def _map_lse_extensions(self, source):
         """Generates a list of FHIR `Extension` instances based on attributes from a VRS.State.LiteralSequenceExpression object (`name`, `description`, `aliases`, `extensions`).
@@ -276,7 +276,7 @@ class VrsToFhirAlleleTranslator:
         exts.extend(self._map_description_sub(source, url_base=LSE_PTRS['description']))
         exts.extend(self._map_aliases_sub(source, url_base=LSE_PTRS['aliases']))
         exts.extend(self.map_extensions(source=source) or [])
-        return exts
+        return exts or None
 
     def _map_seqref_extensions(self, source):
         """Generates a list of FHIR `Extension` instances based on attributes from a VRS.Location.sequenceReference object (`id`, `name`, `description`, `aliases`, `extensions`).
@@ -294,7 +294,7 @@ class VrsToFhirAlleleTranslator:
         exts.extend(self._map_description_sub(source, url_base=SEQ_REF_PTRS['description']))
         exts.extend(self._map_aliases_sub(source, url_base=SEQ_REF_PTRS['aliases']))
         exts.extend(self.map_extensions(source=source) or [])
-        return exts
+        return exts or None
 
     def _map_id_sub(self, source, url_base):
         """Returns a FHIR `Extension` for the `id` attribute if present in the source object."""
