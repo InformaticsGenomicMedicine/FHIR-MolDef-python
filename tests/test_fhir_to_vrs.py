@@ -1,10 +1,9 @@
 import pytest
-
-from translators.fhir_to_vrs import FhirToVrsAlleleTranslator
 from ga4gh.vrs.models import Allele as VrsAllele
-from profiles.allele import Allele as FhirAllele
 
-from tests.example_data import vrs_synthetic_data, fhir_synthetic_data 
+from profiles.allele import Allele as FhirAllele
+from tests.example_test_data import fhir_synthetic_data, vrs_synthetic_data
+from translators.fhir_to_vrs import FhirToVrsAlleleTranslator
 
 
 @pytest.fixture
@@ -25,7 +24,7 @@ def test_full_allele_translator_returns_expected(fhir_allele_instance, fhir_to, 
     assert vrs_obj.model_dump(exclude_none=True) == vrs_allele_instance.model_dump(exclude_none=True)
 
 def test_missing_contained_sequences_raises(fhir_to, fhir_allele_instance):
-    fhir_allele_instance.contained = [] 
+    fhir_allele_instance.contained = []
 
     with pytest.raises(ValueError, match="Both 'vrs-location-sequence' and 'vrs-location-sequenceReference' are missing."):
         fhir_to.translate_allele_to_vrs(fhir_allele_instance)

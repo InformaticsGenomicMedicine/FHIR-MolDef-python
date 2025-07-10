@@ -1,4 +1,4 @@
-#source: https://github.com/cancervariants/metakb/blob/staging/server/tests/conftest.py#L548 
+#source: https://github.com/cancervariants/metakb/blob/staging/server/tests/conftest.py#L548
 vrs_synthetic_data = {
     "id": "ga4gh:VA.j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L",
     "type": "Allele",
@@ -13,8 +13,8 @@ vrs_synthetic_data = {
             "syntax_version": "21.0",
             "extensions": [
                 {
-                    "id": "sub-expression:1", 
-                    "name": "expression.name.1", 
+                    "id": "sub-expression:1",
+                    "name": "expression.name.1",
                     "value": "expression.value.1",
                     "description": "expression.description.1",
                     "extensions": [

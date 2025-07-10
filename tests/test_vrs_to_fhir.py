@@ -1,10 +1,9 @@
 import pytest
-
-from translators.vrs_to_fhir import VrsToFhirAlleleTranslator
 from ga4gh.vrs.models import Allele as VrsAllele
-from profiles.allele import Allele as FhirAllele
 
-from tests.example_data import vrs_synthetic_data, fhir_synthetic_data 
+from profiles.allele import Allele as FhirAllele
+from tests.example_test_data import fhir_synthetic_data, vrs_synthetic_data
+from translators.vrs_to_fhir import VrsToFhirAlleleTranslator
 
 
 @pytest.fixture
@@ -34,7 +33,7 @@ def test_translate_allele_with_missing_optional_fields(vrs_to,vrs_allele_instanc
     vrs_allele_instance.id = None
     vrs_allele_instance.name = None
     vrs_allele_instance.digest = None
-    vrs_allele_instance.aliases = [] 
+    vrs_allele_instance.aliases = []
 
     fhir_obj = vrs_to.translate_allele_to_fhir(vrs_allele_instance)
     assert fhir_obj.identifier is None

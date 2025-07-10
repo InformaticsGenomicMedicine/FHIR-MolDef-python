@@ -7,7 +7,6 @@ from exceptions.fhir import (
     MissingFocusCodingError,
     RepresentationCardinalityError,
 )
-
 from profiles.allele import Allele as FhirAllele
 
 
