@@ -83,23 +83,25 @@ class FhirToVrsAlleleTranslator:
             list[Expression]: A list containing a single VRS `Expression` object with
             extracted syntax, value, version, and optional extensions.
         """
+        
         if not ao.representation[0].code:
             return None
+        
+        expression_list = []
+        for code in ao.representation[0].code:
+            extensions = self._extract_nested_extensions(code.extension) if code.extension else None
+            for coding in code.coding:
+                exp = Expression(
+                    id = code.id,
+                    syntax=coding.display,
+                    value=coding.code,
+                    syntax_version=coding.version,
+                    extensions = extensions
+                    )
+                expression_list.append(exp)
 
-        code = ao.representation[0].code[0]
-        coding = code.coding[0]
-        extensions = self._extract_nested_extensions(code.extension)
-
-        return [
-            Expression(
-                id=code.id,
-                syntax=coding.display,
-                value=coding.code,
-                syntax_version=coding.version,
-                extensions=extensions
-            )
-        ]
-
+        return expression_list
+    
 # ========== Sequence Location Mapping ==========
 
     def _map_sequence_location(self,ao):
