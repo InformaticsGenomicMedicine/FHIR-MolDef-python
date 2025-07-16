@@ -1,7 +1,7 @@
 [project]
 name = "FHIR.MolDef" 
 version = "0.2.0" 
-description = "This project provides a Python-based implementation of the HL7 FHIR Molecular Definition standard."
+description = "Python implementation of the HL7 FHIR Molecular Definition standard with bidirectional translation between VRS and FHIR Allele Profiles."
 readme = "README.md"
 authors = [
     {name = "Robert R. Freimuth"},
@@ -9,7 +9,7 @@ authors = [
 ]
 
 license = {file = "LICENSE"}
-# Keywords for your project, these are tags that help find your the project. 
+# Keywords for your project. These are tags that help users find the project.
 keywords = [
     "FHIR",
     "MolecularDefinition",
@@ -56,7 +56,7 @@ where = ["src"]
 
 [tool.ruff]
 src = ["src"]
-exclude = ["notebooks","data","edits"]
+exclude = ["notebooks", "data", "edits"]
 
 [tool.ruff.lint]
 
