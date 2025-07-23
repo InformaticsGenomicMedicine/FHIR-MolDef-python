@@ -1,5 +1,5 @@
 [project]
-name = "FHIR.MolDef" 
+name = "fhir.moldef" 
 version = "0.2.0" 
 description = "Python implementation of the HL7 FHIR Molecular Definition standard with bidirectional translation between VRS and FHIR Allele Profiles."
 readme = "README.md"
