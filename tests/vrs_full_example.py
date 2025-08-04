@@ -3,10 +3,9 @@
 {
     "id": "ga4gh:VA.nmp-bzYpO00NYIqr3CaVF0ZH2ZpSj1ly",
     "type": "Allele",
-    "name": "BRAF V600E",
+    "name": "V600E",
     "description": "BRAF V600E variant",
     "aliases": ["RS113488022", "VAL600GLU", "V640E", "VAL640GLU"],
-    #  'extensions': None,
     "digest": "nmp-bzYpO00NYIqr3CaVF0ZH2ZpSj1ly",
     "expressions": [
         {
@@ -20,17 +19,15 @@
         "id": "ga4gh:SL.hVna-JOV5bBTGdXexL--IQm135MG3bGT",
         "type": "SequenceLocation",
         "name": "NC_000007.13",
-        "description": "NC_000007.13 locaiton description",
+        "description": "NC_000007.13 location description",
         "aliases": ["Ensembl:ENSP00000288602.6"],
-        #   'extensions': None,
         "digest": "hVna-JOV5bBTGdXexL--IQm135MG3bGT",
         "sequenceReference": {
             "id": "sequence_reference.id",
             "type": "SequenceReference",
             "name": "sequence_reference.name",
             "description": "sequence_reference.description",
-            "aliases": ["sequence_reference.aliase"],
-            #    'extensions': None,
+            "aliases": ["sequence_reference.alias"],
             "refgetAccession": "SQ.IW78mgV5Cqf6M24hy52hPjyyo5tCCd86",
             "residueAlphabet": "na",
             "circular": False,
@@ -47,7 +44,6 @@
         "name": "state.name",
         "description": "My description for state",
         "aliases": ["my_sequence"],
-        #   'extensions': None,
         "sequence": "T",
     },
 }
@@ -58,10 +54,9 @@
 {
     "id": "ga4gh:VA.aWCHp3b-SdVM5GsaWVL8ZwhYUkMFXpC4",
     "type": "Allele",
-    "name": "BRAF V600E",
+    "name": "V600E",
     "description": "BRAF V600E variant",
     "aliases": ["RS113488022", "VAL600GLU", "V640E", "VAL640GLU"],
-    #  'extensions': None,
     "digest": "aWCHp3b-SdVM5GsaWVL8ZwhYUkMFXpC4",
     "expressions": [
         {
@@ -75,17 +70,15 @@
         "id": "ga4gh:SL.IseAEMqzS3_flHuwYrh7o5P6cA7fE-Z5",
         "type": "SequenceLocation",
         "name": "NM_004333.4",
-        "description": "NM_004333.4 locaiton description",
+        "description": "NM_004333.4 location description",
         "aliases": ["Ensembl:ENSP00000288602.6"],
-        #   'extensions': None,
         "digest": "IseAEMqzS3_flHuwYrh7o5P6cA7fE-Z5",
         "sequenceReference": {
             "id": "sequence_reference.id",
             "type": "SequenceReference",
             "name": "sequence_reference.name",
             "description": "sequence_reference.description",
-            "aliases": ["sequence_reference.aliase"],
-            #    'extensions': None,
+            "aliases": ["sequence_reference.alias"],
             "refgetAccession": "SQ.jkiXxxRjK7uTMiW2KQFjpgvF3VQi-HhX",
             "residueAlphabet": "na",
             "circular": False,
@@ -102,7 +95,6 @@
         "name": "state.name",
         "description": "My description for state",
         "aliases": ["my_sequence"],
-        "extensions": None,
         "sequence": "A",
     },
 }
@@ -110,7 +102,56 @@
 
 # Protein example
 # NP_004324.2:p.Val600Glu
+{
+    "id": "ga4gh:VA.j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L",
+    "type": "Allele",
+    "name": "V600E",
+    "description": "BRAF V600E variant",
+    "aliases": ["VAL600GLU", "V640E", "VAL640GLU"],
+    "digest": "j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L",
+    "expressions": [
+        {
+            "id": "expression:1",
+            "syntax": "hgvs.p",
+            "value": "NP_004324.2:p.Val600Glu",
+            "syntax_version": "21.0",
+        }
+    ],
+    "location": {
+        "id": "ga4gh:SL.t-3DrWALhgLdXHsupI-e-M00aL3HgK3y",
+        "name": "NP_004324.2",
+        "description": "My location description",
+        "digest": "t-3DrWALhgLdXHsupI-e-M00aL3HgK3y",
+        "type": "SequenceLocation",
+        "sequenceReference": {
+            "id": "sequence_reference.id",
+            "name": "sequence_reference.name",
+            "aliases": ["sequence_reference.alias"],
+            "description": "sequence_reference.description",
+            "refgetAccession": "SQ.cQvw4UsHHRRlogxbWCB8W-mKD4AraM9y",
+            "type": "SequenceReference",
+            "residueAlphabet": "aa",
+            "moleculeType": "protein",
+            "circular": False,
+            "sequence": "V",
+        },
+        "aliases": ["Ensembl:ENSP00000288602.6"],
+        "start": 599,
+        "end": 600,
+        "sequence": "V",
+    },
+    "state": {
+        "id": "state:1",
+        "name": "state",
+        "description": "My description for state",
+        "sequence": "E",
+        "type": "LiteralSequenceExpression",
+        "aliases": ["my_sequence"],
+    },
+}
 
+
+# DONT MODIFY BELOW
 {
     "id": "ga4gh:VA.j4XnsLZcdzDIYa5pvvXM7t1wn9OITr0L",
     "type": "Allele",
@@ -146,7 +187,7 @@
         "sequenceReference": {
             "id": "sequence_reference.id",
             "name": "sequence_reference.name",
-            "aliases": ["sequence_reference.aliase"],
+            "aliases": ["sequence_reference.alias"],
             "description": "sequence_reference.description",
             "refgetAccession": "SQ.cQvw4UsHHRRlogxbWCB8W-mKD4AraM9y",
             "type": "SequenceReference",
