@@ -43,7 +43,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "pytest==7.4.4",
-    "deepdiff==8.1.1",
+    "deepdiff==8.6.1",
     "ruff==0.8.3"
 ]
 
