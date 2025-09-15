@@ -73,16 +73,13 @@ class AlleleToFhirTranslator:
         if not dry_run:
             with output_path.open("w", encoding="utf-8") as f:
                 json.dump(translations, f, indent=2, ensure_ascii=False)
-            with error_path.open("w", encoding="utf-8") as f:
-                json.dump(errors, f, indent=2, ensure_ascii=False)
+            if errors:
+                with error_path.open("w", encoding="utf-8") as f:
+                #If errors is emplty then dont write out the file
+                    json.dump(errors, f, indent=2, ensure_ascii=False)
 
         stats = {"Total Expressions": len(df), "Translatable": len(translations), "Untranslatable": len(errors)}
         return output_path, error_path, stats
-
-
-    # def _extract_expression_column(df, column):
-    #      if column in df.columns:
-    #           return column
 
     # def _dump_vrs_model(vo):
     #     if hasattr(vo, "model_dump"):
@@ -91,7 +88,7 @@ class AlleleToFhirTranslator:
 
     def main(self,argv=None):
         parser = argparse.ArgumentParser(
-            prog="allele-translator",
+            prog="allele-to-fhir-translator",
             description="Load a dataset and translate allele expression to FHIR"
         )
 
@@ -99,6 +96,9 @@ class AlleleToFhirTranslator:
         parser.add_argument("--out", default="all_alleles.json", help="Output file for translations (default: all_alleles.json)")
         parser.add_argument("--errors", default="allele_errors.json", help="Output file for errors (default: allele_errors.json)")
         parser.add_argument("--column", default="expression", help="Name of the column containing expressions (default: expression)")
+        #TODO: possible add 
+        # parser.add_argument("--format",choices= ["json"], default= "json" , help="Output file format (default: .json)")
+        #NOTE: If we are going to support both the csv output and json output then will need to make edits above. 
         parser.add_argument("--verbose", action="store_true",help="Enable detailed logging")
         parser.add_argument("--dry-run", action="store_true",help="Run without writing output files")
         parser.add_argument("--overwrite", action="store_true", help="Allow overwriting existing files")
