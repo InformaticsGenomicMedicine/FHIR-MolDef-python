@@ -43,7 +43,7 @@ class AlleleToFhirTranslator:
 
         return df
 
-    def translate_file(self,input_file, output_file="all_alleles.json", error_file="allele_errors.json", column="expression",dry_run=False):
+    def translate_file(self,input_file, output_file="all_alleles.jsonl", error_file="allele_errors.jsonl", column="expression",dry_run=False):
 
         df = self.load_data(input_file)
 
@@ -72,11 +72,12 @@ class AlleleToFhirTranslator:
 
         if not dry_run:
             with output_path.open("w", encoding="utf-8") as f:
-                json.dump(translations, f, indent=2, ensure_ascii=False)
+                for record in translations:
+                    f.write(json.dumps(record,ensure_ascii=False) + "\n")
             if errors:
                 with error_path.open("w", encoding="utf-8") as f:
-                #If errors is emplty then dont write out the file
-                    json.dump(errors, f, indent=2, ensure_ascii=False)
+                    for err in errors:
+                        f.write(json.dumps(err,ensure_ascii=False) + "\n")
 
         stats = {"Total Expressions": len(df), "Translatable": len(translations), "Untranslatable": len(errors)}
         return output_path, error_path, stats
