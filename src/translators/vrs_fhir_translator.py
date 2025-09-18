@@ -319,6 +319,7 @@ class VrsFhirAlleleTranslator:
         )
 
         if alt_allele == "":
+            # NOTE: Empty string is invalid per FHIR string rules — use space instead.
             alt_allele = " "
 
         start_quant = Quantity(value=int(start_pos))
