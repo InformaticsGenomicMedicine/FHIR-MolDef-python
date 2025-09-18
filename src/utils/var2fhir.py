@@ -28,6 +28,11 @@ class AlleleToFhirTranslator:
             "Untranslatable": untranslatable,
         }
 
+    def _write_out(self,path, rows):
+        with path.open("w", encoding="utf-8") as f:
+            for row in rows:
+                f.write(json.dumps(row,ensure_ascii=False) + "\n")
+
     def load_data(self, input_file, **read_kwargs):
         p = Path(input_file)
 
@@ -52,7 +57,7 @@ class AlleleToFhirTranslator:
             df = pd.read_json(p, **read_kwargs)
 
         else:
-            raise ValueError("Unsupported file type. Use: csv, tsv, txt, xlsx, xls, jsonl.")
+            raise ValueError(f"Unsupported file type for '{p.name}'. Use: csv, tsv, txt, xlsx, xls, jsonl.")
 
         return df
 
@@ -84,13 +89,9 @@ class AlleleToFhirTranslator:
         error_path = Path(error_file)
 
         if not dry_run:
-            with output_path.open("w", encoding="utf-8") as f:
-                for record in fhir_translations:
-                    f.write(json.dumps(record,ensure_ascii=False) + "\n")
+            self._write_out(path=output_path,rows=fhir_translations)
             if errors:
-                with error_path.open("w", encoding="utf-8") as f:
-                    for err in errors:
-                        f.write(json.dumps(err,ensure_ascii=False) + "\n")
+                self._write_out(path=error_path,rows=errors)
 
         stats = self._stats(df, fhir_translations)
         return output_path, error_path, stats
@@ -117,7 +118,7 @@ class AlleleToFhirTranslator:
                 try:
                     vrs_alleles.append({"ROW_INDEX": int(idx), "VRS_Allele": Allele(**vo)})
                 except Exception as e:
-                    error_vrs_translation.append({"ROW_INDEX": idx, "ERROR": f"Failed to instantiate Allele: {e}"})
+                    error_vrs_translation.append({"ROW_INDEX": int(idx), "ERROR": f"Failed to instantiate Allele: {e}"})
             else:
                 unexpected_error.append({"ROW_INDEX": int(idx), "ERROR": f"Unexpected out.type={vo.get('type')}"})
 
@@ -146,16 +147,11 @@ class AlleleToFhirTranslator:
         error_path = Path(error_file)
 
         if not dry_run:
-            with output_path.open("w", encoding="utf-8") as f:
-                for record in fhir_translations:
-                    f.write(json.dumps(record,ensure_ascii=False) + "\n")
+            self._write_out(path=output_path,rows=fhir_translations)
             all_errors = error_vrs_translation + error_fhir_translation + unexpected_error
             if all_errors:
-                with error_path.open("w", encoding="utf-8") as f:
-                    for err in all_errors:
-                        f.write(json.dumps(err,ensure_ascii=False) + "\n")
+                self._write_out(path=error_path,rows=all_errors)
 
-        
         stats = self._stats(df, fhir_translations)
 
         return output_path, error_path, stats
