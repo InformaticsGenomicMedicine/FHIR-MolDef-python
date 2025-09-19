@@ -28,6 +28,7 @@ from translators.vrs_json_pointers import (
 )
 from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC_PTRS
 from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
+from translators.sequence_expression_translator import SequenceExpressionTranslator
 
 
 class VrsToFhirAlleleTranslator:
@@ -35,12 +36,13 @@ class VrsToFhirAlleleTranslator:
     def __init__(self):
         self.seqrepo_api = SeqRepoAPI()
         self.dp = self.seqrepo_api.seqrepo_dataproxy
+        self.rsl_to = SequenceExpressionTranslator()
 
     def translate_allele_to_fhir(self,vrs_allele):
         is_valid_vrs_allele(vrs_allele)
 
         if vrs_allele.state.type == "ReferenceLengthExpression":
-            vrs_allele = self.seq_expr_translator.translate_rle_to_lse(vrs_allele)
+            vrs_allele = self.rsl_to.translate_rle_to_lse(vrs_allele)
 
         return FhirAllele(
             identifier= self.map_identifiers(vrs_allele),
