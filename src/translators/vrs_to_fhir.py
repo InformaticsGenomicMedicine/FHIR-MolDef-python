@@ -19,8 +19,9 @@ from resources.moleculardefinition import (
 from translators.allele_utils import (
     detect_sequence_type,
     is_valid_vrs_allele,
-    translate_sequence_id
+    translate_sequence_id,
 )
+from translators.sequence_expression_translator import SequenceExpressionTranslator
 from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import (
@@ -28,7 +29,6 @@ from translators.vrs_json_pointers import (
 )
 from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC_PTRS
 from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
-from translators.sequence_expression_translator import SequenceExpressionTranslator
 
 
 class VrsToFhirAlleleTranslator:
@@ -244,7 +244,7 @@ class VrsToFhirAlleleTranslator:
 
         raise TypeError("Unsupported extension value type. Must be str, bool, or float.")
 
-# ========== Sub-Extensions Mapping ==========  
+# ========== Sub-Extensions Mapping ==========
 
     def _map_location_extensions(self, source):
         """Generates a list of FHIR `Extension` instances based on attributes from a VRS.Location object (`name`, `description`, `aliases`, `digest`, `extensions`).
@@ -580,12 +580,12 @@ class VrsToFhirAlleleTranslator:
         seqref_residueAlphabet = getattr(source, "residueAlphabet", None)
         seqref_sequence = self._extract_str(getattr(source, "sequence", None))
         seqref_moleculeType = getattr(source, "moleculeType", None)
-        #NOTE: Circular is currently not represnted when we are going from vrs to fhir. 
+        #NOTE: Circular is currently not represnted when we are going from vrs to fhir.
 
-        # NOTE: While only `refgetAccession` is required, if `sequence` is provided and we want to include `residueAlphabet`, 
-        # we must include both — since `residueAlphabet` is tied to the literal representation, which requires a sequence value. 
+        # NOTE: While only `refgetAccession` is required, if `sequence` is provided and we want to include `residueAlphabet`,
+        # we must include both — since `residueAlphabet` is tied to the literal representation, which requires a sequence value.
         # If `residueAlphabet` is missing but `sequence` is present, we can infer it from `refgetAccession`.
-        
+
         rep_sequence = None
         if seqref_sequence:
             if seqref_residueAlphabet is None:
