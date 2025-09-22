@@ -2,6 +2,7 @@ import argparse
 import json
 import logging
 import sys
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -183,6 +184,8 @@ class AlleleToFhirTranslator:
         logging.info("Starting Translation Job")
         logging.debug("Arguments: %s",args)
 
+        t0 = time.perf_counter()
+
         if not args.dry_run and not args.overwrite:
             for p in [args.out, args.errors]:
                 if Path(p).exists():
@@ -202,6 +205,9 @@ class AlleleToFhirTranslator:
             logging.info("Wrote results to %s and errors to %s", out_path, err_path)
 
         logging.info("Done: Total Rows=%d Translatable=%d Untranslatable=%d", stats['Total Rows'], stats['Translatable'], stats['Untranslatable'])
+
+        elapsed = time.perf_counter() - t0
+        logging.info("Time Elapsed: %.3f s", elapsed)
 
         return 0
 
