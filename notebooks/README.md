@@ -40,3 +40,8 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
    - Showcases the **Allele Factory Module**, which simplifies the creation of **VRS Alleles** and **FHIR Allele** resources.
    - Since generating these profiles requires a solid understanding of the schema, this module helps users by generating an Allele with just **five input attributes**.
    - The **Allele Factory Module** reduces the learning curve by automating profile generation, making it easier for users to work with VRS and FHIR Alleles without deep prior knowledge of their schemas.
+
+- **[Full Allele Translations](vrs_fhir_full_translation_demo.ipynb)**  
+   - Demonstrates the **VRSToFHIR** and **FHIRToVRS** modules, which enable translation of fully populated **VRS Allele** objects into **FHIR Allele** resources, and vice versa.  
+   - Since **FHIR includes attributes beyond those defined in VRS**, the translation is asymmetric: every VRS Allele can be represented in FHIR, but only the overlapping fields can be translated from FHIR back to VRS.  
+   - This notebook goes beyond the minimal examples by focusing on **full, schema-compliant translations** within that shared subset.  
