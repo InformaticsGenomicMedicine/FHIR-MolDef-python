@@ -436,6 +436,9 @@ class VrsToFhirAlleleTranslator:
         id_ = getattr(state, "id", None)
         value = self._extract_str(getattr(state, "sequence", ""))
 
+        if value == "":
+            value = " "
+            
         return MolecularDefinitionRepresentationLiteral(
             id=id_,
             extension=self._map_representation_extensions(ao),
