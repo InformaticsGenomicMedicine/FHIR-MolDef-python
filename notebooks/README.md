@@ -47,6 +47,8 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
    - This notebook goes beyond the minimal examples by focusing on **full, schema-compliant translations** within that shared subset.  
 
 - **[ClinVar Demo Translations](translations/clinvar_demo_translation.ipynb)**  
-   - Uses sample ClinVar data (allele objects in categorical variation form) and translates them into FHIR Allele Profiles.  
-   - Highlights the full VRS-to-FHIR translator, required for non-minimal VRS Alleles.  
-   - Notes ongoing development of a scalable pipeline to process millions of records.  
+   - Demonstrates extraction and translation of ClinVar variation data into FHIR Allele Profiles.
+   - Streams compressed .jsonl.gz ClinVar files efficiently and filters for VRS Allele records.
+   - Extracts representative VRS Allele objects and performs VRS Allele to FHIR Allele Profile translation.  
+   - Currently translates a subset (~20K examples); full dataset support and a CLI tool are in development.  
+
