@@ -1,4 +1,4 @@
-from api.seqrepo import SeqRepoAPI
+from api.seqrepo import SeqRepoClient
 from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
@@ -11,8 +11,8 @@ class RepresentationTranslator:
     Currently, RepresentationTranslator can only handle extracted and repeated representations.
     """
     def __init__(self):
-        seqrepo_api = SeqRepoAPI()
-        self.dp = seqrepo_api.seqrepo_dataproxy
+        seqrepo_api = SeqRepoClient()
+        self.dp = seqrepo_api.dataproxy
 
     def _validate_representation(self, expression):
         if not hasattr(expression, "representation"):
