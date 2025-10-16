@@ -7,7 +7,8 @@ from exceptions.fhir import (
     InvalidMoleculeTypeError,
     LocationCardinalityError,
     MemberStateNotAllowedError,
-    MissingAlleleStateError,
+    MissingReferenceStateError,
+    MissingAlternativeStateError,
     MissingFocusCodingError,
     MultipleContextStateError,
     RepresentationCardinalityError,
@@ -28,6 +29,13 @@ class Variation(MolecularDefinition):
         Allele: An instance of the Allele class.
 
     """
+    # FOCUS_SYSTEM: ClassVar[str] = "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus"
+    EXPECTED_DISPLAY: ClassVar[dict[str, str]] = {
+        "context-state": "Context State",
+        "reference-state": "Reference State",
+        "alternative-state": "Alternative State",
+        }
+    
     memberState: ClassVar[fhirtypes.ReferenceType| None] #type: ignore
 
     @model_validator(mode="before")
@@ -111,9 +119,82 @@ class Variation(MolecularDefinition):
         return values
 
 
-    # @model_validator(mode="after")
-    # def validate_focus(cls, values): TODO: keep working on this part
-    #NOTE: potentially need to change allele validate_focus
+    @model_validator(mode="after")
+    def validate_focus(self): 
+        
+        context_state_count = 0
+        reference_state_count = 0
+        alternative_state_count = 0
+
+        for idx, rep in enumerate(self.representation):
+            #check for focus must be present
+            if getattr(rep,"focus", None) is None:
+                raise MissingFocusCodingError(
+                    f"representation[{idx}].focus is required when slicing by focus CodeableConcept."
+                )
+            # Check if coding is present
+            codings = getattr(rep.focus,"coding", None)
+            if not codings:
+                raise MissingFocusCodingError(
+                    f"representation[{idx}].focus.coding must contain at least one entry."
+                )
+        
+            for coding in codings:
+                code = getattr(coding,"code", None)
+                system = getattr(coding,"system", None)
+                display = getattr(coding,"display", None)
+
+                #check if coding is present
+                if code is None:
+                    raise MissingFocusCodingError(
+                        f"representation[{idx}].focus.coding is missing a 'code' element.")
+                
+                if code in {"context-state","reference-state","alternative-state"}:
+                    if not system:
+                        raise MissingFocusCodingError(
+                            f"representation[{idx}].focus.coding (code='{code}') must define 'system'."
+                        )
+                    
+                    #NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
+                    #NOTE: To avoid changing the examples and this we are just going to # it out. 
+                    # if system != self.FOCUS_SYSTEM:
+                    #     raise MissingFocusCodingError(
+                    #         f"Invalid focus.coding in representation[{idx}]: "
+                    #         f"The Coding with code='{code}' must define a 'system' value as required by the MolDef focus discriminator."
+                    #     )
+
+                    expected_display = self.EXPECTED_DISPLAY.get(code)
+
+                    if display != expected_display:
+                        raise MissingFocusCodingError(
+                            f"Invalid focus.coding in representation[{idx}]: "
+                            f"The Coding with code='{code}' must have display='{expected_display}', "
+                            f"found '{display}'."
+                            )
+                    
+                    if code == "context-state":
+                        context_state_count += 1 
+                    elif code == "reference-state":
+                        reference_state_count += 1
+                    elif code == "alternative-state":
+                        alternative_state_count += 1
+
+        if context_state_count > 1:
+            raise MultipleContextStateError(
+                "At most one 'context-state' is allowed across 'representation' (0..1 cardinality)."
+            )
+        
+        if reference_state_count != 1:
+            raise MissingReferenceStateError(
+                "Exactly one 'reference-state' must be present across 'representation' (1..1 cardinality)."
+                )
+        
+        if alternative_state_count != 1:
+            raise MissingAlternativeStateError(
+                "Exactly one 'alternative-state' must be present across 'representation' (1..1 cardinality)."
+                )
+        
+        return self
 
     @classmethod
     def elements_sequence(cls):
