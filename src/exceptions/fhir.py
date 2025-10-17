@@ -1,50 +1,63 @@
 class FHIRException(Exception):
     """Base exception for FHIR-related errors."""
 
-    pass
-
 class ElementNotAllowedError(FHIRException):
     """Raised when a certain field is disallowed in a profile."""
-
-    pass
 
 class MemberStateNotAllowedError(FHIRException):
     """Raised when 'memberState' is set in Allele but should not be."""
 
-    pass
 
 class InvalidMoleculeTypeError(FHIRException):
     """Raised when 'moleculeType' does not meet its 1..1 cardinality requirement."""
 
-    pass
-
 class InvalidTypeError(FHIRException):
     """Raised when 'type' does not meet its 1..1 cardinality requirement."""
 
-    pass 
+####################### Location #############################################
+class LocationError(FHIRException):
+    """Base class for 'Location' validation errors."""
 
-class LocationCardinalityError(FHIRException):
+class MultipleLocation(LocationError):
     """Raised when 'location' does not meet its 1..1 cardinality requirement."""
 
-    pass
+####################### Representation ########################################
+class RepresentationError(FHIRException):
+    """Base class for 'representation' validation errors."""
 
-class RepresentationCardinalityError(FHIRException):
-    """Raised when 'representation' does not meet its 1..* cardinality requirement."""
+class MissingRepresentation(RepresentationError):
+    """Raised when 'representation' is missing (cardinality 1..*)."""
 
-    pass
+class MissingAlleleState(RepresentationError):
+    """Raised when no 'allele-state' is present in 'representation' (cardinality 1..1)."""
 
-class MissingFocusCodingError(FHIRException):
+class MultipleContextState(RepresentationError):
+    """Raised when more than one 'context-state' is present in 'representation' (cardinality 0..1)."""
+
+class MissingReferenceState(RepresentationError):
+    """Raised when no 'reference-state' is present in 'representation' (cardinality 1..1)."""
+
+class MissingAlternativeState(RepresentationError):
+    """Raised when no 'alternative-state' is present in 'representation' (cardinality 1..1)."""
+
+####################### FOCUS #############################################
+class FocusError(FHIRException):
+    """Base class for representation.focus-related validation errors."""
+
+class MissingFocus(FocusError):
+    """Raised when 'representation.focus' is missing (cardinality 1..1)."""
+
+class MissingFocusCoding(FocusError):
     """Raised when 'focus.coding' is missing or improperly defined in representation."""
 
-    pass
+class MissingFocusCodingCode(FocusError):
+    """Raised when 'focus.coding.code' is missing (cardinality 1..1)."""
 
-class MissingAlleleStateError(FHIRException):
-    """Raised when at least one 'allele-state' coding is not present in 'focus.coding'."""
+class MissingFocusCodingSystem(FocusError):
+    """Raised when 'focus.coding.system' is missing (cardinality 1..1)."""
 
-    pass
+class InvalidFocusCodingSystem(FocusError):
+    """Raised when 'focus.coding.system' does not match its fixed value."""
 
-class MultipleContextStateError(FHIRException):
-    """Raised when more than one 'context-state' coding is present in 'focus.coding'."""
-
-    pass
-
+class InvalidFocusCodingDisplay(FocusError):
+    """Raised when 'focus.coding.display' does not match its fixed value."""
