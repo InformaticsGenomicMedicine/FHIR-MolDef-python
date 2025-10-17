@@ -5,13 +5,18 @@ from pydantic import model_validator
 
 from exceptions.fhir import (
     InvalidMoleculeTypeError,
-    LocationCardinalityError,
+    MultipleLocation,
     MemberStateNotAllowedError,
-    MissingReferenceStateError,
-    MissingAlternativeStateError,
-    MissingFocusCodingError,
-    MultipleContextStateError,
-    RepresentationCardinalityError,
+    MissingRepresentation,
+    MissingFocus,
+    MissingFocusCoding,
+    MissingFocusCodingCode,
+    MissingFocusCodingSystem,
+    InvalidFocusCodingSystem,
+    InvalidFocusCodingDisplay,
+    MultipleContextState,
+    MissingReferenceState,
+    MissingAlternativeState
 )
 from resources.moleculardefinition import MolecularDefinition
 
@@ -39,7 +44,7 @@ class Variation(MolecularDefinition):
     memberState: ClassVar[fhirtypes.ReferenceType| None] #type: ignore
 
     @model_validator(mode="before")
-    def validate_memberState_exclusion(cls, values):
+    def validate_memberState_exclusion(cls, data):
         """Validates that the 'memberState' field is not present in the input values.
 
         Args:
@@ -52,12 +57,12 @@ class Variation(MolecularDefinition):
             dict: The original input values if validation passes.
 
         """
-        if "memberState" in values and values["memberState"] is not None:
+        if isinstance(data,dict) and "memberState" in data:
             raise MemberStateNotAllowedError("`memberState` is not allowed in Allele.")
-        return values
+        return data
 
     @model_validator(mode="after")
-    def validate_moleculeType(cls, values):
+    def validate_moleculeType(self):
         """Validates that the 'moleculeType' field is present and contains exactly one item.
 
         Args:
@@ -70,14 +75,30 @@ class Variation(MolecularDefinition):
             BaseModel: The validated model instance if the check passes.
 
         """
-        if not values.moleculeType or not values.moleculeType.model_dump(exclude_unset=True):
+        mt = getattr(self,"moleculeType", None)
+
+        if mt is None:
             raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
-            )
-        return values
+                )
+        if isinstance(mt,list):
+            if len(mt) != 1:
+                raise InvalidMoleculeTypeError(
+                     "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
+                )
+        else:
+            try:
+                if not mt.model_dump(exclude_unset = True):
+                    raise InvalidMoleculeTypeError(
+                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
+                )
+            except AttributeError:
+                pass
+        
+        return self
 
     @model_validator(mode="after")
-    def validate_location_cardinality(cls, values):
+    def validate_location_cardinality(self):
         """Validates that the 'location' field contains exactly one item.
 
         Args:
@@ -90,15 +111,15 @@ class Variation(MolecularDefinition):
             BaseModel: The validated model instance if the check passes.
 
         """
-        if not values.location or len(values.location) > 1:
-            raise LocationCardinalityError(
+        if not self.location or len(self.location) != 1:
+            raise MultipleLocation(
                 "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for Allele."
             )
-        return values
+        return self
 
     @model_validator(mode="after")
-    def validate_representation_cardinality(cls, values):
-        """Validates that the 'representation' field contains at least two item.
+    def validate_representation_cardinality(self):
+        """Validates that the 'representation' field contains at least one item.
 
         Args:
             values (BaseModel): The validated model instance.
@@ -110,13 +131,12 @@ class Variation(MolecularDefinition):
             BaseModel: The validated model instance if the check passes.
 
         """
-        reps = getattr(values, "representation", None) or []
-        if len(reps) < 2:
-            raise RepresentationCardinalityError(
-                "The `representation` field must contain exactly one item. `representation` has a 2..* cardinality for Allele."
+        if not self.representation:
+            raise MissingRepresentation(
+                "The `representation` field must contain one or more items. `representation` has a 1..* cardinality for Allele."
 
             )
-        return values
+        return self
 
 
     @model_validator(mode="after")
@@ -129,13 +149,13 @@ class Variation(MolecularDefinition):
         for idx, rep in enumerate(self.representation):
             #check for focus must be present
             if getattr(rep,"focus", None) is None:
-                raise MissingFocusCodingError(
+                raise MissingFocus(
                     f"representation[{idx}].focus is required when slicing by focus CodeableConcept."
                 )
             # Check if coding is present
             codings = getattr(rep.focus,"coding", None)
             if not codings:
-                raise MissingFocusCodingError(
+                raise MissingFocusCoding(
                     f"representation[{idx}].focus.coding must contain at least one entry."
                 )
         
@@ -146,28 +166,26 @@ class Variation(MolecularDefinition):
 
                 #check if coding is present
                 if code is None:
-                    raise MissingFocusCodingError(
+                    raise MissingFocusCodingCode(
                         f"representation[{idx}].focus.coding is missing a 'code' element.")
                 
                 if code in {"context-state","reference-state","alternative-state"}:
                     if not system:
-                        raise MissingFocusCodingError(
+                        raise MissingFocusCodingSystem(
                             f"representation[{idx}].focus.coding (code='{code}') must define 'system'."
                         )
                     
                     #NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
                     #NOTE: To avoid changing the examples and this we are just going to # it out. 
                     # if system != self.FOCUS_SYSTEM:
-                    #     raise MissingFocusCodingError(
-                    #         f"Invalid focus.coding in representation[{idx}]: "
+                    #     raise InvalidFocusCodingSystem(
                     #         f"The Coding with code='{code}' must define a 'system' value as required by the MolDef focus discriminator."
                     #     )
 
                     expected_display = self.EXPECTED_DISPLAY.get(code)
 
                     if display != expected_display:
-                        raise MissingFocusCodingError(
-                            f"Invalid focus.coding in representation[{idx}]: "
+                        raise InvalidFocusCodingDisplay(
                             f"The Coding with code='{code}' must have display='{expected_display}', "
                             f"found '{display}'."
                             )
@@ -180,18 +198,18 @@ class Variation(MolecularDefinition):
                         alternative_state_count += 1
 
         if context_state_count > 1:
-            raise MultipleContextStateError(
-                "At most one 'context-state' is allowed across 'representation' (0..1 cardinality)."
+            raise MultipleContextState(
+                "At most one 'context-state' is allowed across 'representation' (cardinality 0..1)."
             )
         
         if reference_state_count != 1:
-            raise MissingReferenceStateError(
-                "Exactly one 'reference-state' must be present across 'representation' (1..1 cardinality)."
+            raise MissingReferenceState(
+                "Exactly one 'reference-state' must be present across 'representation' (cardinality 1..1)."
                 )
         
         if alternative_state_count != 1:
-            raise MissingAlternativeStateError(
-                "Exactly one 'alternative-state' must be present across 'representation' (1..1 cardinality)."
+            raise MissingAlternativeState(
+                "Exactly one 'alternative-state' must be present across 'representation' (cardinality 1..1)."
                 )
         
         return self
