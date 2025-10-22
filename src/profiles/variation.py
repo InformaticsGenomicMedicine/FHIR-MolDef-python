@@ -4,19 +4,18 @@ from fhir.resources import fhirtypes
 from pydantic import model_validator
 
 from exceptions.fhir import (
+    InvalidFocusCodingDisplay,
     InvalidMoleculeTypeError,
-    MultipleLocation,
     MemberStateNotAllowedError,
-    MissingRepresentation,
+    MissingAlternativeState,
     MissingFocus,
     MissingFocusCoding,
     MissingFocusCodingCode,
     MissingFocusCodingSystem,
-    InvalidFocusCodingSystem,
-    InvalidFocusCodingDisplay,
-    MultipleContextState,
     MissingReferenceState,
-    MissingAlternativeState
+    MissingRepresentation,
+    MultipleContextState,
+    MultipleLocation,
 )
 from resources.moleculardefinition import MolecularDefinition
 
@@ -40,7 +39,7 @@ class Variation(MolecularDefinition):
         "reference-state": "Reference State",
         "alternative-state": "Alternative State",
         }
-    
+
     memberState: ClassVar[fhirtypes.ReferenceType| None] #type: ignore
 
     @model_validator(mode="before")
@@ -94,7 +93,7 @@ class Variation(MolecularDefinition):
                 )
             except AttributeError:
                 pass
-        
+
         return self
 
     @model_validator(mode="after")
@@ -140,8 +139,8 @@ class Variation(MolecularDefinition):
 
 
     @model_validator(mode="after")
-    def validate_focus(self): 
-        
+    def validate_focus(self):
+
         context_state_count = 0
         reference_state_count = 0
         alternative_state_count = 0
@@ -158,7 +157,7 @@ class Variation(MolecularDefinition):
                 raise MissingFocusCoding(
                     f"representation[{idx}].focus.coding must contain at least one entry."
                 )
-        
+
             for coding in codings:
                 code = getattr(coding,"code", None)
                 system = getattr(coding,"system", None)
@@ -168,15 +167,15 @@ class Variation(MolecularDefinition):
                 if code is None:
                     raise MissingFocusCodingCode(
                         f"representation[{idx}].focus.coding is missing a 'code' element.")
-                
+
                 if code in {"context-state","reference-state","alternative-state"}:
                     if not system:
                         raise MissingFocusCodingSystem(
                             f"representation[{idx}].focus.coding (code='{code}') must define 'system'."
                         )
-                    
+
                     #NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
-                    #NOTE: To avoid changing the examples and this we are just going to # it out. 
+                    #NOTE: To avoid changing the examples and this we are just going to # it out.
                     # if system != self.FOCUS_SYSTEM:
                     #     raise InvalidFocusCodingSystem(
                     #         f"The Coding with code='{code}' must define a 'system' value as required by the MolDef focus discriminator."
@@ -189,9 +188,9 @@ class Variation(MolecularDefinition):
                             f"The Coding with code='{code}' must have display='{expected_display}', "
                             f"found '{display}'."
                             )
-                    
+
                     if code == "context-state":
-                        context_state_count += 1 
+                        context_state_count += 1
                     elif code == "reference-state":
                         reference_state_count += 1
                     elif code == "alternative-state":
@@ -201,17 +200,17 @@ class Variation(MolecularDefinition):
             raise MultipleContextState(
                 "At most one 'context-state' is allowed across 'representation' (cardinality 0..1)."
             )
-        
+
         if reference_state_count != 1:
             raise MissingReferenceState(
                 "Exactly one 'reference-state' must be present across 'representation' (cardinality 1..1)."
                 )
-        
+
         if alternative_state_count != 1:
             raise MissingAlternativeState(
                 "Exactly one 'alternative-state' must be present across 'representation' (cardinality 1..1)."
                 )
-        
+
         return self
 
     @classmethod
