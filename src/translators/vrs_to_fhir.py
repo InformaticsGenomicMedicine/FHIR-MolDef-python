@@ -362,6 +362,7 @@ class VrsToFhirAlleleTranslator:
                 Coding(
                     system="http://hl7.org/fhir/moleculardefinition-focus",
                     code="allele-state",
+                    display="Allele State"
                 )
             ]
         )
