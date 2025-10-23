@@ -15,6 +15,6 @@ class SeqRepoClient:
             return create_dataproxy(uri=uri)
         except Exception:
             try:
-                return create_dataproxy(uri=self.HOST_URL)
+                return create_dataproxy(uri=self.DEFAULT_LOCAL_URL)
             except Exception as e:
                 raise RuntimeError(f"Failed to create SeqRepo data proxy: {e}") from e
