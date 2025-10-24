@@ -6,12 +6,7 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
-
-# The GA4GH HgvsTools class (from ga4gh.vrs.utils.hgvs_tools) automatically attempts to
-# connect to the UTA (Universal Transcript Archive) database via hgvs.dataproviders.uta.
-# UTA is required for HGVS normalization and transcript/genomic coordinate mapping,
-# because those operations depend on transcript alignment data stored in UTA.
-from ga4gh.vrs.utils.hgvs_tools import HgvsTools
+from vrs_tools.hgvs_tools import HgvsToolsLite
 
 from api.seqrepo import SeqRepoClient
 from profiles.variation import Variation
@@ -32,7 +27,7 @@ class VariationTranslation:
         self.seqrepo = SeqRepoClient()
         self.dp = self.seqrepo.dataproxy
         #most likely need to replace this
-        self.hgvs_tools = HgvsTools()
+        self.hgvs_tools = HgvsToolsLite(data_proxy=self.dp)
 
     def _from_spdi(self,spdi):
         """Parse an SPDI string and convert it into a FHIR Variation Profile object.
