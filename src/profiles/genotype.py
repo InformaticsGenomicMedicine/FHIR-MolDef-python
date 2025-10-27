@@ -28,28 +28,16 @@ class Genotype(MolecularDefinition):
     )
 
     @model_validator(mode="before")
-    def validate_exclusions(cls, values):
+    def validate_exclusions(cls, data):
         for field in ["location", "representation"]:
-            if field in values and values[field] is not None:
+            if field in data and data[field] is not None:
                 raise ElementNotAllowedError(f"`{field}` is not allowed in Genotype.")
-        return values
+        return data
     
     @model_validator(mode="after")
-    def validate_type(cls, values):
-        """Validates that the 'type' field is present and contains exactly one item.
-
-        Args:
-            values (BaseModel): The validated model instance.
-
-        Raises:
-            InvalidTypeError: If 'type' is missing or empty.
-
-        Returns:
-            BaseModel: The validated model instance if the check passes.
-
-        """
-        if not values.type or not values.type.model_dump(exclude_unset=True):
+    def validate_type(self):
+        if not self.type or not self.type.model_dump(exclude_unset=True):
             raise InvalidTypeError(
                 "The `type` field must contain exactly one item. `type` has a 1..1 cardinality for Genotype."
             )
-        return values
+        return self
