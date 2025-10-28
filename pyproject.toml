@@ -37,6 +37,7 @@ dependencies = [
     "fhir-resources==8.0.0",
     "pandas==2.2.3",
     "openpyxl==3.1.5",
+    "orjson==3.11.3",
 ]
 
 [project.optional-dependencies]
