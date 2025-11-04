@@ -3,6 +3,8 @@ import hgvs.parser
 
 from ga4gh.vrs.utils.hgvs_tools import HgvsTools as _Base
 
+# NOTE: Consider removing this module now that we can use Podman and have access to the UTA database.
+# NOTE: Evaluate using hgvstools as a replacement for this module.
 class HgvsToolsLite(_Base):
     """
     A lightweight subclass of HgvsTools that does not connect to the UTA database.
