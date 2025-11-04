@@ -364,8 +364,13 @@ fhir_synthetic_data = {
       "focus": {
         "coding": [
           {
+            # In the new Allele examples, the `system` field is set to the value shown below.
+            # However, the Allele profile (allele.py) does not currently enforce this 1:1 match.
+            # Need to confirm whether this is now the official system value before enabling the check:
+            #"http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus"
             "system": "http://hl7.org/fhir/moleculardefinition-focus",
-            "code": "allele-state"
+            "code": "allele-state",
+            "display": "Allele State"
           }
         ]
       },
