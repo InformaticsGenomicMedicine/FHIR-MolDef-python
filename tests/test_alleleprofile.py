@@ -1,17 +1,26 @@
+from copy import deepcopy
+
 import pytest
+from fhir.resources.reference import Reference
 
 from exceptions.fhir import (
+    # MissingFocusCodingSystem,
+    InvalidFocusCodingDisplay,
     InvalidMoleculeTypeError,
-    LocationCardinalityError,
-    MissingAlleleStateError,
-    MissingFocusCodingError,
-    RepresentationCardinalityError,
+    MemberStateNotAllowedError,
+    MissingAlleleState,
+    MissingFocus,
+    MissingFocusCoding,
+    MissingFocusCodingCode,
+    MissingRepresentation,
+    MultipleContextState,
+    MultipleLocation,
 )
 from profiles.allele import Allele as FhirAllele
 
 
-@pytest.fixture
-def example_allele_profile():
+@pytest.fixture()
+def valid_allele_example():
     return {
     "resourceType" : "MolecularDefinition",
     "id" : "example-allelesliced-cyp2c19-1016",
@@ -85,32 +94,163 @@ def example_allele_profile():
   }
 
 
-def test_missing_moleculeType(example_allele_profile):
-    example_allele_profile.pop("moleculeType")
-    with pytest.raises(InvalidMoleculeTypeError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."):
-        FhirAllele(**example_allele_profile)
+def assert_raises_message(exception_type,msg,fn,*args,**kwargs):
+    with pytest.raises(exception_type) as exception_info:
+        fn(*args,**kwargs)
+    assert str(exception_info.value) == msg
 
-def test_missing_location(example_allele_profile):
-    example_allele_profile.pop("location")
-    with pytest.raises(LocationCardinalityError, match=r"The `location` field must contain exactly one item. `location` has a 1..1 cardinality for Allele."):
-        FhirAllele(**example_allele_profile)
+def test_member_state_not_allowed(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data['memberState'] = Reference(display="test")
+    assert_raises_message(
+        MemberStateNotAllowedError,
+        "`memberState` is not allowed in Allele.",
+        FhirAllele,
+        **data,
+    )
 
-def test_missing_representation(example_allele_profile):
-    example_allele_profile.pop("representation")
-    with pytest.raises(RepresentationCardinalityError, match=r"The `representation` field must contain exactly one item. `representation` has a 1..* cardinality for Allele."):
-        FhirAllele(**example_allele_profile)
+@pytest.mark.parametrize("molType",[None,{}])
+def test_present_of_molecularType(valid_allele_example,molType):
+    data = deepcopy(valid_allele_example)
+    data['moleculeType'] = molType
+    assert_raises_message(
+        InvalidMoleculeTypeError,
+        "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele.",
+        FhirAllele,
+        **data
+    )
+@pytest.mark.parametrize("loc",[None,[]])
+def test_location_cardinality(valid_allele_example,loc):
+    data = deepcopy(valid_allele_example)
+    data["location"] = loc
+    assert_raises_message(
+        MultipleLocation,
+        "The `location` field must contain exactly one item. `location` has a 1..1 cardinality for Allele.",
+        FhirAllele,
+        **data
+    )
+@pytest.mark.parametrize("rep",[None,[]])
+def test_missing_representation(valid_allele_example,rep):
+    data = deepcopy(valid_allele_example)
+    if rep is None:
+        data.pop("representation", None)
+    else:
+        data["representation"] = rep
+    assert_raises_message(
+        MissingRepresentation,
+        "The `representation` field must contain one or more items. `representation` has a 1..* cardinality for Allele.",
+        FhirAllele,
+        **data
+    )
 
-def test_missing_allele_state_code(example_allele_profile):
-    example_allele_profile["representation"][0]["focus"]["coding"][0]["code"] = "random-state"
-    with pytest.raises(MissingAlleleStateError, match=r"At least one 'allele-state' must be present in 'focus.coding'."):
-        FhirAllele(**example_allele_profile)
+def test_missing_focus_in_representation(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"][0].pop("focus")
+    assert_raises_message(
+        MissingFocus,
+        "representation[0].focus is required when slicing by focus CodeableConcept.",
+        FhirAllele,
+        **data)
 
-def test_missing_allele_state_system(example_allele_profile):
-    example_allele_profile["representation"][0]["focus"]["coding"][0]["system"] = None
-    with pytest.raises(MissingFocusCodingError, match=r"Each 'allele-state' coding entry must have a 'system' defined."):
-        FhirAllele(**example_allele_profile)
 
-def test_missing_context_state_system(example_allele_profile):
-    example_allele_profile["representation"][1]["focus"]["coding"][0]["system"] = None
-    with pytest.raises(MissingFocusCodingError, match=r"Each 'context-state' coding entry must have a 'system' defined."):
-        FhirAllele(**example_allele_profile)
+def test_missing_focus_coding_list(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"][0]["focus"]["coding"] = []
+    assert_raises_message(
+        MissingFocusCoding,
+        "representation[0].focus.coding must contain at least one entry.",
+        FhirAllele,
+        **data)
+
+def test_missing_coding_code(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"][0]["focus"]["coding"][0].pop("code")
+    assert_raises_message(
+        MissingFocusCodingCode,
+        "representation[0].focus.coding is missing a 'code' element.",
+        FhirAllele,
+        **data)
+
+#NOTE: not yet implemented, it is currently # in allele.py
+# def test_allele_state_requires_system(valid_allele_example):
+#     data = deepcopy(valid_allele_example)
+#     data["representation"][0]["focus"]["coding"][0].pop("system")
+#     assert_raises_message(
+#         MissingFocusCodingSystem,
+#         "representation[0].focus.coding (code='allele-state') must define 'system'.",
+#         FhirAllele,
+#         **data)
+
+
+def test_invalid_display_for_allele_state(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"][0]["focus"]["coding"][0]["display"] = "Test-Incorrect-Display"
+    assert_raises_message(
+        InvalidFocusCodingDisplay,
+        "The Coding with code='allele-state' must have display='Allele State', found 'Test-Incorrect-Display'.",
+        FhirAllele,
+        **data)
+
+def test_missing_allele_state_globally(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"][0]["focus"]["coding"][0]["code"] = "test-state"
+    assert_raises_message(
+        MissingAlleleState,
+        "Exactly one 'allele-state' must be present across 'representation' (cardinality 1..1).",
+        FhirAllele,
+        **data)
+
+def test_multiple_allele_state_globally(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"].append(
+        {
+            "focus": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus",
+                        "code": "allele-state",
+                        "display": "Allele State",
+                    }
+                ]
+            }
+        }
+    )
+    assert_raises_message(
+        MissingAlleleState,
+        "Exactly one 'allele-state' must be present across 'representation' (cardinality 1..1).",
+        FhirAllele,
+        **data)
+
+def test_multiple_context_state_globally(valid_allele_example):
+    data = deepcopy(valid_allele_example)
+    data["representation"].append(
+        {
+            "focus": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus",
+                        "code": "context-state",
+                        "display": "Context State",
+                    }
+                ]
+            }
+        }
+    )
+    data["representation"].append(
+        {
+            "focus": {
+                "coding": [
+                    {
+                        "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus",
+                        "code": "context-state",
+                        "display": "Context State",
+                    }
+                ]
+            }
+        }
+    )
+    assert_raises_message(
+        MultipleContextState,
+        "At most one 'context-state' is allowed across 'representation' (cardinality 0..1).",
+        FhirAllele,
+        **data)
