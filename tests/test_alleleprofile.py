@@ -20,7 +20,7 @@ from profiles.allele import Allele as FhirAllele
 
 
 @pytest.fixture()
-def valid_allele_example():
+def valid_allele():
     return {
     "resourceType" : "MolecularDefinition",
     "id" : "example-allelesliced-cyp2c19-1016",
@@ -99,8 +99,8 @@ def assert_raises_message(exception_type,msg,fn,*args,**kwargs):
         fn(*args,**kwargs)
     assert str(exception_info.value) == msg
 
-def test_member_state_not_allowed(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_member_state_not_allowed(valid_allele):
+    data = deepcopy(valid_allele)
     data['memberState'] = Reference(display="test")
     assert_raises_message(
         MemberStateNotAllowedError,
@@ -110,8 +110,8 @@ def test_member_state_not_allowed(valid_allele_example):
     )
 
 @pytest.mark.parametrize("molType",[None,{}])
-def test_present_of_molecularType(valid_allele_example,molType):
-    data = deepcopy(valid_allele_example)
+def test_present_of_molecularType(valid_allele,molType):
+    data = deepcopy(valid_allele)
     data['moleculeType'] = molType
     assert_raises_message(
         InvalidMoleculeTypeError,
@@ -120,8 +120,8 @@ def test_present_of_molecularType(valid_allele_example,molType):
         **data
     )
 @pytest.mark.parametrize("loc",[None,[]])
-def test_location_cardinality(valid_allele_example,loc):
-    data = deepcopy(valid_allele_example)
+def test_location_cardinality(valid_allele,loc):
+    data = deepcopy(valid_allele)
     data["location"] = loc
     assert_raises_message(
         MultipleLocation,
@@ -130,8 +130,8 @@ def test_location_cardinality(valid_allele_example,loc):
         **data
     )
 @pytest.mark.parametrize("rep",[None,[]])
-def test_missing_representation(valid_allele_example,rep):
-    data = deepcopy(valid_allele_example)
+def test_missing_representation(valid_allele,rep):
+    data = deepcopy(valid_allele)
     if rep is None:
         data.pop("representation", None)
     else:
@@ -143,8 +143,8 @@ def test_missing_representation(valid_allele_example,rep):
         **data
     )
 
-def test_missing_focus_in_representation(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_missing_focus_in_representation(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"][0].pop("focus")
     assert_raises_message(
         MissingFocus,
@@ -153,8 +153,8 @@ def test_missing_focus_in_representation(valid_allele_example):
         **data)
 
 
-def test_missing_focus_coding_list(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_missing_focus_coding_list(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"][0]["focus"]["coding"] = []
     assert_raises_message(
         MissingFocusCoding,
@@ -162,8 +162,8 @@ def test_missing_focus_coding_list(valid_allele_example):
         FhirAllele,
         **data)
 
-def test_missing_coding_code(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_missing_coding_code(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"][0]["focus"]["coding"][0].pop("code")
     assert_raises_message(
         MissingFocusCodingCode,
@@ -172,8 +172,8 @@ def test_missing_coding_code(valid_allele_example):
         **data)
 
 #NOTE: not yet implemented, it is currently # in allele.py
-# def test_allele_state_requires_system(valid_allele_example):
-#     data = deepcopy(valid_allele_example)
+# def test_allele_state_requires_system(valid_allele):
+#     data = deepcopy(valid_allele)
 #     data["representation"][0]["focus"]["coding"][0].pop("system")
 #     assert_raises_message(
 #         MissingFocusCodingSystem,
@@ -182,8 +182,8 @@ def test_missing_coding_code(valid_allele_example):
 #         **data)
 
 
-def test_invalid_display_for_allele_state(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_invalid_display_for_allele_state(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"][0]["focus"]["coding"][0]["display"] = "Test-Incorrect-Display"
     assert_raises_message(
         InvalidFocusCodingDisplay,
@@ -191,8 +191,8 @@ def test_invalid_display_for_allele_state(valid_allele_example):
         FhirAllele,
         **data)
 
-def test_missing_allele_state_globally(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_missing_allele_state_globally(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"][0]["focus"]["coding"][0]["code"] = "test-state"
     assert_raises_message(
         MissingAlleleState,
@@ -200,8 +200,8 @@ def test_missing_allele_state_globally(valid_allele_example):
         FhirAllele,
         **data)
 
-def test_multiple_allele_state_globally(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_multiple_allele_state_globally(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"].append(
         {
             "focus": {
@@ -221,8 +221,8 @@ def test_multiple_allele_state_globally(valid_allele_example):
         FhirAllele,
         **data)
 
-def test_multiple_context_state_globally(valid_allele_example):
-    data = deepcopy(valid_allele_example)
+def test_multiple_context_state_globally(valid_allele):
+    data = deepcopy(valid_allele)
     data["representation"].append(
         {
             "focus": {

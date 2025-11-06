@@ -1,3 +1,5 @@
+from copy import deepcopy
+
 import pytest
 from fhir.resources.reference import Reference
 
@@ -6,7 +8,7 @@ from profiles.sequence import Sequence as FhirSequence
 
 
 @pytest.fixture
-def example_sequence_profile():
+def valid_sequence():
     return {
   "resourceType" : "MolecularDefinition",
   "id" : "example-sequence-c",
@@ -27,17 +29,39 @@ def example_sequence_profile():
   }]
 }
 
-def test_missing_moleculeType(example_sequence_profile):
-    example_sequence_profile.pop("moleculeType")
-    with pytest.raises(InvalidMoleculeTypeError, match=r"The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Sequence."):
-        FhirSequence(**example_sequence_profile)
 
-def test_memberState_not_allowed(example_sequence_profile):
-    example_sequence_profile["memberState"] = Reference(reference="test/SequenceProfile",type="test/SequenceProfile",display="NC_000002.12").model_dump()
-    with pytest.raises(ElementNotAllowedError, match=r"`memberState` is not allowed in Sequence."):
-        FhirSequence(**example_sequence_profile)
+def assert_raises_message(exception_type,msg,fn,*args,**kwargs):
+    with pytest.raises(exception_type) as exception_info:
+        fn(*args,**kwargs)
+    assert str(exception_info.value) == msg
 
-def test_location_not_allowed(example_sequence_profile):
-    example_sequence_profile["location"] = {}
-    with pytest.raises(ElementNotAllowedError, match=r"`location` is not allowed in Sequence."):
-        FhirSequence(**example_sequence_profile)
+def test_member_state_not_allowed(valid_sequence):
+    data = deepcopy(valid_sequence)
+    data["memberState"] = Reference(display="Test")
+    assert_raises_message(
+        ElementNotAllowedError,
+        "`memberState` is not allowed in Sequence.",
+        FhirSequence,
+        **data
+    )
+
+def test_location_not_allowed(valid_sequence):
+    data = deepcopy(valid_sequence)
+    data["location"] = []
+    assert_raises_message(
+        ElementNotAllowedError,
+        "`location` is not allowed in Sequence.",
+        FhirSequence,
+        **data
+    )
+
+@pytest.mark.parametrize("molType",[None,{}])
+def test_present_of_molecularType(valid_sequence,molType):
+    data = deepcopy(valid_sequence)
+    data['moleculeType'] = molType
+    assert_raises_message(
+        InvalidMoleculeTypeError,
+        "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele.",
+        FhirSequence,
+        **data
+    )
