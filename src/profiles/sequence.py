@@ -49,7 +49,7 @@ class Sequence(MolecularDefinition):
         """
         mt = getattr(self,"moleculeType", None)
 
-        if mt is None:
+        if not mt:
             raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
                 )
