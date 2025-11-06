@@ -74,7 +74,7 @@ class Allele(MolecularDefinition):
         """
         mt = getattr(self,"moleculeType", None)
 
-        if mt is None:
+        if not mt:
             raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
                 )
@@ -161,7 +161,7 @@ class Allele(MolecularDefinition):
                 # card. of display must be 1..1
                 display = getattr(coding, "display", None)
 
-                if code is None:
+                if not code:
                     raise MissingFocusCodingCode(
                         f"representation[{idx}].focus.coding is missing a 'code' element.")
 
