@@ -1,6 +1,6 @@
 
 from fhir.resources import backboneelement, domainresource, fhirtypes
-from fhir_core.types import BooleanType, CodeType, IntegerType, StringType
+from fhir_core.types import BooleanType, CodeType, IntegerType
 from pydantic import Field
 
 import resources.fhirtypesextra as fhirtypesextra
@@ -577,7 +577,7 @@ class MolecularDefinitionRepresentationLiteral(backboneelement.BackboneElement):
         },
     )
 
-    value: StringType = Field(  # type: ignore
+    value: fhirtypesextra.EmptyStringType = Field(  # type: ignore
         ...,
         alias="value",
         title="The primary (linear) sequence, expressed as a literal string",
