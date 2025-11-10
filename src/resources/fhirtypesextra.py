@@ -1,6 +1,17 @@
 from __future__ import annotations as _annotations
 
-from fhir_core.types import create_fhir_type
+import dataclasses
+from typing import Annotated
+
+from fhir_core.types import String, create_fhir_type
+
+
+@dataclasses.dataclass(frozen=True)
+class StringAllowEmpty(String):
+    """FHIR String type that allows empty strings (regex updated automatically)."""
+    allow_empty_str = True
+
+EmptyStringType = Annotated[str, StringAllowEmpty()]
 
 MolecularDefinitionType = create_fhir_type(
     "MolecularDefinitionType",
@@ -94,6 +105,7 @@ MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemT
 
 __all__ = [
     # New MolecularDefinition Values
+    "EmptyStringType",
     "MolecularDefinitionType",
     "MolecularDefinitionLocationType",
     "MolecularDefinitionLocationSequenceLocationType",
