@@ -6,7 +6,6 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
-from vrs_tools.hgvs_tools import HgvsToolsLite
 
 from api.seqrepo import SeqRepoClient
 from profiles.variation import Variation
@@ -19,6 +18,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type
+from vrs_tools.hgvs_tools import HgvsToolsLite
 
 
 class VariationTranslation:
@@ -121,7 +121,7 @@ class VariationTranslation:
             "start": start,
             "end": end,
             "ref_seq": ref_seq,
-            "alt_seq": alt_seq
+            "alt_seq": alt_seq,
             }
 
         return self._create_variation_profile(values)
