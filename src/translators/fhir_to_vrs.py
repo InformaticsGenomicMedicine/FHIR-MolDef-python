@@ -171,7 +171,8 @@ class FhirToVrsAlleleTranslator:
             refgetAccession = refget_accession,
             residueAlphabet = residue_alphabet,
             moleculeType=self._validate_molecule_type(molecule_type),
-            circular=False, #NOTE: this is hard coded
+            #TODO/NOTE: No place to put this in the fhir schema/ so we can just hard code it. 
+            # circular=False, 
             sequence=literal_sequence
         )
 
@@ -260,6 +261,8 @@ class FhirToVrsAlleleTranslator:
         """
         residue_alphabet = {
             'DNA': 'na',
+            #TODO: Double check
+            'genomic': 'na',
             'RNA': 'na',
             'protein': 'aa'
         }
@@ -280,6 +283,9 @@ class FhirToVrsAlleleTranslator:
         """
         mapped_molType = {
             'dna': 'genomic',
+            #TODO/NOTE: How do we handle if vrs had MolType as genomic? 
+            # Potentially need to add the code below
+            'genomic': 'genomic',
             'rna': 'RNA',
             'protein': 'protein'
         }
@@ -288,8 +294,8 @@ class FhirToVrsAlleleTranslator:
 
         if molecule_type in mapped_molType:
             return mapped_molType[molecule_type]
-
-        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, protein.")
+        #TODO/NOTE: If i edit the top make sure to change message: 
+        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, protein.") 
 
 # ========== Literal Sequence Expression Mapping ==========
 
@@ -423,7 +429,7 @@ class FhirToVrsAlleleTranslator:
             }
 
 
-            for ext in getattr(literal, "extension", []):
+            for ext in getattr(literal, "extension", None) or []:
                 url = getattr(ext, "url", "") or ""
                 val = self._get_extension_value(ext)
 
@@ -462,7 +468,7 @@ class FhirToVrsAlleleTranslator:
             "extensions": []
         }
 
-        for ext in getattr(ref_seq, "extension", []):
+        for ext in getattr(ref_seq, "extension", None) or []:
             url = getattr(ext, "url", "") or ""
             val = self._get_extension_value(ext)
 
@@ -474,7 +480,7 @@ class FhirToVrsAlleleTranslator:
                 result["description"] = val
             elif SEQ_REF["aliases"] in url:
                 result["aliases"].append(val)
-            elif getattr(ext, "id", None):
+            elif hasattr(ext, "extension"):
                 nested = self._extract_nested_extensions([ext])
                 if nested:
                     result["extensions"].extend(nested)
@@ -511,7 +517,7 @@ class FhirToVrsAlleleTranslator:
                     result["value"] = inner_val
                 elif EXT_PTRS["description"] in inner_url:
                     result["description"] = inner_val
-                elif hasattr(inner_ext, "extension") or "extension" in inner_ext:
+                elif hasattr(inner_ext, "extension"):
                     nested_ext.extend(self._extract_nested_extensions([inner_ext]))
 
             if nested_ext:
