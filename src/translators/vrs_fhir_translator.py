@@ -14,7 +14,6 @@ from ga4gh.vrs.models import (
 )
 
 from api.seqrepo import SeqRepoClient
-from vrs_tools.normalizer import VariantNormalizer
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
@@ -29,11 +28,12 @@ from translators.allele_utils import (
     detect_sequence_type,
     is_valid_allele_profile,
     is_valid_vrs_allele,
+    translate_sequence_id,
     validate_accession,
     validate_indexing,
-    translate_sequence_id
 )
 from translators.sequence_expression_translator import SequenceExpressionTranslator
+from vrs_tools.normalizer import VariantNormalizer
 
 
 class VrsFhirAlleleTranslator:
@@ -317,10 +317,6 @@ class VrsFhirAlleleTranslator:
             moleculeType=mol_type,
             representation=[representation_sequence],
         )
-
-        if alt_allele == "":
-            # NOTE: Empty string is invalid per FHIR string rules — use space instead.
-            alt_allele = " "
 
         start_quant = Quantity(value=int(start_pos))
         end_quant = Quantity(value=int(end_pos))
