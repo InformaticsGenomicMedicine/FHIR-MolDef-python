@@ -2,16 +2,32 @@
 
 import argparse
 import gzip
-
 import logging
 import time
+from dataclasses import dataclass
 from datetime import datetime
+from pathlib import Path
 
 import orjson
 from ga4gh.vrs.models import Allele
 
 from translators.vrs_to_fhir import VrsToFhirAlleleTranslator
 
+
+@dataclass
+class FinalStats:
+    file_name: str
+    start_date: str
+    start_time: str
+    end_date: str
+    end_time: str
+    duration_seconds: float
+    total_lines_read: int
+    vrs_allele_seen: int
+    total_translated: int
+    failed_vrs_allele_validation: int
+    failed_vrs_to_fhir_translation: int
+    total_failed: int
 
 class FastTranslation:
 
@@ -25,19 +41,19 @@ class FastTranslation:
 
         invalid_allele_log = open(invalid_allele_path, "ab")
         invalid_fhir_trans_log = open(invalid_fhir_path, "ab")
-        stats = open("translational_stats.txt", "wb")
+        stats = open("runtime_stats.txt", "wb")
 
         total_translated = 0
         failed_vrs_allele_validation = 0
         failed_vrs_to_fhir_translation = 0
-        lines_read = 0
-        allele_members_seen = 0
+        total_lines_read = 0
+        vrs_allele_seen = 0
 
         try:
             with open(outputfile, "ab") as out_f:
                 with gzip.open(inputfile, "rt", encoding="utf-8") as f:
                     for line_num, line in enumerate(f, 1):
-                        lines_read += 1
+                        total_lines_read += 1
                         if limit is not None and line_num > limit:
                             break
                         try:
@@ -50,7 +66,7 @@ class FastTranslation:
                         for member in members:
                             if not (isinstance(member, dict) and member.get("type") == "Allele"):
                                 continue
-                            allele_members_seen += 1
+                            vrs_allele_seen += 1
                             try:
                                 vo = Allele(**member)
                             except Exception as e:
@@ -85,17 +101,20 @@ class FastTranslation:
             ended_at_wall = datetime.now()
             duration = max(t1 - t0, 1e-9)
 
-            final_stats = {
-                "started_at": started_at_wall.isoformat(timespec="seconds"),
-                "ended_at": ended_at_wall.isoformat(timespec="seconds"),
-                "duration_seconds": round(duration, 3),
-                "lines_read": lines_read,
-                "allele_members_seen": allele_members_seen,
-                "total_translated": total_translated,
-                "failed_vrs_allele_validation": failed_vrs_allele_validation,
-                "failed_vrs_to_fhir_translation": failed_vrs_to_fhir_translation,
-                "total_failed": failed_vrs_allele_validation + failed_vrs_to_fhir_translation,
-            }
+            final_stats = FinalStats(
+                file_name=Path(inputfile).name,
+                start_date=started_at_wall.date().isoformat(),
+                start_time=started_at_wall.time().isoformat(timespec="seconds"),
+                end_date=ended_at_wall.date().isoformat(),
+                end_time=ended_at_wall.time().isoformat(timespec="seconds"),
+                duration_seconds=round(duration, 2),
+                total_lines_read=total_lines_read,
+                vrs_allele_seen=vrs_allele_seen,
+                total_translated=total_translated,
+                failed_vrs_allele_validation=failed_vrs_allele_validation,
+                failed_vrs_to_fhir_translation=failed_vrs_to_fhir_translation,
+                total_failed=failed_vrs_allele_validation + failed_vrs_to_fhir_translation,
+                )
 
             stats.write(orjson.dumps(final_stats, option=orjson.OPT_INDENT_2) + b"\n")
             stats.close()
@@ -109,8 +128,8 @@ class FastTranslation:
             description="Load a dataset and translate allele expressions (tabular) or VRS 'out' objects (jsonl) to FHIR"
         )
         parser.add_argument("input_gzip", help="Path to gzipped JSONL file")
-        parser.add_argument("--invalid-allele-log", default="invalid_alleles.jsonl")
-        parser.add_argument("--invalid-fhir-log", default="invalid_fhir_trans.jsonl")
+        parser.add_argument("--invalid-allele-log", default="invalid_vrs_alleles.jsonl")
+        parser.add_argument("--invalid-fhir-log", default="invalid_trans_to_fhir.jsonl")
         parser.add_argument("--limit", type=int, help="Process only this many lines from input")
         parser.add_argument("--verbose", action="store_true", help="Enable detailed logging")
 
