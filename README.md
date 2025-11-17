@@ -13,7 +13,7 @@ To help you get started, we provide Jupyter notebooks that serve as an education
 
 * It does **not** align with the schema provided in the HL7 FHIR 6.0.0 Ballot 2 version available here: [FHIR Ballot 2 Schema](https://hl7.org/fhir/6.0.0-ballot2/moleculardefinition.html).  
 
-* ⚠️ **Note**: The [Work in Progress Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html) page may occasionally be unavailable due to active development. This downtime is beyond our group's control. If the page is temporarily inaccessible, we recommend trying again later.
+* **Note**: The [Work in Progress Schema](https://build.fhir.org/branches/cg-im-moldef_work_in_progress_2/moleculardefinition.html) page may occasionally be unavailable due to active development. This downtime is beyond our group's control. If the page is temporarily inaccessible, we recommend trying again later.
 
 
 ## Features
@@ -94,12 +94,12 @@ If you're new to using **Codespaces**, the following resources may be helpful:
 * Start off by clicking the Codespaces badge above to get started.
 * A prompt to build a code space will pop up with certain specifications.
 * Click on **Create Codespace**.
-* ⚠️ **NOTE**: This will take a few minutes to build your virtual machine. A message will appear in the terminal indicating the progress:
+* **NOTE**: This will take a few minutes to build your virtual machine. A message will appear in the terminal indicating the progress:
     ```bash
     Finishing up...
     Running postCreateCommand...
     ```
-* ⚠️ **NOTE**: If you encounter the following GitHub Codespace error:
+* **NOTE**: If you encounter the following GitHub Codespace error:
 
     > _"Oh no, it looks like you are offline! Make sure you are connected to the internet and try again. If you verified that your connection is fine, your firewall might be blocking the connection."_
 
@@ -119,7 +119,7 @@ If you're new to using **Codespaces**, the following resources may be helpful:
     ```plaintext
     Python 3.11.11 /usr/local/bin/python
     ```
-* ⚠️ **NOTE**: This step must be performed for each notebook that you intend to execute.
+* **NOTE**: This step must be performed for each notebook that you intend to execute.
 
 ## 4. Running Notebooks
 * Once the appropriate kernel is selected, you can proceed to run the cells inside the Jupyter notebooks.
