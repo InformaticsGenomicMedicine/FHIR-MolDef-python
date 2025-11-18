@@ -505,6 +505,10 @@ class FhirToVrsAlleleTranslator:
             ext_id = getattr(ext, "id", None)
             result = {"id": ext_id}
             inner_extensions = getattr(ext, "extension", [])
+
+            if inner_extensions is None: #to avoid extensions that are none. Prefer to find a better solution.
+                continue
+
             nested_ext = []
 
             for inner_ext in inner_extensions:
