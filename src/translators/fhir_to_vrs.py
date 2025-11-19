@@ -392,7 +392,7 @@ class FhirToVrsAlleleTranslator:
                     result["digest"] = val
                 elif SEQ_LOC["aliases"] in url:
                     result["aliases"].append(val)
-                elif getattr(ext, "id", None):
+                elif getattr(ext, "extension"):
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)
@@ -439,7 +439,7 @@ class FhirToVrsAlleleTranslator:
                     result["description"] = val
                 elif LSE["aliases"] in url:
                     result["aliases"].append(val)
-                elif getattr(ext, "id", None):
+                elif getattr(ext,"extension"):
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)
