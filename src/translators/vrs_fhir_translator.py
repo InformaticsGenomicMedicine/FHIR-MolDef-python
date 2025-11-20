@@ -5,6 +5,7 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
+from ga4gh.vrs.dataproxy import create_dataproxy
 from ga4gh.vrs.models import (
     Allele,
     LiteralSequenceExpression,
@@ -13,7 +14,6 @@ from ga4gh.vrs.models import (
     sequenceString,
 )
 
-from api.seqrepo import SeqRepoClient
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
@@ -39,11 +39,10 @@ from vrs_tools.normalizer import VariantNormalizer
 class VrsFhirAlleleTranslator:
     """Handles VRS <-> FHIR Allele conversion for 'contained' format."""
 
-    def __init__(self):
-        self.seqrepo_api = SeqRepoClient()
-        self.dp = self.seqrepo_api.dataproxy
+    def __init__(self, dp=None, uri: str | None = None):
+        self.dp = dp or create_dataproxy(uri=uri)
         self.service = VariantNormalizer(dataproxy=self.dp)
-        self.rsl_to = SequenceExpressionTranslator()
+        self.rsl_to = SequenceExpressionTranslator(dp=self.dp)
 
     ##############################################################
 

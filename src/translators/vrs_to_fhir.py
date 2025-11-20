@@ -4,8 +4,8 @@ from fhir.resources.extension import Extension
 from fhir.resources.identifier import Identifier
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
+from ga4gh.vrs.dataproxy import create_dataproxy
 
-from api.seqrepo import SeqRepoClient
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
@@ -33,10 +33,9 @@ from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_
 
 class VrsToFhirAlleleTranslator:
 
-    def __init__(self):
-        self.seqrepo_api = SeqRepoClient()
-        self.dp = self.seqrepo_api.dataproxy
-        self.rsl_to = SequenceExpressionTranslator()
+    def __init__(self, dp=None, uri: str | None = None):
+        self.dp = dp or create_dataproxy(uri=uri)
+        self.rsl_to = SequenceExpressionTranslator(dp=self.dp)
 
     def translate_allele_to_fhir(self,vrs_allele):
         is_valid_vrs_allele(vrs_allele)

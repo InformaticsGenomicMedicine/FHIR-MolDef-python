@@ -1,13 +1,11 @@
+from ga4gh.vrs.dataproxy import create_dataproxy
 from ga4gh.vrs.models import LiteralSequenceExpression
 from ga4gh.vrs.normalize import denormalize_reference_length_expression
 
-from api.seqrepo import SeqRepoClient
-
 
 class SequenceExpressionTranslator:
-    def __init__(self):
-        seqrepo_api = SeqRepoClient()
-        self.dp = seqrepo_api.dataproxy
+    def __init__(self,dp=None, uri: str | None = None):
+        self.dp = dp or create_dataproxy(uri=uri)
 
     def translate_rle_to_lse(self, ao):
 

@@ -1,4 +1,5 @@
-from api.seqrepo import SeqRepoClient
+from ga4gh.vrs.dataproxy import create_dataproxy
+
 from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
@@ -10,9 +11,8 @@ class RepresentationTranslator:
     """A class to handle the translation between HL7 FHIR Molecular Definition Representations, including extracted, repeated, and relative representations, into literal representations.
     Currently, RepresentationTranslator can only handle extracted and repeated representations.
     """
-    def __init__(self):
-        seqrepo_api = SeqRepoClient()
-        self.dp = seqrepo_api.dataproxy
+    def __init__(self, dp=None, uri: str | None = None):
+        self.dp = dp or create_dataproxy(uri=uri)
 
     def _validate_representation(self, expression):
         if not hasattr(expression, "representation"):
