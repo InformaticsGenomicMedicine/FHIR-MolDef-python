@@ -12,7 +12,6 @@ from ga4gh.vrs.models import (
     sequenceString,
 )
 
-from api.seqrepo import SeqRepoClient
 from vrs_tools.normalizer import VariantNormalizer
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
@@ -25,6 +24,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, validate_accession
+from ga4gh.vrs.dataproxy import create_dataproxy
 
 
 class AlleleFactory:
@@ -33,9 +33,8 @@ class AlleleFactory:
     This function specifically creates an FHIR Allele for Literal Value representation.
     """
 
-    def __init__(self):
-        self.seqrepo_api = SeqRepoClient()
-        self.dp = self.seqrepo_api.dataproxy
+    def __init__(self, dp=None, uri: str | None = None):
+        self.dp = dp or create_dataproxy(uri=uri)
         self.service = VariantNormalizer(dataproxy=self.dp)
 
     def _refseq_to_fhir_id(self, refseq_accession):
@@ -164,6 +163,7 @@ class AlleleFactory:
                 Coding(
                     system="http://hl7.org/fhir/moleculardefinition-focus",
                     code="allele-state",
+                    display="Allele State"
                 )
             ]
         )

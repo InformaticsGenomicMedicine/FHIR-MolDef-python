@@ -6,8 +6,8 @@ from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
+from ga4gh.vrs.dataproxy import create_dataproxy
 
-from api.seqrepo import SeqRepoClient
 from profiles.variation import Variation
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
@@ -23,9 +23,8 @@ from vrs_tools.hgvs_tools import HgvsToolsLite
 
 class VariationTranslation:
 
-    def __init__(self):
-        self.seqrepo = SeqRepoClient()
-        self.dp = self.seqrepo.dataproxy
+    def __init__(self, dp=None, uri: str | None = None):
+        self.dp = dp or create_dataproxy(uri=uri)
         #most likely need to replace this
         self.hgvs_tools = HgvsToolsLite(data_proxy=self.dp)
 
