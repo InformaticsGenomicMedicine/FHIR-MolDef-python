@@ -1,16 +1,7 @@
 ## FHIR-MolDef-Python Educational Notebook Series
 
-This repository contains a collection of interactive Jupyter notebooks designed to provide a hands-on introduction to the **FHIR-MolDef-Python** codebase. The notebooks cover working with the **HL7 FHIR MolecularDefinition Resource**, exploring **Profiles**, and implementing bidirectional **translation between GA4GH VRS (v2.0)** and **HL7 FHIR MolecularDefinition**.
-
-### **Recommended Knowledge**
-
-To get the most out of these notebooks, we recommend the following prerequisites:
-   - Familiarity with **Jupyter Notebook** and **Python**.
-   - An understanding of the **HL7 FHIR MolecularDefinition** schema, you can review it here: [FHIR MolecularDefinition Schema](https://build.fhir.org/moleculardefinition.html).
-   - Knowledge of the **GA4GH VRS (v2.0)** schema, which is essential for bidirectional translation. Documentation is available here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/stable/).
-
-For setup instructions, including how to run these notebooks in **Codespaces**, refer to the main project [README](../README.md).
-
+This repository includes a set of interactive Jupyter notebooks that provide a hands-on introduction to the 
+**FHIR-MolDef-Python** codebase. The notebooks demonstrate how to work with the **HL7 FHIR MolecularDefinition Resource**, exploring its associated **Profiles**, and perform bidirectional translation between **GA4GH VRS (v2.0)** and **HL7 FHIR MolecularDefinition**.
 
 ## Notebook Categories
 
@@ -51,4 +42,64 @@ For setup instructions, including how to run these notebooks in **Codespaces**, 
    - Streams compressed .jsonl.gz ClinVar files efficiently and filters for VRS Allele records.
    - Extracts representative VRS Allele objects and performs VRS Allele to FHIR Allele Profile translation.  
    - Currently translates a subset (~20K examples); full dataset support and a CLI tool are in development.  
+
+<!-- ### **Recommended Knowledge**
+
+To get the most out of these notebooks, we recommend the following prerequisites:
+   - Familiarity with **Jupyter Notebook** and **Python**.
+   - An understanding of the **HL7 FHIR MolecularDefinition** schema, you can review it here: [FHIR MolecularDefinition Schema](https://build.fhir.org/moleculardefinition.html).
+   - Knowledge of the **GA4GH VRS (v2.0)** schema, which is essential for bidirectional translation. Documentation is available here: [GA4GH VRS Schema](https://vrs.ga4gh.org/en/stable/).
+
+For setup instructions, including how to run these notebooks in **Codespaces**, refer to the main project [README](../README.md). -->
+
+## Interacting with Notebooks
+To interact with the FHIR-MolDef-python, you can use GitHub Codespaces to access and work with the Jupyter Notebooks directly. If you plan to make changes, please fork the repository and submit your suggestions or modifications via an issue and a pull request. Personal accounts receive 120 free hours of Codespaces usage, while Pro accounts receive 180 hours. Be aware that Codespaces has a default timeout period of 30 minutes. For more information about Codespaces, refer to the links provided below. If you're already familiar with Codespaces and Jupyter Notebooks, you can proceed with the instructions below.
+
+If you're new to using **Codespaces**, the following resources may be helpful:
+* [Codespaces Overview](https://docs.github.com/en/codespaces/overview)
+* [Codespaces Getting Started Documentation](https://docs.github.com/en/codespaces/getting-started/quickstart)
+
+## Access Notebooks (Codespace)
+
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://github.com/codespaces/new?hide_repo_select=true&ref=main&repo=905915041)
+
+## 1. Starting Codespace
+* Start off by clicking the Codespaces badge above to get started.
+* A prompt to build a code space will pop up with certain specifications.
+* Click on **Create Codespace**.
+* **NOTE**: This will take a few minutes to build your virtual machine. A message will appear in the terminal indicating the progress:
+    ```bash
+    Finishing up...
+    Running postCreateCommand...
+    ```
+* **NOTE**: If you encounter the following GitHub Codespace error:
+
+    > _"Oh no, it looks like you are offline! Make sure you are connected to the internet and try again. If you verified that your connection is fine, your firewall might be blocking the connection."_
+
+    This issue is most likely caused by an active **VPN**. To resolve it:
+    
+    * Sign out of your **VPN** and try again.
+    * If the issue persists, check your security settings or network configuration.
+
+## 2. Selecting Kernel
+* Navigate to the notebooks and select a notebook you wish to run.
+* Locate the **Select Kernel** option on the top right-hand side of the interface.
+* Click on **Select Kernel**.
+
+## 3. Choosing Python Environment
+* After clicking **Select Kernel**, a pop-up will appear. Choose **Python Environment...**.
+* From the dropdown menu, select:
+    ```plaintext
+    Python 3.11.11 /usr/local/bin/python
+    ```
+* **NOTE**: This step must be performed for each notebook that you intend to execute.
+
+## 4. Running Notebooks
+* Once the appropriate kernel is selected, you can proceed to run the cells inside the Jupyter notebooks.
+* 💡 **Tip**: Use `Shift + Enter` to execute a cell quickly.
+
+## 5. Deactivating Codespace
+* On the bottom left corner of your browser, click on **CodeSpaces:** (highlighted in blue).
+* A pop-up will appear. Then, click **Stop Current Codespace**.
+* Once this is done, you have successfully deactivated your Codespace.
 
