@@ -24,6 +24,7 @@ class FinalStats:
     duration_seconds: float
     total_lines_read: int
     vrs_allele_seen: int
+    vrs_allele_types: dict
     total_translated: int
     failed_vrs_allele_validation: int
     failed_vrs_to_fhir_translation: int
@@ -48,14 +49,21 @@ class FastTranslation:
         failed_vrs_to_fhir_translation = 0
         total_lines_read = 0
         vrs_allele_seen = 0
-
+        allele_type ={
+            'lse_count': 0,
+            'rle_count': 0,
+            'other_count': 0}
+        
         try:
             with open(outputfile, "ab") as out_f:
                 with gzip.open(inputfile, "rt", encoding="utf-8") as f:
                     for line_num, line in enumerate(f, 1):
-                        total_lines_read += 1
+
                         if limit is not None and line_num > limit:
                             break
+
+                        total_lines_read += 1
+                        
                         try:
                             obj = orjson.loads(line)
                             members = obj.get("members", [])
@@ -69,12 +77,22 @@ class FastTranslation:
                             vrs_allele_seen += 1
                             try:
                                 vo = Allele(**member)
+
                             except Exception as e:
                                 failed_vrs_allele_validation += 1
 
                                 invalid_allele = {"line": line_num, "error": str(e), "member": member}
                                 invalid_allele_log.write(orjson.dumps(invalid_allele) + b"\n")
                                 continue
+
+                            state_type = vo.state.type
+
+                            if "LiteralSequenceExpression" in state_type:
+                                    allele_type["lse_count"] += 1
+                            elif "ReferenceLengthExpression" in state_type:
+                                    allele_type["rle_count"] += 1
+                            else:
+                                allele_type["other_count"] += 1
 
                             try:
                                 fhir_obj = self.vrs_translator.translate_allele_to_fhir(vo)
@@ -110,6 +128,7 @@ class FastTranslation:
                 duration_seconds=round(duration, 2),
                 total_lines_read=total_lines_read,
                 vrs_allele_seen=vrs_allele_seen,
+                vrs_allele_types=allele_type,
                 total_translated=total_translated,
                 failed_vrs_allele_validation=failed_vrs_allele_validation,
                 failed_vrs_to_fhir_translation=failed_vrs_to_fhir_translation,
