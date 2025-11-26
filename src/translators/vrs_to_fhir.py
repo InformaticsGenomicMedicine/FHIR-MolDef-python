@@ -472,8 +472,28 @@ class VrsToFhirAlleleTranslator:
                 display="0-based interval counting"
                 )]
             )
+        origin = CodeableConcept(
+                coding=[Coding(
+                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/coordinate-origin",
+                        code =  "sequence-start",
+                        display =  "Sequence start",
+                )
+                ]
+            )
+
+        normalizationMethod = CodeableConcept(
+                coding=[Coding(
+                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/normalization-method",
+                        code =  "fully-justified", 
+                        display = "Fully justified" 
+                )
+                ]
+            )
+        
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-            system=coord_system
+            system=coord_system,
+            origin=origin,
+            normalizationMethod=normalizationMethod
         )
 
         return MolecularDefinitionLocationSequenceLocationCoordinateInterval(
