@@ -18,7 +18,12 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type
+from translators.utils.hardcoded import (
+    hgvs_coordinate_interval,
+    spdi_coordinate_interval,
+)
 from vrs_tools.hgvs_tools import HgvsToolsLite
+
 
 class VariationTranslation:
 
@@ -27,70 +32,10 @@ class VariationTranslation:
         #most likely need to replace this
         self.hgvs_tools = HgvsToolsLite(data_proxy=self.dp)
 
-    def _spdi_coordinate_interval(self):
-        system = CodeableConcept(
-                coding=[Coding(
-                        system="http://loinc.org",
-                        code =  "LA30100-4",
-                        display =  "0-based interval counting",
-                )
-                ]
-            )
-        
-        origin = CodeableConcept(
-                coding=[Coding(
-                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/coordinate-origin",
-                        code =  "sequence-start",
-                        display =  "Sequence start",
-                )
-                ]
-            )
-
-        normalizationMethod = CodeableConcept(
-                coding=[Coding(
-                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/normalization-method",
-                        code =  "fully-justified", 
-                        display = "Fully justified" 
-                )
-                ]
-            )
-        
-        return system, origin, normalizationMethod
-    
-    def _hgvs_coordinate_interval(self):
-        system = CodeableConcept(
-                coding=[Coding(
-                        system="http://loinc.org",
-                        code =  "LA30102-0",
-                        display =  "1-based character counting",
-                )
-                ]
-            )
-        
-        origin = CodeableConcept(
-                coding=[Coding(
-                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/coordinate-origin",
-                        code =  "feature-start",
-                        display =  "Feature start",
-                )
-                ]
-            )
-
-        normalizationMethod = CodeableConcept(
-                coding=[Coding(
-                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/normalization-method",
-                        code =  "right-shift", 
-                        display = "Right shift" 
-                )
-                ]
-            )
-        
-        return system, origin, normalizationMethod
-    
     def _hgvs_position(self, sv):
         pos = sv.posedit.pos
         return pos.start.base, pos.end.base
-    
+
     # TODO: This function was copied from another module. Consider moving it to `allele_utils.py`.
     # NOTE: The name `allele_utils` might not be ideal, since this function is also used in the
     #       variation module, which could cause confusion.
@@ -156,7 +101,7 @@ class VariationTranslation:
         return self._create_variation_profile(values,fmt="spdi")
 
     def _from_hgvs(self,hgvs_expr):
-        
+
         sv = self.hgvs_tools.parse(hgvs_expr)
         if not sv:
             return None
@@ -180,7 +125,7 @@ class VariationTranslation:
                 ref_seq = sv.posedit.edit.alt or ""
         else:
             raise NotImplementedError(f"Unsupported HGVS edit type: {edit_type}")
-        
+
         start,end = self._hgvs_position(sv)
 
         values = {
@@ -215,9 +160,9 @@ class VariationTranslation:
                 )])
 
         if fmt == "hgvs":
-            coord_system_values, coord_system_origin, normalization_method = self._hgvs_coordinate_interval()
+            coord_system_values, coord_system_origin, normalization_method = hgvs_coordinate_interval()
         elif fmt == "spdi":
-            coord_system_values, coord_system_origin, normalization_method = self._spdi_coordinate_interval()
+            coord_system_values, coord_system_origin, normalization_method = spdi_coordinate_interval()
 
         fhir_id = self._refseq_to_fhir_id(refseq_accession=values["refget_accession"])
 

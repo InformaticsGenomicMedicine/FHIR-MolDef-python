@@ -22,6 +22,7 @@ from translators.allele_utils import (
     translate_sequence_id,
 )
 from translators.sequence_expression_translator import SequenceExpressionTranslator
+from translators.utils.hardcoded import vrs_coordinate_interval
 from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import (
@@ -464,34 +465,10 @@ class VrsToFhirAlleleTranslator:
         Maps a VRS allele's start and end coordinates to a FHIR CoordinateInterval using 0-based interbase indexing.
         """
         start, end = Quantity(value=int(ao.location.start)),Quantity(value=int(ao.location.end))
-        #NOTE: This is hard coded
-        coord_system = CodeableConcept(
-            coding=[Coding(
-                system="http://loinc.org",
-                code="LA30100-4",
-                display="0-based interval counting"
-                )]
-            )
-        origin = CodeableConcept(
-                coding=[Coding(
-                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/coordinate-origin",
-                        code =  "sequence-start",
-                        display =  "Sequence start",
-                )
-                ]
-            )
 
-        normalizationMethod = CodeableConcept(
-                coding=[Coding(
-                        system="http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/normalization-method",
-                        code =  "fully-justified", 
-                        display = "Fully justified" 
-                )
-                ]
-            )
-        
+        system, origin, normalizationMethod = vrs_coordinate_interval()
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-            system=coord_system,
+            system=system,
             origin=origin,
             normalizationMethod=normalizationMethod
         )

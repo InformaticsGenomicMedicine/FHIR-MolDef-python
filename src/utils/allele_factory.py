@@ -24,6 +24,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, validate_accession
+from translators.utils.hardcoded import vrs_coordinate_interval
 from ga4gh.vrs.dataproxy import create_dataproxy
 
 
@@ -145,15 +146,8 @@ class AlleleFactory:
             moleculeType=mol_type,
             representation=[representation_sequence],
         )
-        coord_system = CodeableConcept(
-            coding=[
-                {
-                    "system": "http://loinc.org",
-                    "code": "LA30100-4",
-                    "display": "0-based interval counting",
-                }
-            ]
-        )
+        
+        system, origin, normalizationMethod = vrs_coordinate_interval()
 
         seq_context = Reference(
             reference=f"#{sequence_profile.id}", type="MolecularDefinition"
@@ -176,7 +170,9 @@ class AlleleFactory:
         )
 
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-            system=coord_system
+            system=system,
+            origin=origin,
+            normalizationMethod=normalizationMethod
         )
         coord_interval = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
             coordinateSystem=coord_system_fhir,
