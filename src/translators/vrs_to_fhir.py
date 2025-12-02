@@ -22,7 +22,7 @@ from translators.allele_utils import (
     translate_sequence_id,
 )
 from translators.sequence_expression_translator import SequenceExpressionTranslator
-from translators.utils.hardcoded import vrs_coordinate_interval
+from translators.utils.coordinate_systems import vrs_coordinate_interval
 from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.vrs_json_pointers import (

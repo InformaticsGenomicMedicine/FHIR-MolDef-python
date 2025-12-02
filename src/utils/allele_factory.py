@@ -24,7 +24,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from translators.allele_utils import detect_sequence_type, validate_accession
-from translators.utils.hardcoded import vrs_coordinate_interval
+from translators.utils.coordinate_systems import vrs_coordinate_interval
 from ga4gh.vrs.dataproxy import create_dataproxy
 
 

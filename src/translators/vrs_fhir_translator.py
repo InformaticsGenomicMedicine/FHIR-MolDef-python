@@ -33,6 +33,7 @@ from translators.allele_utils import (
     validate_indexing,
 )
 from translators.sequence_expression_translator import SequenceExpressionTranslator
+from translators.utils.coordinate_systems import vrs_coordinate_interval
 from vrs_tools.normalizer import VariantNormalizer
 
 
@@ -320,14 +321,8 @@ class VrsFhirAlleleTranslator:
         start_quant = Quantity(value=int(start_pos))
         end_quant = Quantity(value=int(end_pos))
 
-        coord_system = CodeableConcept(
-            coding=[Coding(
-                    system="http://loinc.org",
-                    code =  "LA30100-4",
-                    display =  "0-based interval counting",
-            )
-            ]
-        )
+        system, origin, normalizationMethod = vrs_coordinate_interval()
+
         seq_context = Reference(
             reference=f"#{sequence_profile.id}", type="MolecularDefinition"
         )
@@ -346,7 +341,9 @@ class VrsFhirAlleleTranslator:
         moldef_repr = MolecularDefinitionRepresentation(focus=focus_value, literal=moldef_literal)
 
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-            system=coord_system
+            system=system,
+            origin=origin,
+            normalizationMethod=normalizationMethod
         )
         coord_interval = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
             coordinateSystem=coord_system_fhir,
