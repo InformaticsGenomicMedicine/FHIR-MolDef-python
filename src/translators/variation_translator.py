@@ -160,7 +160,7 @@ class VariationTranslation:
                 )])
 
         if fmt == "hgvs":
-            coord_system_values, coord_system_origin, normalization_method = hgvs_coordinate_interval()
+            coord_system_values, coord_system_origin, normalization_method = hgvs_coordinate_interval(molType=sequence_type)
         elif fmt == "spdi":
             coord_system_values, coord_system_origin, normalization_method = spdi_coordinate_interval()
 

@@ -66,9 +66,23 @@ def vrs_coordinate_interval():
         FULLY_JUSTIFIED_NORMALIZATION,
     )
 
-def hgvs_coordinate_interval():
-    return (
-        ONE_BASE_INTERVAL_SYSTEM,
-        FEATURE_START_ORIGIN,
-        RIGHT_SHIFT_NORMALIZATION,
-    )
+def hgvs_coordinate_interval(molType):
+
+    if molType == "DNA":
+        return (
+            ONE_BASE_INTERVAL_SYSTEM,
+            FEATURE_START_ORIGIN,
+            RIGHT_SHIFT_NORMALIZATION,
+        )
+
+    elif molType in ("RNA", "protein"):
+        return (
+            ONE_BASE_INTERVAL_SYSTEM,
+            SEQUENCE_START_ORIGIN,
+            RIGHT_SHIFT_NORMALIZATION,
+        )
+
+    else:
+        raise ValueError(f"Unsupported molecular type: {molType}")
+
+
