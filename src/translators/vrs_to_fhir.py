@@ -16,20 +16,22 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.allele_utils import (
+from translators.utils.refseq import (
     detect_sequence_type,
-    is_valid_vrs_allele,
     translate_sequence_id,
 )
+from translators.utils.allele import (
+    is_valid_vrs_allele,
+)
 from translators.sequence_expression_translator import SequenceExpressionTranslator
-from translators.utils.coordinate_systems import vrs_coordinate_interval
-from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
-from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
-from translators.vrs_json_pointers import (
+from translators.constants.coordinate_systems import vrs_coordinate_interval
+from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
+from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
+from translators.constants.vrs_json_pointers import (
     literal_sequence_expression_identifiers as LSE_PTRS,
 )
-from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC_PTRS
-from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
+from translators.constants.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC_PTRS
+from translators.constants.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
 
 
 class VrsToFhirAlleleTranslator:
@@ -48,7 +50,7 @@ class VrsToFhirAlleleTranslator:
             identifier= self.map_identifiers(vrs_allele),
             contained=self.map_contained(vrs_allele),
             description = self.map_description(vrs_allele),
-            # NOTE: The moleculeType is inferred based on the refget accession.
+            # NOTE: The moleculeType is inferred based on if it is present in the allele or the refget accession.
             moleculeType=self.map_mol_type(vrs_allele),
             #NOTE: At this time we will not be supporting Exension.
             # extension = self.map_extensions(vrs_allele),
@@ -86,17 +88,29 @@ class VrsToFhirAlleleTranslator:
         Returns:
             CodeableConcept: A FHIR-compliant CodeableConcept indicating the sequence type (e.g., DNA, RNA, or AA) based on the detected molecular type.
         """
+        molType_map = {
+            "genomic": 'dna',
+            "RNA": "rna",
+            "mRNA": "rna",
+            "protein": "amino acid"
+        }
 
-        refget_accession = translate_sequence_id(dp=self.dp, expression=ao)
+        molType = getattr(ao.location.sequenceReference, "moleculeType",None)
 
-        sequence_type = detect_sequence_type(refget_accession)
+        if not molType:
+            refget_accession = translate_sequence_id(dp=self.dp, expression=ao)
+            sequence_type = detect_sequence_type(refget_accession)
+        else:
+            sequence_type = molType
+        
+        molType = molType_map.get(sequence_type)
 
         return CodeableConcept(
             coding=[
                 Coding(
-                    system="http://hl7.org/fhir/sequence-type",
-                    code=sequence_type.lower(),
-                    display=f"{sequence_type} Sequence"
+                    system=SEQ_REF_PTRS["moleculeType"],
+                    code=molType.lower(),
+                    display=f"{molType} Sequence"
                 )
             ]
         )
@@ -517,7 +531,7 @@ class VrsToFhirAlleleTranslator:
         """
         contained = []
 
-        if getattr(ao.location, "sequence", ""): #TODO: Double check this, this might need to be None instead of ""
+        if getattr(ao.location, "sequence", None): 
             seq = self.build_location_sequence(ao)
             if seq:
                 contained.append(seq)
@@ -543,19 +557,12 @@ class VrsToFhirAlleleTranslator:
             FhirSequence: A FHIR SequenceProfile resource built from the sequence data.
         """
         sequence_id = "vrs-location-sequence"
-        sequence_value = self._extract_str(getattr(ao.location, "sequence", ""))
+        sequence_value = self._extract_str(getattr(ao.location, "sequence", None))
 
         rep_literal = MolecularDefinitionRepresentationLiteral(value=sequence_value)
         rep_sequence = MolecularDefinitionRepresentation(literal=rep_literal)
-        refgetAccession = translate_sequence_id(dp= self.dp, expression = ao)
-        sequence_type = detect_sequence_type(refgetAccession)
+        molecule_type = self.map_mol_type(ao)
 
-        molecule_type = CodeableConcept(
-            coding=[Coding(
-                system="http://hl7.org/fhir/sequence-type",
-                code=sequence_type
-            )]
-        )
         return FhirSequence(
             id=sequence_id,
             moleculeType=molecule_type,
@@ -577,7 +584,7 @@ class VrsToFhirAlleleTranslator:
 
         seqref_residueAlphabet = getattr(source, "residueAlphabet", None)
         seqref_sequence = self._extract_str(getattr(source, "sequence", None))
-        seqref_moleculeType = getattr(source, "moleculeType", None)
+        moleculeType = self.map_mol_type(ao)
         #NOTE: Circular is currently not represnted when we are going from vrs to fhir.
 
         # NOTE: While only `refgetAccession` is required, if `sequence` is provided and we want to include `residueAlphabet`,
@@ -587,9 +594,8 @@ class VrsToFhirAlleleTranslator:
         rep_sequence = None
         if seqref_sequence:
             if seqref_residueAlphabet is None:
-                seqref_moleculeType = self._extract_seqref_moleculeType(ao)
-                seqref_residueAlphabet = self._infer_residue_alphabet(seqref_moleculeType)
-
+                get_moltype = getattr(moleculeType.coding[0],"code")
+                seqref_residueAlphabet = self._infer_residue_alphabet(get_moltype)
             if seqref_residueAlphabet:
                 rep_sequence = MolecularDefinitionRepresentationLiteral(
                     value=seqref_sequence,
@@ -611,34 +617,20 @@ class VrsToFhirAlleleTranslator:
             literal=rep_sequence
         )
 
-        if seqref_moleculeType is None:
-            seqref_moleculeType = self._extract_seqref_moleculeType(ao)
-
-        molecule_type = CodeableConcept(
-            coding=[Coding(
-                system=SEQ_REF_PTRS['moleculeType'],
-                code=seqref_moleculeType
-            )]
-        )
 
         return FhirSequence(
             id=seqref_id,
-            moleculeType=molecule_type,
+            moleculeType=moleculeType,
             extension=self._map_seqref_extensions(source=source),
             representation=[representation_sequence]
         )
 
-    def _extract_seqref_moleculeType(self,ao):
-        """Infers the molecule type by translating the sequence ID and detecting its sequence type."""
-        refget_accession = translate_sequence_id(dp=self.dp, expression=ao)
-        return detect_sequence_type(refget_accession)
-
     def _infer_residue_alphabet(self, molecule_type):
         """Maps the molecule type to the corresponding residue alphabet code ('na' or 'aa')."""
         residue_alphabet = {
-            'DNA': 'na',
-            'RNA': 'na',
-            'protein': 'aa'
+            "dna": 'na',
+            "rna": 'na',
+            "amino acid": 'aa'
         }
         return residue_alphabet.get(molecule_type)
 

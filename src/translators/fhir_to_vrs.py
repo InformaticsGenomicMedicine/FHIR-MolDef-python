@@ -8,11 +8,11 @@ from ga4gh.vrs.models import (
     sequenceString,
 )
 
-from translators.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
-from translators.vrs_json_pointers import extension_identifiers as EXT_PTRS
-from translators.vrs_json_pointers import literal_sequence_expression_identifiers as LSE
-from translators.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC
-from translators.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF
+from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
+from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
+from translators.constants.vrs_json_pointers import literal_sequence_expression_identifiers as LSE
+from translators.constants.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC
+from translators.constants.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF
 
 
 class FhirToVrsAlleleTranslator:
@@ -260,11 +260,9 @@ class FhirToVrsAlleleTranslator:
         or None if the molecule type is unrecognized.
         """
         residue_alphabet = {
-            'DNA': 'na',
-            #TODO: Double check
-            'genomic': 'na',
-            'RNA': 'na',
-            'protein': 'aa'
+            'dna': 'na',
+            'rna': 'na',
+            'amino acid': 'aa'
         }
         return residue_alphabet.get(molecule_type)
 
@@ -282,20 +280,17 @@ class FhirToVrsAlleleTranslator:
             str: A molecule type string compatible with VRS. One of 'genomic', 'RNA', or 'protein'.
         """
         mapped_molType = {
-            'dna': 'genomic',
-            #TODO/NOTE: How do we handle if vrs had MolType as genomic? 
-            # Potentially need to add the code below
-            'genomic': 'genomic',
-            'rna': 'RNA',
-            'protein': 'protein'
+            "dna": "genomic",
+            "rna": "RNA",
+            "amino acid": "protein"
         }
 
         molecule_type = molecule_type.lower()
 
         if molecule_type in mapped_molType:
             return mapped_molType[molecule_type]
-        #TODO/NOTE: If i edit the top make sure to change message: 
-        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, protein.") 
+
+        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, amino acid.") 
 
 # ========== Literal Sequence Expression Mapping ==========
 
