@@ -17,8 +17,8 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.allele_utils import detect_sequence_type
-from translators.utils.coordinate_systems import (
+from translators.utils.refseq import detect_sequence_type
+from translators.constants.coordinate_systems import (
     hgvs_coordinate_interval,
     spdi_coordinate_interval,
 )

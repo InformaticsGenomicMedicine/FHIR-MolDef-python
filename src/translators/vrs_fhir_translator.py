@@ -24,7 +24,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.allele_utils import (
+from translators.utils.allele_utils import (
     detect_sequence_type,
     is_valid_allele_profile,
     is_valid_vrs_allele,
@@ -33,7 +33,7 @@ from translators.allele_utils import (
     validate_indexing,
 )
 from translators.sequence_expression_translator import SequenceExpressionTranslator
-from translators.utils.coordinate_systems import vrs_coordinate_interval
+from translators.constants.coordinate_systems import vrs_coordinate_interval
 from vrs_tools.normalizer import VariantNormalizer
 
 
