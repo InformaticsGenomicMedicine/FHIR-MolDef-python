@@ -23,7 +23,7 @@ from translators.utils.refseq import (
 from translators.utils.allele import (
     is_valid_vrs_allele,
 )
-from translators.sequence_expression_translator import SequenceExpressionTranslator
+from translators.utils.allele_denormalizer import AlleleDenormalizer
 from translators.constants.coordinate_systems import vrs_coordinate_interval
 from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
@@ -38,13 +38,13 @@ class VrsToFhirAlleleTranslator:
 
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
-        self.rsl_to = SequenceExpressionTranslator(dp=self.dp)
+        self.allele_denormalizer = AlleleDenormalizer(dp=self.dp)
 
     def translate_allele_to_fhir(self,vrs_allele):
         is_valid_vrs_allele(vrs_allele)
 
         if vrs_allele.state.type == "ReferenceLengthExpression":
-            vrs_allele = self.rsl_to.translate_rle_to_lse(vrs_allele)
+            vrs_allele = self.allele_denormalizer.denormalize_reference_length(vrs_allele)
 
         return FhirAllele(
             identifier= self.map_identifiers(vrs_allele),

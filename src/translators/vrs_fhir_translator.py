@@ -32,7 +32,7 @@ from translators.utils.allele_utils import (
     validate_accession,
     validate_indexing,
 )
-from translators.sequence_expression_translator import SequenceExpressionTranslator
+from translators.utils.allele_denormalizer import AlleleDenormalizer
 from translators.constants.coordinate_systems import vrs_coordinate_interval
 from vrs_tools.normalizer import VariantNormalizer
 
@@ -43,7 +43,7 @@ class VrsFhirAlleleTranslator:
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
         self.service = VariantNormalizer(dataproxy=self.dp)
-        self.rsl_to = SequenceExpressionTranslator(dp=self.dp)
+        self.allele_denormalizer = AlleleDenormalizer(dp=self.dp)
 
     ##############################################################
 
@@ -286,7 +286,7 @@ class VrsFhirAlleleTranslator:
     def translate_allele_to_fhir(self, expression):
 
         if expression.state.type == "ReferenceLengthExpression":
-            expression = self.rsl_to.translate_rle_to_lse(expression)
+            expression = self.allele_denormalizer.denormalize_reference_length(expression)
 
         refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
 
