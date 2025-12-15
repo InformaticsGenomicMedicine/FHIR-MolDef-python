@@ -24,16 +24,15 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.utils.allele_utils import (
+from translators.constants.coordinate_systems import vrs_coordinate_interval
+from translators.utils.allele import is_valid_allele_profile, is_valid_vrs_allele
+from translators.utils.allele_denormalizer import AlleleDenormalizer
+from translators.utils.coordinates import validate_indexing
+from translators.utils.refseq import (
     detect_sequence_type,
-    is_valid_allele_profile,
-    is_valid_vrs_allele,
     translate_sequence_id,
     validate_accession,
-    validate_indexing,
 )
-from translators.utils.allele_denormalizer import AlleleDenormalizer
-from translators.constants.coordinate_systems import vrs_coordinate_interval
 from vrs_tools.normalizer import VariantNormalizer
 
 
