@@ -1,9 +1,9 @@
 # Import required libraries
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
-
 from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
+from ga4gh.vrs.dataproxy import create_dataproxy
 from ga4gh.vrs.models import (
     Allele,
     LiteralSequenceExpression,
@@ -12,7 +12,6 @@ from ga4gh.vrs.models import (
     sequenceString,
 )
 
-from vrs_tools.normalizer import VariantNormalizer
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
@@ -23,12 +22,12 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.utils.refseq import detect_sequence_type, validate_accession
 from translators.constants.coordinate_systems import vrs_coordinate_interval
-from ga4gh.vrs.dataproxy import create_dataproxy
+from translators.utils.refseq import detect_sequence_type, validate_accession
+from vrs_tools.normalizer import VariantNormalizer
 
 
-class AlleleFactory:
+class AlleleBuilder:
     """The goal of this module is to simplify the creation of FHIR Allele, eliminating the need to build them step by step or through the unpackaging process.
     These FHIR Allele will come with pre-filled attributes, allowing you to input just five key attributes: id, startQuantity, endQuantity, reference sequence, and literal value.
     This function specifically creates an FHIR Allele for Literal Value representation.
@@ -49,7 +48,7 @@ class AlleleFactory:
         """
         return refseq_accession.split(".", 1)[0].replace("_", "").lower()
 
-    def create_vrs_allele(
+    def build_vrs_allele(
         self,
         context_sequence_id: str,
         start: int,
@@ -93,7 +92,7 @@ class AlleleFactory:
         else:
             return allele
 
-    def create_fhir_allele(
+    def build_fhir_allele(
         self,
         context_sequence_id: str,
         start: int,
@@ -146,7 +145,7 @@ class AlleleFactory:
             moleculeType=mol_type,
             representation=[representation_sequence],
         )
-        
+
         system, origin, normalizationMethod = vrs_coordinate_interval()
 
         seq_context = Reference(

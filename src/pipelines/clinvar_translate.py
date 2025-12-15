@@ -15,7 +15,7 @@ from translators.vrs_to_fhir import VrsToFhirAlleleTranslator
 
 
 @dataclass
-class FinalStats:
+class ClinvarTranslationSummary:
     file_name: str
     start_date: str
     start_time: str
@@ -30,12 +30,12 @@ class FinalStats:
     failed_vrs_to_fhir_translation: int
     total_failed: int
 
-class FastTranslation:
+class ClinvarTranslationPipeline:
 
     def __init__(self):
         self.vrs_translator = VrsToFhirAlleleTranslator()
 
-    def clinvartranslation(self,inputfile, outputfile, invalid_allele_path, invalid_fhir_path, limit = None):
+    def run(self,inputfile, outputfile, invalid_allele_path, invalid_fhir_path, limit = None):
 
         started_at_wall = datetime.now()
         t0 = time.perf_counter()
@@ -53,7 +53,7 @@ class FastTranslation:
             'lse_count': 0,
             'rle_count': 0,
             'other_count': 0}
-        
+
         try:
             with open(outputfile, "ab") as out_f:
                 with gzip.open(inputfile, "rt", encoding="utf-8") as f:
@@ -63,7 +63,7 @@ class FastTranslation:
                             break
 
                         total_lines_read += 1
-                        
+
                         try:
                             obj = orjson.loads(line)
                             members = obj.get("members", [])
@@ -119,7 +119,7 @@ class FastTranslation:
             ended_at_wall = datetime.now()
             duration = max(t1 - t0, 1e-9)
 
-            final_stats = FinalStats(
+            final_stats = ClinvarTranslationSummary(
                 file_name=Path(inputfile).name,
                 start_date=started_at_wall.date().isoformat(),
                 start_time=started_at_wall.time().isoformat(timespec="seconds"),
@@ -158,7 +158,7 @@ class FastTranslation:
         logging.info("Starting Translation Job")
 
 
-        self.clinvartranslation(
+        self.run(
             inputfile=args.input_gzip,
             outputfile="vrs_to_fhir_translations.jsonl",
             invalid_allele_path=args.invalid_allele_log,
@@ -167,4 +167,4 @@ class FastTranslation:
         )
 
 if __name__ == "__main__":
-    FastTranslation().main()
+    ClinvarTranslationPipeline().main()
