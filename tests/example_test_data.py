@@ -61,7 +61,7 @@ vrs_synthetic_data = {
             "type": "SequenceReference",
             "residueAlphabet": "aa",
             "moleculeType": "protein",
-            #TODO: Currently FHIR doesn't support circular Sequence 
+            #TODO: Currently FHIR doesn't support circular Sequence
             # "circular": False,
             "sequence": "V", # A sequenceString that is a literal representation of the referenced sequence.
             "extensions": [

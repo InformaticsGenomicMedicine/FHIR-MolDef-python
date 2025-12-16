@@ -10,9 +10,15 @@ from ga4gh.vrs.models import (
 
 from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
-from translators.constants.vrs_json_pointers import literal_sequence_expression_identifiers as LSE
-from translators.constants.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC
-from translators.constants.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF
+from translators.constants.vrs_json_pointers import (
+    literal_sequence_expression_identifiers as LSE,
+)
+from translators.constants.vrs_json_pointers import (
+    sequence_location_identifiers as SEQ_LOC,
+)
+from translators.constants.vrs_json_pointers import (
+    sequence_reference_identifiers as SEQ_REF,
+)
 
 
 class FhirToVrsAlleleTranslator:
@@ -83,10 +89,10 @@ class FhirToVrsAlleleTranslator:
             list[Expression]: A list containing a single VRS `Expression` object with
             extracted syntax, value, version, and optional extensions.
         """
-        
+
         if not ao.representation[0].code:
             return None
-        
+
         expression_list = []
         for code in ao.representation[0].code:
             extensions = self._extract_nested_extensions(code.extension) if code.extension else None
@@ -101,7 +107,7 @@ class FhirToVrsAlleleTranslator:
                 expression_list.append(exp)
 
         return expression_list
-    
+
 # ========== Sequence Location Mapping ==========
 
     def _map_sequence_location(self,ao):
@@ -171,8 +177,8 @@ class FhirToVrsAlleleTranslator:
             refgetAccession = refget_accession,
             residueAlphabet = residue_alphabet,
             moleculeType=self._validate_molecule_type(molecule_type),
-            #TODO/NOTE: No place to put this in the fhir schema/ so we can just hard code it. 
-            # circular=False, 
+            #TODO/NOTE: No place to put this in the fhir schema/ so we can just hard code it.
+            # circular=False,
             sequence=literal_sequence
         )
 
@@ -290,7 +296,7 @@ class FhirToVrsAlleleTranslator:
         if molecule_type in mapped_molType:
             return mapped_molType[molecule_type]
 
-        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, amino acid.") 
+        raise ValueError(f"Unsupported moleculeType: '{molecule_type}'. Expected one of: dna, rna, amino acid.")
 
 # ========== Literal Sequence Expression Mapping ==========
 
@@ -387,7 +393,7 @@ class FhirToVrsAlleleTranslator:
                     result["digest"] = val
                 elif SEQ_LOC["aliases"] in url:
                     result["aliases"].append(val)
-                elif getattr(ext, "extension"):
+                elif ext.extension:
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)
@@ -434,7 +440,7 @@ class FhirToVrsAlleleTranslator:
                     result["description"] = val
                 elif LSE["aliases"] in url:
                     result["aliases"].append(val)
-                elif getattr(ext,"extension"):
+                elif ext.extension:
                     nested = self._extract_nested_extensions([ext])
                     if nested:
                         result["extensions"].extend(nested)

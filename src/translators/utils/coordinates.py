@@ -1,8 +1,7 @@
-import re
-
 from exceptions.utils import (
     InvalidCoordinateSystemError,
 )
+
 
 def validate_indexing(coord_system, start):
     """Adjust the indexing based on the coordinate system.

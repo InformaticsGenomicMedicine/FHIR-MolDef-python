@@ -1,5 +1,3 @@
-#NOTE: This is still in the process of developement, needs more testing and work
-
 import argparse
 import gzip
 import logging

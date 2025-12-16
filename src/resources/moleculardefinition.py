@@ -1,4 +1,3 @@
-
 from fhir.resources import backboneelement, domainresource, fhirtypes
 from fhir_core.types import BooleanType, CodeType, IntegerType
 from pydantic import Field
