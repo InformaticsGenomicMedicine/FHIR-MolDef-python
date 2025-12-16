@@ -1,7 +1,3 @@
-### will be attempting to transalte spdi, and hgvs to FHIR Variation Profile
-# Variation profile includes two representations
-# alt and ref state
-
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity
@@ -17,11 +13,11 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.utils.refseq import detect_sequence_type
 from translators.constants.coordinate_systems import (
     hgvs_coordinate_interval,
     spdi_coordinate_interval,
 )
+from translators.utils.refseq import detect_sequence_type
 from vrs_tools.hgvs_tools import HgvsToolsLite
 
 

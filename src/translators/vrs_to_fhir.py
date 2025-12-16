@@ -16,22 +16,26 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.utils.refseq import (
-    detect_sequence_type,
-    translate_sequence_id,
-)
-from translators.utils.allele import (
-    is_valid_vrs_allele,
-)
-from translators.utils.allele_denormalizer import AlleleDenormalizer
 from translators.constants.coordinate_systems import vrs_coordinate_interval
 from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.constants.vrs_json_pointers import (
     literal_sequence_expression_identifiers as LSE_PTRS,
 )
-from translators.constants.vrs_json_pointers import sequence_location_identifiers as SEQ_LOC_PTRS
-from translators.constants.vrs_json_pointers import sequence_reference_identifiers as SEQ_REF_PTRS
+from translators.constants.vrs_json_pointers import (
+    sequence_location_identifiers as SEQ_LOC_PTRS,
+)
+from translators.constants.vrs_json_pointers import (
+    sequence_reference_identifiers as SEQ_REF_PTRS,
+)
+from translators.utils.allele import (
+    is_valid_vrs_allele,
+)
+from translators.utils.allele_denormalizer import AlleleDenormalizer
+from translators.utils.refseq import (
+    detect_sequence_type,
+    translate_sequence_id,
+)
 
 
 class VrsToFhirAlleleTranslator:
@@ -102,7 +106,7 @@ class VrsToFhirAlleleTranslator:
             sequence_type = detect_sequence_type(refget_accession)
         else:
             sequence_type = molType
-        
+
         molType = molType_map.get(sequence_type)
 
         return CodeableConcept(
@@ -531,7 +535,7 @@ class VrsToFhirAlleleTranslator:
         """
         contained = []
 
-        if getattr(ao.location, "sequence", None): 
+        if getattr(ao.location, "sequence", None):
             seq = self.build_location_sequence(ao)
             if seq:
                 contained.append(seq)
@@ -594,7 +598,7 @@ class VrsToFhirAlleleTranslator:
         rep_sequence = None
         if seqref_sequence:
             if seqref_residueAlphabet is None:
-                get_moltype = getattr(moleculeType.coding[0],"code")
+                get_moltype = moleculeType.coding[0].code
                 seqref_residueAlphabet = self._infer_residue_alphabet(get_moltype)
             if seqref_residueAlphabet:
                 rep_sequence = MolecularDefinitionRepresentationLiteral(

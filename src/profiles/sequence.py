@@ -66,7 +66,7 @@ class Sequence(MolecularDefinition):
                 )
             except AttributeError:
                 pass
-        
+
         return self
 
     @classmethod

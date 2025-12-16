@@ -1,4 +1,3 @@
-# Import required libraries
 from fhir.resources.codeableconcept import CodeableConcept
 from fhir.resources.coding import Coding
 from fhir.resources.quantity import Quantity

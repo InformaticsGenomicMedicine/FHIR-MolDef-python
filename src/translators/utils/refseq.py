@@ -5,6 +5,7 @@ from exceptions.utils import (
     InvalidSequenceTypeError,
 )
 
+
 def detect_sequence_type(sequence_id: str) -> str:
     """Translate the prefix of the RefSeq identifier to the type of sequence.
 

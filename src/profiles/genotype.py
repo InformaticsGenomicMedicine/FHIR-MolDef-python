@@ -1,13 +1,11 @@
-#NOTE: This is a template, most likely will change 
-# NOTE: Alpha 
-
+#NOTE: This is currently not being used. Before use must be reviewed.(work in progress)
 from typing import ClassVar
 
 from fhir.resources import fhirtypes
-import resources.fhirtypesextra as fhirtypesextra
-
 from pydantic import model_validator
-from exceptions.fhir import ElementNotAllowedError,InvalidTypeError
+
+import resources.fhirtypesextra as fhirtypesextra
+from exceptions.fhir import ElementNotAllowedError, InvalidTypeError
 from resources.moleculardefinition import MolecularDefinition
 
 
@@ -33,7 +31,7 @@ class Genotype(MolecularDefinition):
             if field in data and data[field] is not None:
                 raise ElementNotAllowedError(f"`{field}` is not allowed in Genotype.")
         return data
-    
+
     @model_validator(mode="after")
     def validate_type(self):
         if not self.type or not self.type.model_dump(exclude_unset=True):
