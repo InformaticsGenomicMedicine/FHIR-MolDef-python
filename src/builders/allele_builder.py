@@ -21,8 +21,8 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.constants.coordinate_systems import vrs_coordinate_interval
-from translators.utils.refseq import detect_sequence_type, validate_accession
+from conventions.coordinate_systems import vrs_coordinate_interval
+from conventions.refseq_identifiers import detect_sequence_type, validate_accession,refseq_to_fhir_id
 from vrs_tools.normalizer import VariantNormalizer
 
 
@@ -35,17 +35,6 @@ class AlleleBuilder:
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
         self.service = VariantNormalizer(dataproxy=self.dp)
-
-    def _refseq_to_fhir_id(self, refseq_accession):
-        """Convert a RefSeq accession to a FHIR-compatible ID.
-
-        Args:
-            refseq_accession (str): A RefSeq accession string (e.g., 'NM_001200.3').
-
-        Returns:
-            str: A normalized FHIR-compatible ID (e.g., 'nm001200').
-        """
-        return refseq_accession.split(".", 1)[0].replace("_", "").lower()
 
     def build_vrs_allele(
         self,
@@ -137,7 +126,7 @@ class AlleleBuilder:
         if id_value is not None:
             fhir_id = id_value
         else:
-            fhir_id = self._refseq_to_fhir_id(refseq_accession=val_sequence_id)
+            fhir_id = refseq_to_fhir_id(refseq_accession=val_sequence_id)
 
         sequence_profile = FhirSequence(
             id=f"ref-to-{fhir_id}",

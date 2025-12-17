@@ -16,7 +16,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.constants.coordinate_systems import vrs_coordinate_interval
+from conventions.coordinate_systems import vrs_coordinate_interval
 from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.constants.vrs_json_pointers import (
@@ -28,11 +28,11 @@ from translators.constants.vrs_json_pointers import (
 from translators.constants.vrs_json_pointers import (
     sequence_reference_identifiers as SEQ_REF_PTRS,
 )
-from translators.utils.allele import (
-    is_valid_vrs_allele,
+from translators.validation.allele import (
+    validate_vrs_allele,
 )
-from translators.utils.allele_denormalizer import AlleleDenormalizer
-from translators.utils.refseq import (
+from vrs_tools.allele_denormalizer import AlleleDenormalizer
+from conventions.refseq_identifiers import (
     detect_sequence_type,
     translate_sequence_id,
 )
@@ -45,7 +45,7 @@ class VrsToFhirAlleleTranslator:
         self.allele_denormalizer = AlleleDenormalizer(dp=self.dp)
 
     def translate_allele_to_fhir(self,vrs_allele):
-        is_valid_vrs_allele(vrs_allele)
+        validate_vrs_allele(vrs_allele)
 
         if vrs_allele.state.type == "ReferenceLengthExpression":
             vrs_allele = self.allele_denormalizer.denormalize_reference_length(vrs_allele)

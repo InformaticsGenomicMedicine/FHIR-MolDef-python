@@ -24,14 +24,15 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.constants.coordinate_systems import vrs_coordinate_interval
-from translators.utils.allele import is_valid_allele_profile, is_valid_vrs_allele
-from translators.utils.allele_denormalizer import AlleleDenormalizer
-from translators.utils.coordinates import validate_indexing
-from translators.utils.refseq import (
+from conventions.coordinate_systems import vrs_coordinate_interval
+from translators.validation.allele import validate_allele_profile, validate_vrs_allele
+from vrs_tools.allele_denormalizer import AlleleDenormalizer
+from translators.validation.indexing import apply_indexing
+from conventions.refseq_identifiers import (
     detect_sequence_type,
     translate_sequence_id,
     validate_accession,
+    refseq_to_fhir_id
 )
 from vrs_tools.normalizer import VariantNormalizer
 
@@ -178,7 +179,7 @@ class VrsFhirAlleleTranslator:
         Returns:
             tuple: (refseq_id, start_pos, end_pos, alt_allele)
         """
-        is_valid_vrs_allele(expression)
+        validate_vrs_allele(expression)
 
         refgetAccession = translate_sequence_id(dp, expression)
         start_pos = expression.location.start
@@ -207,18 +208,6 @@ class VrsFhirAlleleTranslator:
 
         return validate_accession(code_item.coding[0].code)
 
-    def _refseq_to_fhir_id(self, refseq_accession):
-        """Converts a RefSeq accession string to a standardized FHIR ID format.
-        This method removes the version suffix (after the dot), strips out underscores,
-        and converts the string to lowercase to ensure compatibility with FHIR resource IDs.
-
-        Args:
-            refseq_accession (str): A RefSeq accession string (e.g., 'NM_001256789.1').
-
-        Returns:
-            str: A formatted FHIR-compatible ID (e.g., 'nm001256789').
-        """
-        return refseq_accession.split(".", 1)[0].replace("_", "").lower()
 
     #############################################################
 
@@ -238,7 +227,7 @@ class VrsFhirAlleleTranslator:
         Returns:
             models.Allele: A GA4GH VRS Allele object.
         """
-        is_valid_allele_profile(expression)
+        validate_allele_profile(expression)
 
         location_data = self._is_valid_sequence_location(expression.location)
 
@@ -255,7 +244,7 @@ class VrsFhirAlleleTranslator:
         values_needed["coordinate_system_display"] = coding_list[0].display
 
         seq = self._get_literal_value_for_allele_state(expression.representation)
-        start = validate_indexing(
+        start = apply_indexing(
             values_needed["coordinate_system_display"], values_needed["start"]
         )
         start_pos = self._convert_decimal_to_int(start)
@@ -309,7 +298,7 @@ class VrsFhirAlleleTranslator:
         code_value = CodeableConcept(coding=[coding_ref])
         representation_sequence = MolecularDefinitionRepresentation(code=[code_value])
 
-        fhir_id = self._refseq_to_fhir_id(refseq_accession=refgetAccession)
+        fhir_id = refseq_to_fhir_id(refseq_accession=refgetAccession)
 
         sequence_profile = FhirSequence(
             id=f"ref-to-{fhir_id}",
