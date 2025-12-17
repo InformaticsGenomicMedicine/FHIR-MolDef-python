@@ -4,7 +4,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.utils.coordinates import validate_indexing
+from translators.validation.indexing import apply_indexing
 
 
 class RepresentationTranslator:
@@ -52,7 +52,7 @@ class RepresentationTranslator:
         start_pos = extracted.coordinateInterval.start
         coordsystem = extracted.coordinateInterval.coordinateSystem.system.coding[0].display
 
-        start = validate_indexing(coord_system=coordsystem,start= start_pos)
+        start = apply_indexing(coord_system=coordsystem,start= start_pos)
         end = extracted.coordinateInterval.end
 
         sequence_id = extracted.startingMolecule.display

@@ -3,7 +3,7 @@ from exceptions.utils import (
 )
 
 
-def validate_indexing(coord_system, start):
+def apply_indexing(coord_system, start):
     """Adjust the indexing based on the coordinate system.
 
     Args:

@@ -13,11 +13,11 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.constants.coordinate_systems import (
+from conventions.coordinate_systems import (
     hgvs_coordinate_interval,
     spdi_coordinate_interval,
 )
-from translators.utils.refseq import detect_sequence_type
+from conventions.refseq_identifiers import detect_sequence_type,refseq_to_fhir_id
 from vrs_tools.hgvs_tools import HgvsToolsLite
 
 
@@ -31,22 +31,6 @@ class VariationTranslation:
     def _hgvs_position(self, sv):
         pos = sv.posedit.pos
         return pos.start.base, pos.end.base
-
-    # TODO: This function was copied from another module. Consider moving it to `allele_utils.py`.
-    # NOTE: The name `allele_utils` might not be ideal, since this function is also used in the
-    #       variation module, which could cause confusion.
-    def _refseq_to_fhir_id(self, refseq_accession):
-        """Converts a RefSeq accession string to a standardized FHIR ID format.
-        This method removes the version suffix (after the dot), strips out underscores,
-        and converts the string to lowercase to ensure compatibility with FHIR resource IDs.
-
-        Args:
-            refseq_accession (str): A RefSeq accession string (e.g., 'NM_001256789.1').
-
-        Returns:
-            str: A formatted FHIR-compatible ID (e.g., 'nm001256789').
-        """
-        return refseq_accession.split(".", 1)[0].replace("_", "").lower()
 
     def _from_spdi(self,spdi):
         """Parse an SPDI string and convert it into a FHIR Variation Profile object.
@@ -160,7 +144,7 @@ class VariationTranslation:
         elif fmt == "spdi":
             coord_system_values, coord_system_origin, normalization_method = spdi_coordinate_interval()
 
-        fhir_id = self._refseq_to_fhir_id(refseq_accession=values["refget_accession"])
+        fhir_id = refseq_to_fhir_id(refseq_accession=values["refget_accession"])
 
         sequence_context = Reference(
             reference=f"#ref-to-{fhir_id}",

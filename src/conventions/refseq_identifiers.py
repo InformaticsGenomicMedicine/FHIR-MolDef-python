@@ -6,6 +6,17 @@ from exceptions.utils import (
 )
 
 
+def refseq_to_fhir_id(refseq_accession):
+    """Convert a RefSeq accession to a FHIR-compatible ID.
+
+    Args:
+        refseq_accession (str): A RefSeq accession string (e.g., 'NM_001200.3').
+
+    Returns:
+        str: A normalized FHIR-compatible ID (e.g., 'nm001200').
+    """
+    return refseq_accession.split(".", 1)[0].replace("_", "").lower()
+
 def detect_sequence_type(sequence_id: str) -> str:
     """Translate the prefix of the RefSeq identifier to the type of sequence.
 

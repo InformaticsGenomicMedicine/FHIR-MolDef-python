@@ -5,7 +5,7 @@ from exceptions.utils import (
 from profiles.allele import Allele as FhirAllele
 
 
-def is_valid_vrs_allele(expression):
+def validate_vrs_allele(expression):
     """Validation step to ensure that the expression is a valid VRS Allele object.
 
     Args:
@@ -33,7 +33,7 @@ def is_valid_vrs_allele(expression):
             raise InvalidVRSAlleleError(error_message)
 
 
-def is_valid_allele_profile(expression: object):
+def validate_allele_profile(expression: object):
     """Validates if the given expression is a valid Allele.
 
     Args:
