@@ -34,7 +34,7 @@ class AlleleBuilder:
 
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
-        self.service = VariantNormalizer(dataproxy=self.dp)
+        self.service = VariantNormalizer(dp=self.dp)
 
     def build_vrs_allele(
         self,
