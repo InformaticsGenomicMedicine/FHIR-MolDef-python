@@ -26,7 +26,6 @@ from resources.moleculardefinition import (
 )
 from conventions.coordinate_systems import vrs_coordinate_interval
 from translators.validation.allele import validate_allele_profile, validate_vrs_allele
-from vrs_tools.allele_denormalizer import AlleleDenormalizer
 from translators.validation.indexing import apply_indexing
 from conventions.refseq_identifiers import (
     detect_sequence_type,
@@ -42,8 +41,8 @@ class VrsFhirAlleleTranslator:
 
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
-        self.service = VariantNormalizer(dataproxy=self.dp)
-        self.allele_denormalizer = AlleleDenormalizer(dp=self.dp)
+        self.service = VariantNormalizer(dp=self.dp)
+        self.allele_denormalizer = VariantNormalizer(dp=self.dp)
 
     ##############################################################
 

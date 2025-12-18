@@ -31,7 +31,7 @@ from translators.constants.vrs_json_pointers import (
 from translators.validation.allele import (
     validate_vrs_allele,
 )
-from vrs_tools.allele_denormalizer import AlleleDenormalizer
+from vrs_tools.normalizer import VariantNormalizer
 from conventions.refseq_identifiers import (
     detect_sequence_type,
     translate_sequence_id,
@@ -42,7 +42,7 @@ class VrsToFhirAlleleTranslator:
 
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
-        self.allele_denormalizer = AlleleDenormalizer(dp=self.dp)
+        self.allele_denormalizer = VariantNormalizer(dp=self.dp)
 
     def translate_allele_to_fhir(self,vrs_allele):
         validate_vrs_allele(vrs_allele)
