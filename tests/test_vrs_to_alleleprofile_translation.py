@@ -94,6 +94,24 @@ def alleleprofile_expected_outputs():
                                         "display": "0-based interval counting",
                                     }
                                 ]
+                            },
+                            "origin": {
+                                "coding": [
+                                    {
+                                        "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/coordinate-origin",
+                                        "code": "sequence-start",
+                                        "display": "Sequence start"
+                                    }
+                                ]
+                            },
+                            "normalizationMethod": {
+                                "coding": [
+                                    {
+                                        "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/normalization-method",
+                                        "code": "fully-justified",
+                                        "display": "Fully justified"
+                                    }
+                                ]
                             }
                         },
                         "startQuantity": {"value": Decimal(113901365)},
