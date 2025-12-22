@@ -138,8 +138,9 @@ fhir_synthetic_data = {
       "moleculeType": {
         "coding": [
           {
-            "system": "http://hl7.org/fhir/sequence-type",
-            "code": "protein"
+              "code": "amino acid",
+              "display": "amino acid Sequence",
+              "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/moleculeType"
           }
         ]
       },
@@ -209,8 +210,9 @@ fhir_synthetic_data = {
       "moleculeType": {
         "coding": [
           {
-            "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/moleculeType",
-            "code": "protein"
+            "code": "amino acid",
+            "display": "amino acid Sequence",
+            "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/moleculeType"
           }
         ]
       },
@@ -271,9 +273,9 @@ fhir_synthetic_data = {
   "moleculeType": {
     "coding": [
       {
-        "system": "http://hl7.org/fhir/sequence-type",
-        "code": "protein",
-        "display": "protein Sequence"
+        "code": "amino acid",
+        "display": "amino acid Sequence",
+        "system": "https://w3id.org/ga4gh/schema/vrs/2.0.1/json/SequenceReference#properties/moleculeType"
       }
     ]
   },
@@ -348,7 +350,25 @@ fhir_synthetic_data = {
                   "display": "0-based interval counting"
                 }
               ]
-            }
+            },
+                "origin": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/coordinate-origin",
+                            "code": "sequence-start",
+                            "display": "Sequence start"
+                        }
+                    ]
+                },
+                "normalizationMethod": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/normalization-method",
+                            "code": "fully-justified",
+                            "display": "Fully justified"
+                        }
+                    ]
+                }
           },
           "startQuantity": {
             "value": 599.0
