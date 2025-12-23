@@ -13,6 +13,7 @@ class VariantNormalizer:
         self.dp = dp or create_dataproxy(uri=uri)
 
     def normalize(self, allele):
+        """Normalize an allele and assign GA4GH digest-based identifiers."""
         # Using the ga4gh normalize function to normalize the allele. (Coming form biocommons.normalize())
         allele = vrs_normalize(allele, self.dp)
         # Setting the allele id to a GA4GH digest-based id for the object, as a CURIE
@@ -23,7 +24,7 @@ class VariantNormalizer:
         return allele
 
     def denormalize_reference_length(self, ao):
-
+        """Denormalize a ReferenceLengthExpression allele expression into a literal sequence."""
         sequence = f"ga4gh:{ao.location.get_refget_accession()}"
 
         aliases = self.dp.translate_sequence_identifier(sequence, 'refseq')
