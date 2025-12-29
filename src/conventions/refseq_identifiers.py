@@ -33,6 +33,8 @@ def detect_sequence_type(sequence_id: str) -> str:
     prefix_to_type = {
         "NC_": "DNA",
         "NG_": "DNA",
+        "NW_": "DNA",
+        "NT_": "DNA",
         "NM_": "RNA",
         "NR_": "RNA",
         "NP_": "protein",
