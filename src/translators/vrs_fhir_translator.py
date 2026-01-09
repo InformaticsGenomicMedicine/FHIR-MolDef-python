@@ -25,8 +25,8 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from conventions.coordinate_systems import vrs_coordinate_interval
-from translators.validation.allele import validate_allele_profile, validate_vrs_allele
-from translators.validation.indexing import apply_indexing
+from translators.validations.allele import validate_allele_profile, validate_vrs_allele
+from translators.validations.indexing import apply_indexing
 from conventions.refseq_identifiers import (
     detect_sequence_type,
     translate_sequence_id,

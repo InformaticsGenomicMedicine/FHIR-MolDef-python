@@ -28,7 +28,7 @@ from translators.constants.vrs_json_pointers import (
 from translators.constants.vrs_json_pointers import (
     sequence_reference_identifiers as SEQ_REF_PTRS,
 )
-from translators.validation.allele import (
+from translators.validations.allele import (
     validate_vrs_allele,
 )
 from vrs_tools.normalizer import VariantNormalizer

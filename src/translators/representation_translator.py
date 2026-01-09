@@ -4,7 +4,7 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from translators.validation.indexing import apply_indexing
+from translators.validations.indexing import apply_indexing
 
 
 class RepresentationTranslator:
