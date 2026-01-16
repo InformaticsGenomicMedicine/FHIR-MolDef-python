@@ -7,17 +7,18 @@ This repository includes a set of interactive Jupyter notebooks that provide a h
 
 ### 1. **Schema Notebooks** (`notebooks/schema/`)
 
-- **1.1** **[MolecularDefinition](schema/molecular_definition_demo.ipynb)**  
-   - Demonstrates the Python implementation of the HL7 FHIR **MolecularDefinition** resource.  
-   - Includes a structured, step-by-step guide for constructing a MolecularDefinition resource.
+- **1.1** **[MolecularDefinition](schema/01_molecular_definition_overview.ipynb)**  
+   - Demonstrates the Python implementation of the HL7 FHIR **MolecularDefinition resource**.  
+   - Includes a structured, step-by-step guide for constructing the resource.
 
-- **1.2** **[Allele Profile](schema/allele_profile_demo.ipynb)**  
-   - Explores the Python implementation of the **HL7 FHIR Allele**.  
-   - Provides a walkthrough for constructing an Allele resource.  
+- **1.2** **[Sequence Profile](schema/02_sequence_profile.ipynb)**  
+   - Demonstrates the Python implementation of the MolecularDefinition **Sequence profile**, with a step-by-step walkthrough for building a Sequence.
 
-- **1.3** **[Sequence Profile](schema/sequence_profile_demo.ipynb)**  
-   - Showcases the Python implementation of the **HL7 FHIR Sequence**.  
-   - Guides users through the step-by-step process of building a Sequence profile.
+- **1.3** **[Allele Profile](schema/03_allele_profile.ipynb)**  
+   - Demonstrates the Python implementation of the MolecularDefinition **Allele profile**, with a step-by-step walkthrough for building an Allele.
+
+- **1.4** **[Variation Profile](schema/04_variation_profile.ipynb)**
+   - Demonstrates the Python implementation of the MolecularDefinition **Variation profile**, with a step-by-step walkthrough for building a Variation.
 
 ### 2. **Translational Notebooks** (`notebooks/translations/`)
 
