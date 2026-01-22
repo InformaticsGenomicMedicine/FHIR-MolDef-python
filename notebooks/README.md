@@ -5,19 +5,19 @@ This repository includes a set of interactive Jupyter notebooks that provide a h
 
 ## Notebook Categories
 
-### 1. **Schema Notebooks** (`notebooks/schema/`)
+### 1. **Schema Notebooks** (`notebooks/schemas/`)
 
-- **1.1** **[MolecularDefinition](schema/01_molecular_definition_overview.ipynb)**  
+- **1.1** **[MolecularDefinition](schemas/01_molecular_definition_overview.ipynb)**  
    - Demonstrates the Python implementation of the HL7 FHIR **MolecularDefinition resource**.  
    - Includes a structured, step-by-step guide for constructing the resource.
 
-- **1.2** **[Sequence Profile](schema/02_sequence_profile.ipynb)**  
+- **1.2** **[Sequence Profile](schemas/02_sequence_profile.ipynb)**  
    - Demonstrates the Python implementation of the MolecularDefinition **Sequence profile**, with a step-by-step walkthrough for building a Sequence.
 
-- **1.3** **[Allele Profile](schema/03_allele_profile.ipynb)**  
+- **1.3** **[Allele Profile](schemas/03_allele_profile.ipynb)**  
    - Demonstrates the Python implementation of the MolecularDefinition **Allele profile**, with a step-by-step walkthrough for building an Allele.
 
-- **1.4** **[Variation Profile](schema/04_variation_profile.ipynb)**
+- **1.4** **[Variation Profile](schemas/04_variation_profile.ipynb)**
    - Demonstrates the Python implementation of the MolecularDefinition **Variation profile**, with a step-by-step walkthrough for building a Variation.
 
 ### 2. **Translational Notebooks** (`notebooks/translations/`)
