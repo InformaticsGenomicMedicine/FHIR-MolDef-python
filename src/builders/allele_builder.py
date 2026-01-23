@@ -22,7 +22,11 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentationLiteral,
 )
 from conventions.coordinate_systems import vrs_coordinate_interval
-from conventions.refseq_identifiers import detect_sequence_type, validate_accession,refseq_to_fhir_id
+from conventions.refseq_identifiers import (
+    detect_sequence_type,
+    validate_accession,
+    refseq_to_fhir_id,
+)
 from vrs_tools.normalizer import VariantNormalizer
 
 
@@ -58,23 +62,20 @@ class AlleleBuilder:
             models.Allele: A VRS Allele object, either in normalized form or as originally constructed.
 
         """
-        refget_accession = self.dp.derive_refget_accession(f"refseq:{context_sequence_id}")
+        refget_accession = self.dp.derive_refget_accession(
+            f"refseq:{context_sequence_id}"
+        )
         seq_ref = SequenceReference(
             refgetAccession=refget_accession.split("refget:")[-1]
-            )
+        )
 
         seq_location = SequenceLocation(
             sequenceReference=seq_ref,
-            start = start,
+            start=start,
             end=end,
         )
-        lit_seq_expr = LiteralSequenceExpression(
-            sequence=sequenceString(allele_state)
-        )
-        allele = Allele(
-            location=seq_location,
-            state=lit_seq_expr
-        )
+        lit_seq_expr = LiteralSequenceExpression(sequence=sequenceString(allele_state))
+        allele = Allele(location=seq_location, state=lit_seq_expr)
         if normalize:
             return self.service.normalize(allele)
         else:
@@ -144,7 +145,7 @@ class AlleleBuilder:
                 Coding(
                     system="http://hl7.org/fhir/moleculardefinition-focus",
                     code="allele-state",
-                    display="Allele State"
+                    display="Allele State",
                 )
             ]
         )
@@ -157,9 +158,7 @@ class AlleleBuilder:
         )
 
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-            system=system,
-            origin=origin,
-            normalizationMethod=normalizationMethod
+            system=system, origin=origin, normalizationMethod=normalizationMethod
         )
         coord_interval = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
             coordinateSystem=coord_system_fhir,

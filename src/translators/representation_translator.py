@@ -11,6 +11,7 @@ class RepresentationTranslator:
     """A class to handle the translation between HL7 FHIR Molecular Definition Representations, including extracted, repeated, and relative representations, into literal representations.
     Currently, RepresentationTranslator can only handle extracted and repeated representations.
     """
+
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
 
@@ -50,9 +51,11 @@ class RepresentationTranslator:
         extracted = extracted_list[0]
 
         start_pos = extracted.coordinateInterval.start
-        coordsystem = extracted.coordinateInterval.coordinateSystem.system.coding[0].display
+        coordsystem = extracted.coordinateInterval.coordinateSystem.system.coding[
+            0
+        ].display
 
-        start = apply_indexing(coord_system=coordsystem,start= start_pos)
+        start = apply_indexing(coord_system=coordsystem, start=start_pos)
         end = extracted.coordinateInterval.end
 
         sequence_id = extracted.startingMolecule.display
@@ -74,7 +77,7 @@ class RepresentationTranslator:
         )
 
         expression.representation.append(literal)
-        #expression.representation.insert(0, literal)
+        # expression.representation.insert(0, literal)
         return expression
 
     def translate_repeated_to_literal(self, expression):

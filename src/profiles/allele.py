@@ -32,13 +32,16 @@ class Allele(MolecularDefinition):
         Allele: An instance of the Allele class.
 
     """
-    FOCUS_SYSTEM: ClassVar[str] = "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus"
+
+    FOCUS_SYSTEM: ClassVar[str] = (
+        "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus"
+    )
     EXPECTED_DISPLAY: ClassVar[dict[str, str]] = {
         "allele-state": "Allele State",
-        "context-state": "Context State"
-        }
+        "context-state": "Context State",
+    }
 
-    memberState: ClassVar[fhirtypes.ReferenceType| None] #type: ignore
+    memberState: ClassVar[fhirtypes.ReferenceType | None]  # type: ignore
 
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, data):
@@ -54,7 +57,7 @@ class Allele(MolecularDefinition):
             dict: The original input values if validation passes.
 
         """
-        if isinstance(data,dict) and "memberState" in data:
+        if isinstance(data, dict) and "memberState" in data:
             raise MemberStateNotAllowedError("`memberState` is not allowed in Allele.")
         return data
 
@@ -72,23 +75,23 @@ class Allele(MolecularDefinition):
             BaseModel: The validated model instance if the check passes.
 
         """
-        mt = getattr(self,"moleculeType", None)
+        mt = getattr(self, "moleculeType", None)
 
         if not mt:
             raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
-                )
-        if isinstance(mt,list):
+            )
+        if isinstance(mt, list):
             if len(mt) != 1:
                 raise InvalidMoleculeTypeError(
-                     "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
+                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
                 )
         else:
             try:
-                if not mt.model_dump(exclude_unset = True):
+                if not mt.model_dump(exclude_unset=True):
                     raise InvalidMoleculeTypeError(
-                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
-                )
+                        "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
+                    )
             except AttributeError:
                 pass
 
@@ -131,7 +134,6 @@ class Allele(MolecularDefinition):
         if not self.representation:
             raise MissingRepresentation(
                 "The `representation` field must contain one or more items. `representation` has a 1..* cardinality for Allele."
-
             )
         return self
 
@@ -142,11 +144,11 @@ class Allele(MolecularDefinition):
 
         for idx, rep in enumerate(self.representation):
             # Focus has a card. of 1..1, must be present in every representation
-            if getattr(rep,"focus", None) is None:
+            if getattr(rep, "focus", None) is None:
                 raise MissingFocus(
                     f"representation[{idx}].focus is required when slicing by focus CodeableConcept."
                 )
-            codings = getattr(rep.focus, 'coding', None)
+            codings = getattr(rep.focus, "coding", None)
             # coding has a card. of 1..*, must be present in every focus
             if not codings:
                 raise MissingFocusCoding(
@@ -163,15 +165,16 @@ class Allele(MolecularDefinition):
 
                 if not code:
                     raise MissingFocusCodingCode(
-                        f"representation[{idx}].focus.coding is missing a 'code' element.")
+                        f"representation[{idx}].focus.coding is missing a 'code' element."
+                    )
 
                 if code in {"allele-state", "context-state"}:
                     if not system:
                         raise MissingFocusCodingSystem(
                             f"representation[{idx}].focus.coding (code='{code}') must define 'system'."
                         )
-                    #NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
-                    #NOTE: To avoid changing the examples and this we are just going to # it out.
+                    # NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
+                    # NOTE: To avoid changing the examples and this we are just going to # it out.
                     # if system != self.FOCUS_SYSTEM:
                     #     raise InvalidFocusCodingSystem(
                     #         f"The Coding with code='{code}' must define a 'system' value as required by the MolDef focus discriminator."
@@ -183,7 +186,7 @@ class Allele(MolecularDefinition):
                         raise InvalidFocusCodingDisplay(
                             f"The Coding with code='{code}' must have display='{expected_display}', "
                             f"found '{display}'."
-                            )
+                        )
 
                     if code == "allele-state":
                         allele_state_count += 1

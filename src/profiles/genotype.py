@@ -1,4 +1,4 @@
-#NOTE: This is currently not being used. Before use must be reviewed.(work in progress)
+# NOTE: This is currently not being used. Before use must be reviewed.(work in progress)
 from typing import ClassVar
 
 from fhir.resources import fhirtypes
@@ -11,7 +11,9 @@ from resources.moleculardefinition import MolecularDefinition
 
 class Genotype(MolecularDefinition):
     location: ClassVar[fhirtypesextra.MolecularDefinitionLocationType | None]  # type: ignore
-    representation: ClassVar[fhirtypesextra.MolecularDefinitionRepresentationType | None]  # type: ignore
+    representation: ClassVar[
+        fhirtypesextra.MolecularDefinitionRepresentationType | None
+    ]  # type: ignore
 
     memberState: list[fhirtypes.ReferenceType] | None = Field(  # type: ignore
         None,
@@ -21,7 +23,7 @@ class Genotype(MolecularDefinition):
         json_schema_extra={
             "element_property": True,
             # note: Listed Resource Type(s) should be allowed as Reference.
-            "enum_reference_types": ["Allele","Haplotype"],
+            "enum_reference_types": ["Allele", "Haplotype"],
         },
     )
 

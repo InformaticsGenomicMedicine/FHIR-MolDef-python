@@ -31,7 +31,7 @@ from conventions.refseq_identifiers import (
     detect_sequence_type,
     translate_sequence_id,
     validate_accession,
-    refseq_to_fhir_id
+    refseq_to_fhir_id,
 )
 from vrs_tools.normalizer import VariantNormalizer
 
@@ -207,7 +207,6 @@ class VrsFhirAlleleTranslator:
 
         return validate_accession(code_item.coding[0].code)
 
-
     #############################################################
 
     def translate_allele_to_vrs(self, expression, normalize=True):
@@ -250,41 +249,42 @@ class VrsFhirAlleleTranslator:
         end_pos = self._convert_decimal_to_int(values_needed["end"])
         alt_seq = self._validate_sequence(seq)
 
-        refget_accession = self.dp.derive_refget_accession(f"refseq:{values_needed['refseq']}")
+        refget_accession = self.dp.derive_refget_accession(
+            f"refseq:{values_needed['refseq']}"
+        )
         seq_ref = SequenceReference(
             refgetAccession=refget_accession.split("refget:")[-1]
-            )
+        )
 
         seq_location = SequenceLocation(
             sequenceReference=seq_ref,
-            start = start_pos,
+            start=start_pos,
             end=end_pos,
         )
-        lit_seq_expr = LiteralSequenceExpression(
-            sequence=sequenceString(alt_seq)
-        )
-        allele = Allele(
-            location=seq_location,
-            state=lit_seq_expr
-        )
+        lit_seq_expr = LiteralSequenceExpression(sequence=sequenceString(alt_seq))
+        allele = Allele(location=seq_location, state=lit_seq_expr)
 
         return self.service.normalize(allele) if normalize else allele
 
     def translate_allele_to_fhir(self, expression):
-
         if expression.state.type == "ReferenceLengthExpression":
-            expression = self.allele_denormalizer.denormalize_reference_length(expression)
+            expression = self.allele_denormalizer.denormalize_reference_length(
+                expression
+            )
 
-        refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(expression, self.dp)
+        refgetAccession, start_pos, end_pos, alt_allele = self._extract_vrs_values(
+            expression, self.dp
+        )
 
         sequence_type = detect_sequence_type(refgetAccession)
 
         mol_type = CodeableConcept(
-            coding=[Coding(
-                    system =  "http://hl7.org/fhir/sequence-type",
-                    code =  sequence_type.lower(),
-                    display =  f"{sequence_type} Sequence",
-        )
+            coding=[
+                Coding(
+                    system="http://hl7.org/fhir/sequence-type",
+                    code=sequence_type.lower(),
+                    display=f"{sequence_type} Sequence",
+                )
             ]
         )
 
@@ -318,19 +318,19 @@ class VrsFhirAlleleTranslator:
                 Coding(
                     system="http://hl7.org/fhir/moleculardefinition-focus",
                     code="allele-state",
-                    display="Allele State"
+                    display="Allele State",
                 )
             ]
         )
 
         moldef_literal = MolecularDefinitionRepresentationLiteral(value=str(alt_allele))
 
-        moldef_repr = MolecularDefinitionRepresentation(focus=focus_value, literal=moldef_literal)
+        moldef_repr = MolecularDefinitionRepresentation(
+            focus=focus_value, literal=moldef_literal
+        )
 
         coord_system_fhir = MolecularDefinitionLocationSequenceLocationCoordinateIntervalCoordinateSystem(
-            system=system,
-            origin=origin,
-            normalizationMethod=normalizationMethod
+            system=system, origin=origin, normalizationMethod=normalizationMethod
         )
         coord_interval = MolecularDefinitionLocationSequenceLocationCoordinateInterval(
             coordinateSystem=coord_system_fhir,

@@ -3,13 +3,14 @@ from ga4gh.core import ga4gh_identify
 from ga4gh.vrs.models import LiteralSequenceExpression
 from ga4gh.vrs.normalize import (
     denormalize_reference_length_expression,
-    normalize as vrs_normalize)
+    normalize as vrs_normalize,
+)
 
 
 class VariantNormalizer:
     """Handles variant normalization using GA4GH VRS."""
 
-    def __init__(self,dp=None, uri: str | None = None):
+    def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
 
     def normalize(self, allele):
@@ -27,18 +28,18 @@ class VariantNormalizer:
         """Denormalize a ReferenceLengthExpression allele expression into a literal sequence."""
         sequence = f"ga4gh:{ao.location.get_refget_accession()}"
 
-        aliases = self.dp.translate_sequence_identifier(sequence, 'refseq')
-        refseq_id = aliases[0].split(':')[1]
+        aliases = self.dp.translate_sequence_identifier(sequence, "refseq")
+        refseq_id = aliases[0].split(":")[1]
 
-        ref_seq = self.dp.get_sequence(identifier=refseq_id,
-                                start=ao.location.start,
-                                end=ao.location.end)
+        ref_seq = self.dp.get_sequence(
+            identifier=refseq_id, start=ao.location.start, end=ao.location.end
+        )
 
         if ao.state.type == "ReferenceLengthExpression":
             alt_seq = denormalize_reference_length_expression(
                 ref_seq=ref_seq,
                 repeat_subunit_length=ao.state.repeatSubunitLength,
-                alt_length=ao.state.length
+                alt_length=ao.state.length,
             )
             ao.state = LiteralSequenceExpression(sequence=alt_seq)
 

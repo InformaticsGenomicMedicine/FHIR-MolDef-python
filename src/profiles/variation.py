@@ -33,14 +33,15 @@ class Variation(MolecularDefinition):
         Variation: An instance of the Variation class.
 
     """
+
     # FOCUS_SYSTEM: ClassVar[str] = "http://hl7.org/fhir/uv/molecular-definition-data-types/CodeSystem/molecular-definition-focus"
     EXPECTED_DISPLAY: ClassVar[dict[str, str]] = {
         "context-state": "Context State",
         "reference-state": "Reference State",
         "alternative-state": "Alternative State",
-        }
+    }
 
-    memberState: ClassVar[fhirtypes.ReferenceType| None] #type: ignore
+    memberState: ClassVar[fhirtypes.ReferenceType | None]  # type: ignore
 
     @model_validator(mode="before")
     def validate_memberState_exclusion(cls, data):
@@ -56,8 +57,10 @@ class Variation(MolecularDefinition):
             dict: The original input values if validation passes.
 
         """
-        if isinstance(data,dict) and "memberState" in data:
-            raise MemberStateNotAllowedError("`memberState` is not allowed in Variation.")
+        if isinstance(data, dict) and "memberState" in data:
+            raise MemberStateNotAllowedError(
+                "`memberState` is not allowed in Variation."
+            )
         return data
 
     @model_validator(mode="after")
@@ -74,23 +77,23 @@ class Variation(MolecularDefinition):
             BaseModel: The validated model instance if the check passes.
 
         """
-        mt = getattr(self,"moleculeType", None)
+        mt = getattr(self, "moleculeType", None)
 
         if mt is None:
             raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Variation."
-                )
-        if isinstance(mt,list):
+            )
+        if isinstance(mt, list):
             if len(mt) != 1:
                 raise InvalidMoleculeTypeError(
-                     "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Variation."
+                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Variation."
                 )
         else:
             try:
-                if not mt.model_dump(exclude_unset = True):
+                if not mt.model_dump(exclude_unset=True):
                     raise InvalidMoleculeTypeError(
-                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Variation."
-                )
+                        "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Variation."
+                    )
             except AttributeError:
                 pass
 
@@ -133,49 +136,47 @@ class Variation(MolecularDefinition):
         if not self.representation:
             raise MissingRepresentation(
                 "The `representation` field must contain one or more items. `representation` has a 1..* cardinality for Variation."
-
             )
         return self
 
-
     @model_validator(mode="after")
     def validate_focus(self):
-
         context_state_count = 0
         reference_state_count = 0
         alternative_state_count = 0
 
         for idx, rep in enumerate(self.representation):
-            #check for focus must be present
-            if getattr(rep,"focus", None) is None:
+            # check for focus must be present
+            if getattr(rep, "focus", None) is None:
                 raise MissingFocus(
                     f"representation[{idx}].focus is required when slicing by focus CodeableConcept."
                 )
             # Check if coding is present
-            codings = getattr(rep.focus,"coding", None)
+            codings = getattr(rep.focus, "coding", None)
             if not codings:
                 raise MissingFocusCoding(
                     f"representation[{idx}].focus.coding must contain at least one entry."
                 )
 
             for coding in codings:
-                code = getattr(coding,"code", None)
-                system = getattr(coding,"system", None)
-                display = getattr(coding,"display", None)
+                code = getattr(coding, "code", None)
+                system = getattr(coding, "system", None)
+                display = getattr(coding, "display", None)
 
-                #check if coding is present
+                # check if coding is present
                 if code is None:
                     raise MissingFocusCodingCode(
-                        f"representation[{idx}].focus.coding is missing a 'code' element.")
+                        f"representation[{idx}].focus.coding is missing a 'code' element."
+                    )
 
-                if code in {"context-state","reference-state","alternative-state"}:
+                if code in {"context-state", "reference-state", "alternative-state"}:
                     if not system:
                         raise MissingFocusCodingSystem(
                             f"representation[{idx}].focus.coding (code='{code}') must define 'system'."
                         )
 
-                    #NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
-                    #NOTE: To avoid changing the examples and this we are just going to # it out.
+                    # NOTE: IN some of the examples the fixed values isn't the same as the FOCUS_SYSTEM.
+                    # NOTE: To avoid changing the examples and this we are just going to # it out.
                     # if system != self.FOCUS_SYSTEM:
                     #     raise InvalidFocusCodingSystem(
                     #         f"The Coding with code='{code}' must define a 'system' value as required by the MolDef focus discriminator."
@@ -187,7 +188,7 @@ class Variation(MolecularDefinition):
                         raise InvalidFocusCodingDisplay(
                             f"The Coding with code='{code}' must have display='{expected_display}', "
                             f"found '{display}'."
-                            )
+                        )
 
                     if code == "context-state":
                         context_state_count += 1
@@ -204,12 +205,12 @@ class Variation(MolecularDefinition):
         if reference_state_count != 1:
             raise MissingReferenceState(
                 "Exactly one 'reference-state' must be present across 'representation' (cardinality 1..1)."
-                )
+            )
 
         if alternative_state_count != 1:
             raise MissingAlternativeState(
                 "Exactly one 'alternative-state' must be present across 'representation' (cardinality 1..1)."
-                )
+            )
 
         return self
 

@@ -21,16 +21,19 @@ class Sequence(MolecularDefinition):
         Sequence: An instance of the Sequence class.
 
     """
-    memberState: ClassVar[fhirtypes.ReferenceType | None] #type: ignore
-    location: ClassVar[fhirtypesextra.MolecularDefinitionLocationType| None]  # type: ignore
+
+    memberState: ClassVar[fhirtypes.ReferenceType | None]  # type: ignore
+    location: ClassVar[fhirtypesextra.MolecularDefinitionLocationType | None]  # type: ignore
 
     # Combined validator to exclude both `memberState` and `location` during validation
     @model_validator(mode="before")
     def validate_exclusions(cls, data):
-        if isinstance(data,dict):
+        if isinstance(data, dict):
             for field in ["memberState", "location"]:
                 if field in data:
-                    raise ElementNotAllowedError(f"`{field}` is not allowed in Sequence.")
+                    raise ElementNotAllowedError(
+                        f"`{field}` is not allowed in Sequence."
+                    )
         return data
 
     @model_validator(mode="after")
@@ -47,23 +50,23 @@ class Sequence(MolecularDefinition):
             BaseModel: The validated model instance if the check passes.
 
         """
-        mt = getattr(self,"moleculeType", None)
+        mt = getattr(self, "moleculeType", None)
 
         if not mt:
             raise InvalidMoleculeTypeError(
                 "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
-                )
-        if isinstance(mt,list):
+            )
+        if isinstance(mt, list):
             if len(mt) != 1:
                 raise InvalidMoleculeTypeError(
-                     "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
+                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
                 )
         else:
             try:
-                if not mt.model_dump(exclude_unset = True):
+                if not mt.model_dump(exclude_unset=True):
                     raise InvalidMoleculeTypeError(
-                    "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
-                )
+                        "The `moleculeType` field must contain exactly one item. `moleculeType` has a 1..1 cardinality for Allele."
+                    )
             except AttributeError:
                 pass
 

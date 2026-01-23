@@ -28,13 +28,14 @@ class ClinvarTranslationSummary:
     failed_vrs_to_fhir_translation: int
     total_failed: int
 
-class ClinvarTranslationPipeline:
 
+class ClinvarTranslationPipeline:
     def __init__(self):
         self.vrs_translator = VrsToFhirAlleleTranslator()
 
-    def run(self,inputfile, outputfile, invalid_allele_path, invalid_fhir_path, limit = None):
-
+    def run(
+        self, inputfile, outputfile, invalid_allele_path, invalid_fhir_path, limit=None
+    ):
         started_at_wall = datetime.now()
         t0 = time.perf_counter()
 
@@ -47,16 +48,12 @@ class ClinvarTranslationPipeline:
         failed_vrs_to_fhir_translation = 0
         total_lines_read = 0
         vrs_allele_seen = 0
-        allele_type ={
-            'lse_count': 0,
-            'rle_count': 0,
-            'other_count': 0}
+        allele_type = {"lse_count": 0, "rle_count": 0, "other_count": 0}
 
         try:
             with open(outputfile, "ab") as out_f:
                 with gzip.open(inputfile, "rt", encoding="utf-8") as f:
                     for line_num, line in enumerate(f, 1):
-
                         if limit is not None and line_num > limit:
                             break
 
@@ -66,11 +63,16 @@ class ClinvarTranslationPipeline:
                             obj = orjson.loads(line)
                             members = obj.get("members", [])
                         except orjson.JSONDecodeError:
-                            logging.warning("[Line %d] Skipping: JSON decode error", line_num)
+                            logging.warning(
+                                "[Line %d] Skipping: JSON decode error", line_num
+                            )
                             continue
 
                         for member in members:
-                            if not (isinstance(member, dict) and member.get("type") == "Allele"):
+                            if not (
+                                isinstance(member, dict)
+                                and member.get("type") == "Allele"
+                            ):
                                 continue
                             vrs_allele_seen += 1
                             try:
@@ -79,26 +81,36 @@ class ClinvarTranslationPipeline:
                             except Exception as e:
                                 failed_vrs_allele_validation += 1
 
-                                invalid_allele = {"line": line_num, "error": str(e), "member": member}
-                                invalid_allele_log.write(orjson.dumps(invalid_allele) + b"\n")
+                                invalid_allele = {
+                                    "line": line_num,
+                                    "error": str(e),
+                                    "member": member,
+                                }
+                                invalid_allele_log.write(
+                                    orjson.dumps(invalid_allele) + b"\n"
+                                )
                                 continue
 
                             state_type = vo.state.type
 
                             if "LiteralSequenceExpression" in state_type:
-                                    allele_type["lse_count"] += 1
+                                allele_type["lse_count"] += 1
                             elif "ReferenceLengthExpression" in state_type:
-                                    allele_type["rle_count"] += 1
+                                allele_type["rle_count"] += 1
                             else:
                                 allele_type["other_count"] += 1
 
                             try:
-                                fhir_obj = self.vrs_translator.translate_allele_to_fhir(vo)
+                                fhir_obj = self.vrs_translator.translate_allele_to_fhir(
+                                    vo
+                                )
 
                                 valid_translation = {
                                     "line": line_num,
                                     "vrs_allele": vo.model_dump(exclude_none=True),
-                                    "fhir_allele": fhir_obj.model_dump(exclude_none=True),
+                                    "fhir_allele": fhir_obj.model_dump(
+                                        exclude_none=True
+                                    ),
                                 }
                                 total_translated += 1
                                 out_f.write(orjson.dumps(valid_translation) + b"\n")
@@ -111,7 +123,9 @@ class ClinvarTranslationPipeline:
                                     "error": str(e),
                                     "vrs_allele": vo.model_dump(exclude_none=True),
                                 }
-                                invalid_fhir_trans_log.write(orjson.dumps(invalid_translation) + b"\n")
+                                invalid_fhir_trans_log.write(
+                                    orjson.dumps(invalid_translation) + b"\n"
+                                )
         finally:
             t1 = time.perf_counter()
             ended_at_wall = datetime.now()
@@ -130,8 +144,9 @@ class ClinvarTranslationPipeline:
                 total_translated=total_translated,
                 failed_vrs_allele_validation=failed_vrs_allele_validation,
                 failed_vrs_to_fhir_translation=failed_vrs_to_fhir_translation,
-                total_failed=failed_vrs_allele_validation + failed_vrs_to_fhir_translation,
-                )
+                total_failed=failed_vrs_allele_validation
+                + failed_vrs_to_fhir_translation,
+            )
 
             stats.write(orjson.dumps(final_stats, option=orjson.OPT_INDENT_2) + b"\n")
             stats.close()
@@ -142,19 +157,22 @@ class ClinvarTranslationPipeline:
     def main(self):
         parser = argparse.ArgumentParser(
             prog="allele-to-fhir-translator",
-            description="Load a dataset and translate allele expressions (tabular) or VRS 'out' objects (jsonl) to FHIR"
+            description="Load a dataset and translate allele expressions (tabular) or VRS 'out' objects (jsonl) to FHIR",
         )
         parser.add_argument("input_gzip", help="Path to gzipped JSONL file")
         parser.add_argument("--invalid-allele-log", default="invalid_vrs_alleles.jsonl")
         parser.add_argument("--invalid-fhir-log", default="invalid_trans_to_fhir.jsonl")
-        parser.add_argument("--limit", type=int, help="Process only this many lines from input")
-        parser.add_argument("--verbose", action="store_true", help="Enable detailed logging")
+        parser.add_argument(
+            "--limit", type=int, help="Process only this many lines from input"
+        )
+        parser.add_argument(
+            "--verbose", action="store_true", help="Enable detailed logging"
+        )
 
         args = parser.parse_args()
 
         logging.basicConfig(level=logging.DEBUG if args.verbose else logging.INFO)
         logging.info("Starting Translation Job")
-
 
         self.run(
             inputfile=args.input_gzip,
@@ -163,6 +181,7 @@ class ClinvarTranslationPipeline:
             invalid_fhir_path=args.invalid_fhir_log,
             limit=args.limit,
         )
+
 
 if __name__ == "__main__":
     ClinvarTranslationPipeline().main()

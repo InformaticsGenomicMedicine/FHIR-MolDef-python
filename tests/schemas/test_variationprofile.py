@@ -305,7 +305,6 @@ def test_multiple_context_state_globally(valid_fhir_variation):
             }
         }
     )
-
     assert_raises_message(
         MultipleContextState,
         "At most one 'context-state' is allowed across 'representation' (cardinality 0..1).",

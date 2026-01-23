@@ -3,9 +3,8 @@ from fhir.resources.coding import Coding
 
 
 def _cc(system: str, code: str, display: str) -> CodeableConcept:
-    return CodeableConcept(
-        coding=[Coding(system=system, code=code, display=display)]
-    )
+    return CodeableConcept(coding=[Coding(system=system, code=code, display=display)])
+
 
 # ------------------------------------------------------------
 # SYSTEMS
@@ -52,12 +51,14 @@ RIGHT_SHIFT_NORMALIZATION = _cc(
 # METHODS
 # ------------------------------------------------------------
 
+
 def spdi_coordinate_interval():
     return (
         ZERO_BASE_INTERVAL_SYSTEM,
         SEQUENCE_START_ORIGIN,
         FULLY_JUSTIFIED_NORMALIZATION,
     )
+
 
 def vrs_coordinate_interval():
     return (
@@ -66,8 +67,8 @@ def vrs_coordinate_interval():
         FULLY_JUSTIFIED_NORMALIZATION,
     )
 
-def hgvs_coordinate_interval(molType):
 
+def hgvs_coordinate_interval(molType):
     if molType == "DNA":
         return (
             ONE_BASE_INTERVAL_SYSTEM,
@@ -84,5 +85,3 @@ def hgvs_coordinate_interval(molType):
 
     else:
         raise ValueError(f"Unsupported molecular type: {molType}")
-
-

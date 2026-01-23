@@ -47,4 +47,3 @@ def validate_allele_profile(expression: object):
         raise InvalidAlleleProfileError(
             "Invalid expression type: expected an instance of Allele."
         )
-

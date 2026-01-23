@@ -17,6 +17,7 @@ def refseq_to_fhir_id(refseq_accession):
     """
     return refseq_accession.split(".", 1)[0].replace("_", "").lower()
 
+
 def detect_sequence_type(sequence_id: str) -> str:
     """Translate the prefix of the RefSeq identifier to the type of sequence.
 
@@ -67,6 +68,7 @@ def validate_accession(refseq_id: str) -> str:
         )
 
     return refseq_id
+
 
 def translate_sequence_id(dp, expression):
     """Translate a sequence ID using SeqRepo and return the RefSeq ID.

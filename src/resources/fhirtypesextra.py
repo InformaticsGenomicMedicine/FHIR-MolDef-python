@@ -9,7 +9,9 @@ from fhir_core.types import String, create_fhir_type
 @dataclasses.dataclass(frozen=True)
 class StringAllowEmpty(String):
     """FHIR String type that allows empty strings (regex updated automatically)."""
+
     allow_empty_str = True
+
 
 EmptyStringType = Annotated[str, StringAllowEmpty()]
 
@@ -123,5 +125,5 @@ __all__ = [
     "MolecularDefinitionRepresentationRelativeType",
     "MolecularDefinitionRepresentationRelativeEditType",
     "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalType",
-    "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType"
+    "MolecularDefinitionRepresentationRelativeEditCoordinateIntervalCoordinateSystemType",
 ]
