@@ -26,6 +26,7 @@ Additionally, this repository facilitates seamless, bidirectional translation be
 | **Profiles** | Sequence, Allele, and Variant profiles |
 | **Translation** | Bidirectional VRS 2.0 translations (full + minimal) |
 | **Notebooks** | Interactive Jupyter notebooks with examples (**see the Notebooks README for details**) |
+| **Pipeline** | Extract VRS Allele objects from ClinVar variation files and translate them into the FHIR Allele Profile |
 
 <!-- ## Features
 
@@ -57,37 +58,49 @@ Additionally, this repository facilitates seamless, bidirectional translation be
 * This package currently relies on a **local installation of SeqRepo**, which is required to perform the bidirectional translations.  
 * We are in the process of writing documentation for installing SeqRepo locally, as well as providing a **docker-compose.yml** configuration to run SeqRepo (and future UTA support) in a containerized environment.
 
-## Steps to Set Up Locally
+## Local Setup
 
-1. **Clone the Repository**:
-   Ensure you are logged into your GitHub account. Navigate to the repository on GitHub, click the green **Code** button, and copy the repository link. Then, use the following command to clone the repository to your local machine:
+Follow these steps to set up the project for local development.
+
+### 1. Clone the Repository
+Make sure you’re logged into GitHub, then clone the repository and navigate into it:
+
+```bash
+git clone https://github.com/YourUsername/FHIR-MolDef-python.git
+cd FHIR-MolDef-python
+```
+
+### 2. Create and Activate a Virtual Environment
+We recommend using Python’s built-in `venv` module.
 
    ```bash
-   git clone https://github.com/YourUsername/FHIR-MolDef-python.git
-   cd FHIR-MolDef-python
+   python -m venv venv
    ```
 
-2. **Set Up a Virtual Environment**:
-   For our development, we used Python's built-in `venv` module to create the virtual environment. Once the virtual environment is created, ensure it is activated.
+Activate the virtual environment
 
-3. **Install the Package in Editable Mode**:
-   - If you want to install the package without the development dependencies:
-     ```bash
-     pip install -e .
-     ```
+- **macOS/Linux**
+   ```bash
+   source venv/bin/activate
+   ```
+- **Windows** 
+   ```bash
+   venv\Scripts\activate
+   ```
 
-   - Install the package along with development dependencies using the following commands for macOS:
-     ```bash
-     pip install -e . '.[dev]'
-     ```
+### 3. Install the Package
+- **Installation (until the package is published)**
+   ```bash
+   pip install . 
+   ```
 
-   - Install the package along with development dependencies using the following commands for Windows:
-     ```bash
-     pip install -e .[dev]
-     ```
+- **Local Development**
+   ```bash
+   pip install -e .[dev]
+   ```
 
-4. **Verify Installation**:
-   Confirm the package is installed by running:
+### 4. Verify Installation
+Confirm the package was installed successfully
    ```bash
    pip show FHIR-MolDef-python
    ```
