@@ -1,8 +1,10 @@
-from ga4gh.vrs.dataproxy import create_dataproxy
 from ga4gh.core import ga4gh_identify
+from ga4gh.vrs.dataproxy import create_dataproxy
 from ga4gh.vrs.models import LiteralSequenceExpression
 from ga4gh.vrs.normalize import (
     denormalize_reference_length_expression,
+)
+from ga4gh.vrs.normalize import (
     normalize as vrs_normalize,
 )
 

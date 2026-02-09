@@ -1,8 +1,8 @@
-# NOTE: This is currently not being used. Before use must be reviewed.(work in progress)
+# NOTE: This Profile is a work in progress. Profile should not be used. 
 from typing import ClassVar
 
 from fhir.resources import fhirtypes
-from pydantic import model_validator
+from pydantic import Field, model_validator
 
 import resources.fhirtypesextra as fhirtypesextra
 from exceptions.fhir import ElementNotAllowedError, InvalidTypeError

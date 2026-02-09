@@ -4,6 +4,11 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 from ga4gh.vrs.dataproxy import create_dataproxy
 
+from conventions.coordinate_systems import (
+    hgvs_coordinate_interval,
+    spdi_coordinate_interval,
+)
+from conventions.refseq_identifiers import detect_sequence_type, refseq_to_fhir_id
 from profiles.variation import Variation
 from resources.moleculardefinition import (
     MolecularDefinitionLocation,
@@ -13,11 +18,6 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from conventions.coordinate_systems import (
-    hgvs_coordinate_interval,
-    spdi_coordinate_interval,
-)
-from conventions.refseq_identifiers import detect_sequence_type, refseq_to_fhir_id
 from vrs_tools.hgvs_tools import HgvsToolsLite
 
 

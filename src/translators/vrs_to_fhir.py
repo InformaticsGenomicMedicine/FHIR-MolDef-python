@@ -6,6 +6,11 @@ from fhir.resources.quantity import Quantity
 from fhir.resources.reference import Reference
 from ga4gh.vrs.dataproxy import create_dataproxy
 
+from conventions.coordinate_systems import vrs_coordinate_interval
+from conventions.refseq_identifiers import (
+    detect_sequence_type,
+    translate_sequence_id,
+)
 from profiles.allele import Allele as FhirAllele
 from profiles.sequence import Sequence as FhirSequence
 from resources.moleculardefinition import (
@@ -16,7 +21,6 @@ from resources.moleculardefinition import (
     MolecularDefinitionRepresentation,
     MolecularDefinitionRepresentationLiteral,
 )
-from conventions.coordinate_systems import vrs_coordinate_interval
 from translators.constants.vrs_json_pointers import allele_identifiers as ALLELE_PTRS
 from translators.constants.vrs_json_pointers import extension_identifiers as EXT_PTRS
 from translators.constants.vrs_json_pointers import (
@@ -32,10 +36,6 @@ from translators.validations.allele import (
     validate_vrs_allele,
 )
 from vrs_tools.normalizer import VariantNormalizer
-from conventions.refseq_identifiers import (
-    detect_sequence_type,
-    translate_sequence_id,
-)
 
 
 class VrsToFhirAlleleTranslator:
