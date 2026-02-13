@@ -385,7 +385,7 @@ class FhirToVrsAlleleTranslator:
                 "extensions": [],
             }
 
-            for ext in getattr(loc, "extension", []):
+            for ext in getattr(loc, "extension", None) or []:
                 url = getattr(ext, "url", "") or ""
                 val = self._get_extension_value(ext)
 
