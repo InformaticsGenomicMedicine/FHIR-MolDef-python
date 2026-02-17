@@ -27,7 +27,7 @@ requires-python = ">=3.11"
 
 dependencies = [
     "pydantic==2.8.2",
-    "ga4gh.vrs[extras]==2.3.0",
+    "ga4gh.vrs[extras]==2.3.1",
     "fhir-core==1.1.4",
     "fhir-resources==8.0.0",
     "orjson==3.11.3",
