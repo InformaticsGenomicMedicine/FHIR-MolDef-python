@@ -111,11 +111,18 @@ Confirm the package was installed successfully
 
 ## Acknowledgments
 
-This project relies on the following packages and resources. We extend our gratitude to their respective developers and contributors for making these tools freely available:
+This project builds upon the following community standards and open-source implementations:
 
-* **[vrs-python](https://github.com/ga4gh/vrs-python)**
-* **[biocommons.seqrepo](https://github.com/biocommons/biocommons.seqrepo)**
-* **[biocommons.seqrepo-rest-services](https://github.com/biocommons/seqrepo-rest-service)**
-* **[HL7 FHIR](https://hl7.org/fhir/6.0.0-ballot2/moleculardefinition.html)**
-* **[fhir.resource](https://github.com/nazrulworld/fhir.resources)**
-* **[fhir-core](https://github.com/nazrulworld/fhir-core)**
+### Standards
+
+- [GA4GH Variation Representation Specification (VRS)](https://vrs.ga4gh.org/)
+- [HL7 FHIR MolecularDefinition](https://hl7.org/fhir/6.0.0-ballot2/moleculardefinition.html)
+
+### Software
+
+- [vrs-python](https://github.com/ga4gh/vrs-python)
+- [biocommons.seqrepo](https://github.com/biocommons/biocommons.seqrepo)
+- [fhir.resources](https://github.com/nazrulworld/fhir.resources)
+- [fhir-core](https://github.com/nazrulworld/fhir-core)
+
+We gratefully acknowledge the communities and contributors who develop and maintain these resources.
