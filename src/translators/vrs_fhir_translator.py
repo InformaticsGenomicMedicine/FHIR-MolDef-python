@@ -37,7 +37,7 @@ from vrs_tools.normalizer import VariantNormalizer
 
 
 class VrsFhirAlleleTranslator:
-    """Handles VRS <-> FHIR Allele conversion for 'contained' format."""
+    """Provide minimal bidirectional translation between VRS Allele and FHIR Allele Profiles."""
 
     def __init__(self, dp=None, uri: str | None = None):
         self.dp = dp or create_dataproxy(uri=uri)
@@ -210,7 +210,7 @@ class VrsFhirAlleleTranslator:
     #############################################################
 
     def translate_allele_to_vrs(self, expression, normalize=True):
-        """Converts an FHIR Allele object into a GA4GH VRS Allele object.
+        """Converts an FHIR Allele Profile object into a GA4GH VRS Allele object.
 
         Args:
             expression (Allele): A FHIR-compliant Allele containing sequence location,
@@ -267,6 +267,20 @@ class VrsFhirAlleleTranslator:
         return self.service.normalize(allele) if normalize else allele
 
     def translate_allele_to_fhir(self, expression):
+        """Converts an GA4GH VRS Allele object into FHIR Allele object.
+
+        Args:
+            expression (Allele): A VRS Allele object containing refgetAccession, start and end position, and alternative sequence.
+
+        Raises:
+            InvalidVRSAlleleError: Raised if the input is not a valid VRS Allele object.
+
+        Returns:
+            FhirAllele: The translated FHIR Allele Profile representation.
+        """
+
+        validate_vrs_allele(expression)
+
         if expression.state.type == "ReferenceLengthExpression":
             expression = self.allele_denormalizer.denormalize_reference_length(
                 expression
