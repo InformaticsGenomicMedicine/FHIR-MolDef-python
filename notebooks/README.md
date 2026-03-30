@@ -22,22 +22,22 @@ This repository includes a set of interactive Jupyter notebooks that provide a h
 
 ### 2. **Translational Notebooks** (`notebooks/translations/`)
 
-- **2.1** **[Simple Allele Creation & Translation](01_simple_allele_creation_and_translation.ipynb)**
+- **2.1** **[Simple Allele Creation & Translation](translations/01_simple_allele_creation_and_translation.ipynb)**
    - Shows how the **Allele Builder**, which simplifies the creation of **VRS Allele** object and **FHIR Allele** profile.
    - Instead of requiring detailed knowledge of VRS or FHIR schemas, users provide just **five attributes** to generate valid Allele objects. 
    - The resulting Allele can then be used with the project’s translation tools to convert between **VRS** and **FHIR** representations.
 
-- **2.2** **[VRS to FHIR: Allele Translation](02_vrs_to_fhir_allele_translation.ipynb)**  
+- **2.2** **[VRS to FHIR: Allele Translation](translations/02_vrs_to_fhir_allele_translation.ipynb)**  
    - Demonstrates how **VRS Allele** representations with the **minimal required fields** are converted into **MolDef Allele Profile**.
 
-- **2.3** **[FHIR to VRS: Allele Translation](03_fhir_to_vrs_allele_translation.ipynb)**  
+- **2.3** **[FHIR to VRS: Allele Translation](translations/03_fhir_to_vrs_allele_translation.ipynb)**  
    - Shows how **MolDef Allele Profile** with the **minimal required elements** are translated into **VRS Allele** representations.  
 
-- **2.4** **[Full Allele Translations](04_full_allele_roundtrip_translation.ipynb)**  
+- **2.4** **[Full Allele Translations](translations/04_full_allele_roundtrip_translation.ipynb)**  
    - Demonstrates the **VRSToFHIR** and **FHIRToVRS** modules for translating fully populated **VRS Allele** objects to **MolDef AlleleProfile**, and vice versa.
    - This notebook focuses on **full, schema compliant Alleles** rather than the minimal examples shown in earlier notebooks.
 
-- **2.5** **[SPDI / HGVS to FHIR Variation](05_spdi_hgvs_to_fhir_variation.ipynb)**  
+- **2.5** **[SPDI / HGVS to FHIR Variation](translations/05_spdi_hgvs_to_fhir_variation.ipynb)**  
    - Demonstrates how **SPDI** and **HGVS** expressions are translated into **HL7 FHIR Variation** profile resources. 
 
 - **2.6** **[ClinVar Data to FHIR Allele Translation](translations/06_clinvar_vrs_to_fhir_allele_translation.ipynb)**  
