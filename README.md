@@ -1,11 +1,11 @@
 # Archived Repository
 
-This repository is no longer maintained and has been archived.
+This repository will be archived in the coming weeks and will become read-only.
 
 Development has moved to the following repository:
 [fhir-moldef](https://github.com/InformaticsGenomicMedicine/fhir-moldef)
 
-This repository is now read-only and will not receive further updates.
+No further updates will be made to this repository.
 
 ## Overview
 
