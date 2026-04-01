@@ -1,3 +1,12 @@
+# Archived Repository
+
+This repository is no longer maintained and has been archived.
+
+Development has moved to the following repository:
+[fhir-moldef](https://github.com/InformaticsGenomicMedicine/fhir-moldef)
+
+This repository is now read-only and will not receive further updates.
+
 ## Overview
 
 Welcome to the **FHIR-MolDef-python** repository. This project provides a Python implementation of the HL7 (Health Level Seven) Fast Healthcare Interoperability Resources (FHIR) Molecular Definition standard. It enables users to create instances of the MolecularDefinition resource and currently supports three profiles: Sequence, Allele, and Variant.
