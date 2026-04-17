@@ -129,7 +129,7 @@ Confirm the package was installed successfully
 Clone the repository and install the package for local development.
 
 ```bash
-git clone https://github.com/YourUsername/FHIR-MolDef-python.git
+git clone https://github.com/InformaticsGenomicMedicine/FHIR-MolDef-python.git
 cd FHIR-MolDef-python
 
 uv venv
